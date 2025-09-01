@@ -1,11 +1,81 @@
-<!-- shop.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Shop - France Farms</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&currency=USD"></script>
+  
+  <!-- This script uses your Sandbox Client ID for testing -->
+  <!-- We have removed the data-partner-attribution-id as it may have been causing the host error -->
+  <script src="https://www.paypal.com/sdk/js?client-id=AQ8j-v6f0etRZQ73aIBcvVTcgulJ0V_sP-dn5LTpkkcdoTe_LA4IIZ0lutjFY96zpXnehfjVBWAxkxwC&currency=USD"></script>
+
+  <!-- Custom styles for the message box -->
+  <style>
+    .message-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease-in-out, visibility 0s linear 0.3s;
+    }
+    .message-overlay.visible {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.3s ease-in-out;
+    }
+    .message-box {
+      background-color: #fff;
+      padding: 2.5rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      font-family: 'Arial', sans-serif;
+      max-width: 90%;
+    }
+    .message-box h3 {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+    .message-box p {
+      font-size: 1rem;
+      color: #666;
+      margin-bottom: 1.5rem;
+    }
+    .message-box button {
+      background-color: #0070ba;
+      color: #fff;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: bold;
+      transition: background-color 0.2s ease-in-out;
+    }
+    .message-box button:hover {
+      background-color: #005f9c;
+    }
+    .info-message {
+      color: #888;
+      font-size: 0.9rem;
+      text-align: center;
+      margin-top: 1rem;
+      padding: 0.5rem;
+      border: 1px dashed #ccc;
+      border-radius: 0.5rem;
+    }
+  </style>
+
 </head>
 <body>
   <nav>
@@ -14,40 +84,68 @@
     <a href="shop.html">Shop</a>
   </nav>
 
-  <h1>Shop France Farms</h1>
-  <p>We currently have fresh Cuban Oregano available.</p>
+  <h1>Shop Our Products</h1>
+  <p>Fresh, close-to-organic herbs from France Farms.</p>
 
-  <div class="product-card">
-    <img src="images/cuban-oregano.jpg" alt="Cuban Oregano" class="product-img">
-    <h2>Cuban Oregano</h2>
-    <p>A fragrant herb used for teas, seasoning, and natural remedies.</p>
-    <p class="price">$10.00 USD (per bundle)</p>
-    
-    <!-- PayPal button container -->
-    <div id="paypal-button-container"></div>
+  <div class="product-container">
+    <div class="product-card">
+      <img src="images/cuban-oregano.JPG" alt="Fresh Cuban Oregano" class="product-image">
+      <h2>Fresh Cuban Oregano</h2>
+      <p>A fragrant herb with a bold flavor, perfect for seasoning and natural remedies. </p>
+      <p class="price">$2.00 USD (per bundle)</p>
+      
+      <!-- PayPal button will render here -->
+      <div id="paypal-button-container"></div>
+    </div>
+  </div>
+
+  <!-- Custom message box for payment confirmation -->
+  <div id="message-overlay" class="message-overlay">
+    <div class="message-box">
+      <h3 id="message-title"></h3>
+      <p id="message-text"></p>
+      <button id="close-message-btn">Close</button>
+    </div>
   </div>
 
   <script>
-    paypal.Buttons({
-      createOrder: function(data, actions) {
-        return actions.order.create({
-          purchase_units: [{
-            description: "Cuban Oregano - France Farms",
-            amount: { value: '10.00' }
-          }]
-        });
-      },
-      onApprove: function(data, actions) {
-        return actions.order.capture().then(function(details) {
-          alert('Transaction completed by ' + details.payer.name.given_name + '!');
-        });
-      }
-    }).render('#paypal-button-container');
-  </script>
-</body>
-</html>
+    try {
+      paypal.Buttons({
+        style: {
+          color: 'blue',
+          shape: 'pill',
+          label: 'pay'
+        },
+        createOrder: function(data, actions) {
+          return actions.order.create({
+            purchase_units: [{
+              description: "Cuban Oregano - France Farms",
+              amount: {
+                value: '2.00' 
+              }
+            }]
+          });
+        },
+        onApprove: function(data, actions) {
+          return actions.order.capture().then(function(details) {
+            const messageOverlay = document.getElementById('message-overlay');
+            const messageTitle = document.getElementById('message-title');
+            const messageText = document.getElementById('message-text');
 
+            messageTitle.textContent = 'Payment Completed!';
+            messageText.textContent = 'Thank you, ' + details.payer.name.given_name + ' for your purchase!';
+            messageOverlay.classList.add('visible');
+          });
+        }
+      }).render('#paypal-button-container');
+    } catch (err) {
+      console.error('Error rendering PayPal Buttons:', err);
+      // Show an info message to the user when the button fails to render
+      const infoMessage = document.createElement('div');
+      infoMessage.className = 'info-message';
+      infoMessage.textContent = 'The PayPal button cannot load in this preview environment. Please view the live page on your GitHub Pages site to see the button.';
+      document.getElementById('paypal-button-container').appendChild(infoMessage);
+    }
 
-  </div>
 </body>
 </html>
