@@ -3,98 +3,31 @@ body {
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4; /* A light gray background */
-    color: #333; /* Dark gray for text */
+    color: #333;
+    
+    /* Dynamic Background Starts Here */
+    background: linear-gradient(135deg, #000000, #2e8b57, #000000);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
 }
 
-/* --- Navigation Bar --- */
-.main-nav {
-    background: #5cb85c; /* A pleasant green color */
-    padding: 1rem 0;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
-.main-nav a {
-    color: white;
-    text-decoration: none;
-    padding: 1rem;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-}
-
-.main-nav a:hover {
-    background-color: #4cae4c;
-}
-
-/* --- Blog Header --- */
+/* Ensure blog content remains readable */
 .blog-header {
     text-align: center;
     padding: 2rem 0;
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.85); /* Semi-transparent white */
     margin-bottom: 2rem;
     border-bottom: 1px solid #ddd;
-}
-
-.blog-header h1 {
-    margin: 0;
-    color: #333;
-}
-
-/* --- Blog Content & Layout --- */
-.blog-container {
-    max-width: 800px;
-    margin: auto;
-    padding: 0 1rem;
-}
-
-.blog-post {
-    background-color: white;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.blog-post h2 {
-    margin-top: 0;
-    color: #2e8b57; /* A deep green for headings */
-}
-
-.post-meta {
-    font-style: italic;
-    color: #666;
-    margin-top: -1rem;
-    margin-bottom: 1rem;
-}
-
-.post-image {
-    width: 100%;
-    height: auto;
-    border-radius: 6px;
-    margin-bottom: 1rem;
-}
-
-.post-images {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap; /* Allows images to wrap on smaller screens */
-    justify-content: center;
-    margin: 1.5rem 0;
-}
-
-.small-image {
-    width: 100%;
-    max-width: 300px;
-    height: auto;
-    border-radius: 6px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* --- Responsive Design --- */
-@media (max-width: 600px) {
-    .main-nav a {
-        display: block;
-        padding: 0.8rem;
-    }
 }
