@@ -1,21 +1,32 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: Arial, sans-serif; /* Changed back to Arial for better general readability */
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    color: #f4f4f4; /* Light gray text for readability on a black background */
-    background-color: #000000; /* Pure black background */
+    color: #ffffff; /* White text for contrast against the dark background */
+    display: flex;
+    flex-direction: column; /* Changed from previous flex setup to stack content */
+    min-height: 100vh;
+    text-align: center; /* Center aligns all body content */
+
+    /* --- Image Background Styles Start --- */
+    background-image: url('images/fractal-background.jpg'); /* IMPORTANT: Replace with your actual filename */
+    background-size: cover; /* Ensures the image covers the entire background */
+    background-position: center; /* Centers the image */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+    background-attachment: fixed; /* Keeps the background fixed when scrolling */
+    /* --- Image Background Styles End --- */
 }
 
 /* --- Navigation Bar --- */
-.main-nav {
-    background: #111; /* A very dark gray, so it's not pure black */
+nav {
+    background: rgba(0, 0, 0, 0.7); /* Semi-transparent dark background for nav */
     padding: 1rem 0;
     text-align: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.5); /* A darker shadow */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 }
 
-.main-nav a {
+nav a {
     color: white;
     text-decoration: none;
     padding: 1rem;
@@ -23,38 +34,64 @@ body {
     transition: background-color 0.3s ease;
 }
 
-.main-nav a:hover {
-    background-color: #333;
+nav a:hover {
+    background-color: rgba(51, 51, 51, 0.8); /* Darker hover effect */
 }
 
-/* --- Homepage Header --- */
-.homepage-header {
+/* --- Main Content Styling --- */
+h1, p {
     text-align: center;
-    padding: 10rem 1rem; /* A lot of vertical space to center the content */
+    color: #ffffff; /* Ensure headings and paragraphs are white */
+    margin: 1rem auto; /* Add some vertical margin and auto horizontal for centering */
+    max-width: 90%; /* Limit width for better readability */
 }
 
-.homepage-header h1 {
-    font-size: 3rem;
-    margin: 0;
-    color: white;
+/* Style for the TikTok embed to make it stand out on the background */
+blockquote.tiktok-embed {
+    margin: 2rem auto; /* Center the TikTok embed and add vertical spacing */
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background for readability */
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
 }
 
-.homepage-header p {
-    font-size: 1.2rem;
-    margin-top: 0.5rem;
+
+/* --- Footer Styles --- */
+footer {
+    text-align: center;
+    padding: 1.5rem; /* Increased padding */
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent dark background for footer */
+    margin-top: auto; /* Pushes the footer to the bottom of the page */
+    width: 100%; /* Ensure footer spans full width */
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.5); /* Shadow for footer */
 }
 
-.button {
-    display: inline-block;
-    background-color: #5cb85c; /* A nice green for the button */
-    color: white;
-    padding: 0.8rem 1.5rem;
+footer p {
+    margin-bottom: 0.5rem;
+    color: #ffffff;
+}
+
+.social-link {
+    color: #90ee90; /* A distinct green for social links */
     text-decoration: none;
-    border-radius: 5px;
-    margin-top: 1.5rem;
-    transition: background-color 0.3s ease;
+    font-weight: bold;
+    margin: 0 15px;
+    transition: color 0.3s ease;
 }
 
-.button:hover {
-    background-color: #4cae4c;
+.social-link:hover {
+    color: #c8f5c8; /* Lighter green on hover */
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 2rem;
+    }
+    p {
+        font-size: 0.9rem;
+    }
+    nav a {
+        padding: 0.8rem;
+    }
 }
