@@ -55,7 +55,9 @@
         <div id="price-container">
             <p><strong>Cocoa Price:</strong> <span id="cocoa-price">Loading...</span></p>
             <p><strong>Coffee Price:</strong> <span id="coffee-price">Loading...</span></p>
-        </div>
+            <p><strong>Sugar Price:</strong> <span id="sugar-price">Loading...</span></p>
+            <p><strong>Cotton Price:</strong> <span id="cotton-price">Loading...</span></p>
+            </div>
 
         <p><small>Prices refresh every 30 seconds.</small></p>
     </div>
@@ -71,23 +73,27 @@
         function fetchNewCommodityData() {
             console.log("Fetching new data from commodity API...");
 
-            // NOTE: In a real application, you would make an API call here. 
-            // Since I cannot access external APIs for you, this simulates 
-            // a data update with random numbers and the current time.
+            // NOTE: This code simulates real API data using random numbers.
+            // If you connect to a real API, replace the Math.random() lines 
+            // with your actual fetch/API call logic.
 
-            // Simulate fetching new prices (e.g., from a Commodity Price API)
+            // Simulate fetching new prices
             const cocoaPrice = (Math.random() * 5000 + 7000).toFixed(2);
             const coffeePrice = (Math.random() * 5 + 2).toFixed(2);
+            const sugarPrice = (Math.random() * 10 + 15).toFixed(2); // Sugar Price simulation
+            const cottonPrice = (Math.random() * 5 + 80).toFixed(2); // Cotton Price simulation
             const currentTime = new Date().toLocaleTimeString();
 
             // Update the HTML elements with new data
             document.getElementById('cocoa-price').textContent = `$${cocoaPrice} (USD/Tonne)`;
             document.getElementById('coffee-price').textContent = `$${coffeePrice} (USD/lb)`;
+            document.getElementById('sugar-price').textContent = `$${sugarPrice} (Cents/lb)`;
+            document.getElementById('cotton-price').textContent = `$${cottonPrice} (Cents/lb)`;
 
             // Update the timestamp to show the data is refreshing
             document.getElementById('price-container').innerHTML += `<p><em>Last updated: ${currentTime}</em></p>`;
             
-            // Clean up the timestamp after update
+            // Clean up old timestamps after update
             const updates = document.querySelectorAll('#price-container em');
             if (updates.length > 2) {
                 updates[0].remove();
@@ -98,7 +104,6 @@
         fetchNewCommodityData();
 
         // **Set the function to run repeatedly every 30 seconds (30000 milliseconds)**
-        // This is the implementation of the self-refreshing data.
         setInterval(fetchNewCommodityData, 30000);
     </script>
 
