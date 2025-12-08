@@ -2,110 +2,131 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>France Farms - Home</title>
-    <link rel="stylesheet" href="style.css">
+    <title>France Farms - Data & Projects</title>
+    <link rel="stylesheet" href="style.css"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        /* Add inline style for a black background */
+        /* Base styles */
         body {
+            font-family: Arial, sans-serif;
             background-color: black;
-            color: white; /* Change text color for readability on black background */
+            color: white; /* Text color */
+            margin: 0;
+            padding: 0;
+        }
+        nav a {
+            color: white;
+            padding: 8px 15px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        h1, h2 {
+            text-align: center;
+            padding: 10px;
         }
         /* Style the commodity data section */
-        #commodity-data {
-            margin: 20px;
-            padding: 15px;
-            border: 1px solid #444; /* Light border for contrast */
-            background-color: #1a1a1a; /* Dark gray for the container */
+        #commodity-data, #portfolio-projects {
+            width: 80%;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 25px;
+            border: 1px solid #4CAF50; /* Green border for contrast */
+            background-color: #1a1a1a; /* Dark gray container */
+            border-radius: 8px;
         }
-        #commodity-data h2 {
+        #commodity-data h2, #portfolio-projects h2 {
             color: #4CAF50; /* Green color for the heading */
+            text-align: left;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            padding: 10px 0;
+            border-bottom: 1px dashed #333;
+        }
+        li a {
+            color: lightblue;
+            text-decoration: none;
+        }
+        li a:hover {
+            text-decoration: underline;
+        }
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            border-top: 1px solid #333;
+            margin-top: 40px;
+        }
+        .social-link {
+            margin: 0 10px;
+            color: white;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
     <nav>
         <a href="index.html">Home</a>
+        <a href="data.html">Commodity Feed</a>
+        <a href="demographics.html">T&T Data Viz</a>
     </nav>
 
-    <h1>Welcome to My Website!</h1>
-    <p>Here is a video I like:</p>
+    <h1>Welcome to France Farms Projects & Portfolio</h1>
+    <p style="text-align: center;">This site serves as a launchpad for my data science and engineering projects.</p>
 
-    <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@france_farms/video/7375612416320883973"
-        data-video-id="7375612416320883973" style="max-width: 605px;min-width: 325px;">
-        <section>
-            <a target="_blank" title="@france_farms" href="https://www.tiktok.com/@france_farms?refer=embed">@france_farms</a>
-            Juicy Julie. Also known as Saint Julian
-            <a title="mango" target="_blank" href="https://www.tiktok.com/tag/mango?refer=embed">#Mango</a>.
-            It is considered to be one of the best mangoes in the
-            <a title="caribbean" target="_blank" href="https://www.tiktok.com/tag/caribbean?refer=embed">#Caribbean</a>
-            <a target="_blank" title="♬ original sound - Françe Farms"
-                href="https://www.tiktok.com/music/original-sound-7375612575465802502?refer=embed">
-                ♬ original sound - Françe Farms
-            </a>
-        </section>
-    </blockquote>
-    <script async src="https://www.tiktok.com/embed.js"></script>
-    
-    <hr>
-    <div id="commodity-data">
-        <h2>Live Commodity Price Feed 📈</h2>
-        <p>Fetching the latest data...</p>
-        
-        <div id="price-container">
-            <p><strong>Cocoa Price:</strong> <span id="cocoa-price">Loading...</span></p>
-            <p><strong>Coffee Price:</strong> <span id="coffee-price">Loading...</span></p>
-            <p><strong>Sugar Price:</strong> <span id="sugar-price">Loading...</span></p>
-            <p><strong>Cotton Price:</strong> <span id="cotton-price">Loading...</span></p>
-            </div>
-
-        <p><small>Prices refresh every 30 seconds.</small></p>
+    <div style="text-align: center; margin: 30px 0;">
+        <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@france_farms/video/7375612416320883973"
+            data-video-id="7375612416320883973" style="max-width: 605px; min-width: 325px; display: inline-block;">
+            <section>
+                <a target="_blank" title="@france_farms" href="https://www.tiktok.com/@france_farms?refer=embed">@france_farms</a>
+                Juicy Julie. Also known as Saint Julian <a title="mango" target="_blank" href="https://www.tiktok.com/tag/mango?refer=embed">#Mango</a>.
+                <a target="_blank" title="♬ original sound - Françe Farms"
+                    href="https://www.tiktok.com/music/original-sound-7375612575465802502?refer=embed">
+                    ♬ original sound - Françe Farms
+                </a>
+            </section>
+        </blockquote>
+        <script async src="https://www.tiktok.com/embed.js"></script>
     </div>
-    <hr>
+    <hr style="width: 80%; border-color: #333;">
+
+    <div id="portfolio-projects">
+        <h2>Data & Engineering Projects 🧑‍💻</h2>
+        <p>Explore the applications of my Linear Algebra, Calculus, and Python skills:</p>
+
+        <ul>
+            <li>
+                <strong>T&T Demographics Visualization:</strong>
+                <a href="demographics.html">View Live Data Storytelling Project</a>
+            </li>
+            <li>
+                <strong>Plant Assessor App:</strong>
+                <a href="https://github.com/francefarms/plant-assessor-app" target="_blank">View Code Repository (GitHub)</a>
+                | <a href="#" target="_blank" style="color: yellow;">View Live App (Coming Soon!)</a>
+            </li>
+            <li>
+                <strong>Dockerized Task Tracker:</strong>
+                <a href="https://github.com/francefarms/task-tracker-app" target="_blank">View Code Repository (GitHub)</a>
+                | <a href="#" target="_blank" style="color: yellow;">View Live App (Coming Soon!)</a>
+            </li>
+            <li>
+                <strong>Commodity Data Feed:</strong>
+                <a href="data.html">View Price Feed Page</a>
+            </li>
+        </ul>
+    </div>
+    <hr style="width: 80%; border-color: #333;">
 
     <footer>
-        <p>Follow Us:</p>
+        <p>Connect with Françe Farms:</p>
+        <a href="https://github.com/francefarms" target="_blank" class="social-link" style="font-weight: bold; color: #4CAF50; font-size: 1.1em;">
+            GitHub Profile 🖥️
+        </a>
         <a href="https://www.instagram.com/?hl=en" target="_blank" class="social-link">Instagram</a>
         <a href="mailto:francefarms@outlook.com" class="social-link">Email Us</a>
     </footer>
-
-    <script>
-        function fetchNewCommodityData() {
-            console.log("Fetching new data from commodity API...");
-
-            // NOTE: This code simulates real API data using random numbers.
-            // If you connect to a real API, replace the Math.random() lines 
-            // with your actual fetch/API call logic.
-
-            // Simulate fetching new prices
-            const cocoaPrice = (Math.random() * 5000 + 7000).toFixed(2);
-            const coffeePrice = (Math.random() * 5 + 2).toFixed(2);
-            const sugarPrice = (Math.random() * 10 + 15).toFixed(2); // Sugar Price simulation
-            const cottonPrice = (Math.random() * 5 + 80).toFixed(2); // Cotton Price simulation
-            const currentTime = new Date().toLocaleTimeString();
-
-            // Update the HTML elements with new data
-            document.getElementById('cocoa-price').textContent = `$${cocoaPrice} (USD/Tonne)`;
-            document.getElementById('coffee-price').textContent = `$${coffeePrice} (USD/lb)`;
-            document.getElementById('sugar-price').textContent = `$${sugarPrice} (Cents/lb)`;
-            document.getElementById('cotton-price').textContent = `$${cottonPrice} (Cents/lb)`;
-
-            // Update the timestamp to show the data is refreshing
-            document.getElementById('price-container').innerHTML += `<p><em>Last updated: ${currentTime}</em></p>`;
-            
-            // Clean up old timestamps after update
-            const updates = document.querySelectorAll('#price-container em');
-            if (updates.length > 2) {
-                updates[0].remove();
-            }
-        }
-
-        // Run the function immediately on page load
-        fetchNewCommodityData();
-
-        // **Set the function to run repeatedly every 30 seconds (30000 milliseconds)**
-        setInterval(fetchNewCommodityData, 30000);
-    </script>
 
 </body>
 </html>
