@@ -10,17 +10,11 @@
             margin: 0;
             padding: 0;
             
-            /* --- FINAL IMAGE BACKGROUND STYLES --- */
-            background-image: url('farm_background.jpg'); 
-            background-size: cover; 
-            background-position: center; 
-            background-repeat: no-repeat;
-            background-attachment: fixed; 
-            /* --- END BACKGROUND STYLES --- */
-
-            background-color: #1a1a1a; /* Fallback color */
+            /* --- REVERTED STYLES: SOLID BLACK BACKGROUND --- */
+            background-color: black; 
+            background-image: none; /* Explicitly removing any background image */
             color: white; 
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8); /* Improves text readability over the background image */
+            text-shadow: none; /* Removing text shadow */
         }
         
         header { 
@@ -48,7 +42,7 @@
         main {
             padding: 50px 20px;
             text-align: center;
-            background-color: rgba(0, 0, 0, 0.4); 
+            background-color: transparent; /* No overlay needed on a solid background */
             min-height: 80vh; 
             display: flex;
             flex-direction: column;
@@ -59,7 +53,7 @@
         h2 {
             font-size: 3em;
             margin-bottom: 20px;
-            color: #E0FFE0; 
+            color: #4CAF50; /* Green for the welcome message */
         }
 
         .project-list {
@@ -73,7 +67,7 @@
         }
 
         .project-item {
-            background-color: rgba(68, 179, 68, 0.8); 
+            background-color: #1a1a1a; /* Dark gray for project boxes */
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
@@ -88,7 +82,7 @@
         }
 
         .project-item a {
-            color: white;
+            color: #4CAF50; /* Green color for link text */
             text-decoration: none;
             font-size: 1.2em;
             font-weight: bold;
@@ -97,6 +91,7 @@
         .project-item p {
             font-size: 0.9em;
             margin-top: 10px;
+            color: #ccc;
         }
     </style>
 </head>
