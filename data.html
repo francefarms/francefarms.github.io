@@ -9,9 +9,18 @@
         header { background-color: #4CAF50; color: white; padding: 15px; text-align: center; }
         nav a { margin: 0 15px; text-decoration: none; color: white; font-weight: bold; }
         h2 { text-align: center; color: #4CAF50; }
-        table { width: 95%; margin: 30px auto; border-collapse: collapse; box-shadow: 0 4px 8px rgba(0,0,0,0.5); background-color: #1a1a1a; }
+        /* Style the table for a dark theme */
+        table { 
+            width: 95%; 
+            max-width: 900px;
+            margin: 30px auto; 
+            border-collapse: collapse; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5); 
+            background-color: #1a1a1a; 
+        }
         th, td { border: 1px solid #444; padding: 12px; text-align: left; }
         th { background-color: #333; color: #f2f2f2; }
+        /* Style for price changes */
         .change-up { color: lightgreen; font-weight: bold; }
         .change-down { color: #ff6666; font-weight: bold; }
         .note { text-align: center; margin-top: 20px; color: #ccc; }
@@ -27,100 +36,92 @@
         </nav>
     </header>
 
-    <h2>Global Agricultural & Related Futures Prices (Live Data)</h2>
+    <h2>Core Agricultural & Related Futures Prices (13 Contracts)</h2>
     <div id="data-container">
-        <p class="note" id="status-message">Fetching live market data...</p>
+        <p class="note">Loading market data...</p>
     </div>
     
     <script>
-        const API_ENDPOINT = 'https://france-farms-data.com/api/commodities'; // <-- YOU MUST REPLACE THIS URL!
-        const FETCH_INTERVAL = 30000; // 30 seconds
-
-        const container = document.getElementById('data-container');
-        const statusMessage = document.getElementById('status-message');
-
-        function displayCommodities(data) {
-            let html = '<table>';
-            html += '<thead><tr><th>Commodity</th><th>Price</th><th>Unit</th><th>Daily Change</th><th>Source</th></tr></thead>';
-            html += '<tbody>';
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('data-container');
             
-            // Sorting the data by name before rendering to ensure dynamic alphabetical order
-            data.sort((a, b) => a.name.localeCompare(b.name));
-
-            data.forEach(item => {
-                // Determine CSS class for color based on price change
-                // Note: Assumes change is a string like "+0.03" or "-0.01"
-                const changeClass = item.change.startsWith('+') ? 'change-up' : 'change-down';
-                
-                // Simple currency symbol formatting
-                let displayPrice = `$${item.price.toFixed(2)}`;
-                if (item.unit && item.unit.startsWith('EUR')) {
-                    displayPrice = `€${item.price.toFixed(2)}`;
-                } else if (item.unit && item.unit.startsWith('CAD')) {
-                    displayPrice = `C$${item.price.toFixed(2)}`;
-                }
-
-                html += `
-                    <tr>
-                        <td>${item.name}</td>
-                        <td>${displayPrice}</td>
-                        <td>${item.unit || 'N/A'}</td>
-                        <td class="${changeClass}">${item.change || 'N/A'}</td>
-                        <td>${item.source || 'API'}</td>
-                    </tr>
-                `;
-            });
+            // --- ALPHABETICALLY SORTED MOCK DATA ARRAY (13 Core Commodities) ---
+            const MOCK_COMMODITY_DATA = [
+                { name: 'Cocoa', price: 8550.00, unit: 'USD/ton', change: '+25.00', source: 'ICE' },
+                { name: 'Coffee (Arabica)', price: 2.10, unit: 'USD/lb', change: '-0.05', source: 'ICE' },
+                { name: 'Corn (Futures)', price: 4.80, unit: 'USD/bushel', change: '-0.01', source: 'CME' },
+                { name: 'Cotton #2', price: 63.90, unit: 'US cents/lb', change: '-0.05', source: 'ICE' },
+                { name: 'Feeder Cattle', price: 241.00, unit: 'US cents/lb', change: '+0.50', source: 'CME' },
+                { name: 'Lean Hogs', price: 81.50, unit: 'US cents/lb', change: '-0.20', source: 'CME' },
+                { name: 'Live Cattle', price: 227.25, unit: 'US cents/lb', change: '+0.10', source: 'CME' },
+                { name: 'Oats (Seeds)', price: 3.55, unit: 'USD/bushel', change: '+0.02', source: 'CBOT' },
+                { name: 'Orange Juice', price: 153.00, unit: 'US cents/lb', change: '+1.50', source: 'ICE' },
+                { name: 'Rough Rice', price: 16.50, unit: 'USD/cwt', change: '-0.05', source: 'CBOT' },
+                { name: 'Soybeans (Seeds)', price: 13.50, unit: 'USD/bushel', change: '+0.15', source: 'CBOT' },
+                { name: 'Sugar #11', price: 14.85, unit: 'US cents/lb', change: '+0.34', source: 'ICE' },
+                { name: 'Wheat (Futures)', price: 6.25, unit: 'USD/bushel', change: '+0.03', source: 'CME' }
+            ];
+            // --- END MOCK DATA ARRAY ---
             
-            html += '</tbody></table>';
-            
-            // Replace the entire content to update the table
-            container.innerHTML = html; 
-            
-            // Add a status note below the table
-            const updateTime = new Date().toLocaleTimeString();
-            container.insertAdjacentHTML('beforeend', `<p class="note">Last updated from external API: ${updateTime}. Next fetch in ${FETCH_INTERVAL / 1000} seconds.</p>`);
-        }
+            function displayCommodities(data) {
+                let html = '<table>';
+                html += '<thead><tr><th>Commodity</th><th>Price</th><th>Unit</th><th>Daily Change</th><th>Source</th></tr></thead>';
+                html += '<tbody>';
+                
+                // Sorting the data by name before rendering to ensure dynamic alphabetical order
+                data.sort((a, b) => a.name.localeCompare(b.name));
 
-        async function fetchCommodityData() {
-            try {
-                // Show fetching status
-                statusMessage.textContent = "Fetching live market data...";
-                statusMessage.style.color = 'yellow';
+                data.forEach(item => {
+                    // Determine CSS class for color based on price change
+                    const changeClass = item.change.startsWith('+') ? 'change-up' : 'change-down';
+                    
+                    // Simple currency symbol formatting
+                    let displayPrice = `$${item.price.toFixed(2)}`;
 
-                const response = await fetch(API_ENDPOINT);
+                    html += `
+                        <tr>
+                            <td>${item.name}</td>
+                            <td>${displayPrice}</td>
+                            <td>${item.unit}</td>
+                            <td class="${changeClass}">${item.change}</td>
+                            <td>${item.source}</td>
+                        </tr>
+                    `;
+                });
                 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                
-                // Your API must return a JSON array like the mock data:
-                // [{ name: 'Cocoa', price: 8500.00, unit: 'USD/ton', change: '+25.00', source: 'ICE' }, ...]
-                const liveData = await response.json();
-                
-                if (liveData && liveData.length > 0) {
-                    displayCommodities(liveData);
-                    // Hide status message after successful fetch
-                    statusMessage.style.display = 'none';
-                } else {
-                    throw new Error('API returned an empty data set.');
-                }
-                
-            } catch (error) {
-                console.error("Failed to fetch live commodity data:", error);
-                // Display error message
-                statusMessage.style.display = 'block';
-                statusMessage.textContent = `Error fetching data: ${error.message}. Displaying mock data (if available).`;
-                statusMessage.style.color = '#ff6666';
-                
-                // Optional: Fallback to static mock data if the API fails
-                // You would define the mock data array here if you want a reliable fallback.
+                html += '</tbody></table>';
+                html += '<p class="note">Data is simulated (mock data) but is updated every 30 seconds for demonstration purposes. It will never fail to load.</p>';
+                container.innerHTML = html;
             }
-        }
 
-        // Run the function immediately and then at the set interval
-        fetchCommodityData();
-        setInterval(fetchCommodityData, FETCH_INTERVAL);
+            // Function to simulate updates every 30 seconds
+            function simulateUpdate() {
+                // To simulate a live update, we slightly randomize prices and changes before re-displaying.
+                const updatedData = MOCK_COMMODITY_DATA.map(item => {
+                    // Small random change to the price to simulate market movement
+                    const movement = (Math.random() * 0.1 - 0.05) * item.price; 
+                    const newPrice = item.price + movement;
+                    
+                    // Update the price and change for simulation
+                    const newChange = (movement > 0 ? '+' : '') + (movement / item.price * 100).toFixed(2); 
 
+                    return {
+                        ...item,
+                        price: newPrice,
+                        change: newChange
+                    };
+                });
+
+                displayCommodities(updatedData);
+            }
+
+            // Run the function immediately
+            simulateUpdate();
+            
+            // Run the update simulation every 30 seconds
+            setInterval(simulateUpdate, 30000); 
+
+        });
     </script>
 </body>
 </html>
