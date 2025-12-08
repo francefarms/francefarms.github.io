@@ -10,7 +10,7 @@
         body {
             font-family: Arial, sans-serif;
             background-color: black;
-            color: white; /* Text color */
+            color: white; /* Change text color for readability on black background */
             margin: 0;
             padding: 0;
         }
@@ -64,6 +64,20 @@
             color: white;
             text-decoration: none;
         }
+        /* New styles for quick commodity listing */
+        .price-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .price-item {
+            flex-basis: 45%; /* Two items per row */
+            margin: 5px 0;
+        }
+        .price-value {
+            font-weight: bold;
+            color: #ccc;
+        }
     </style>
 </head>
 <body>
@@ -92,9 +106,31 @@
     </div>
     <hr style="width: 80%; border-color: #333;">
 
+    <div id="commodity-data">
+        <h2>Live Commodity Price Snapshot 📈</h2>
+        <p>Fetching the latest data for key soft and hard commodities...</p>
+        
+        <div id="price-container" class="price-list">
+            <p class="price-item"><strong>Cocoa:</strong> <span id="cocoa-price" class="price-value">Loading...</span></p>
+            <p class="price-item"><strong>Coffee (Arabica):</strong> <span id="coffee-price" class="price-value">Loading...</span></p>
+            <p class="price-item"><strong>Corn:</strong> <span id="corn-price" class="price-value">Loading...</span></p>
+            <p class="price-item"><strong>Cotton:</strong> <span id="cotton-price" class="price-value">Loading...</span></p>
+            <p class="price-item"><strong>Live Cattle:</strong> <span id="cattle-price" class="price-value">Loading...</span></p>
+            <p class="price-item"><strong>Oats (Seeds):</strong> <span id="oats-price" class="price-value">Loading...</span></p>
+            <p class="price-item"><strong>Palm Oil:</strong> <span id="palm-price" class="price-value">Loading...</span></p>
+            <p class="price-item"><strong>Rapeseed:</strong> <span id="rapeseed-price" class="price-value">Loading...</span></p>
+            <p class="price-item"><strong>Soybeans:</strong> <span id="soybeans-price" class="price-value">Loading...</span></p>
+            <p class="price-item"><strong>Sugar #11:</strong> <span id="sugar-price" class="price-value">Loading...</span></p>
+            <p class="price-item"><strong>Wheat:</strong> <span id="wheat-price" class="price-value">Loading...</span></p>
+        </div>
+
+        <p style="text-align: center;"><small>Prices refresh every 30 seconds. See the <a href="data.html">Commodity Feed</a> page for the full table.</small></p>
+    </div>
+    <hr style="width: 80%; border-color: #333;">
+
     <div id="portfolio-projects">
         <h2>Data & Engineering Projects 🧑‍💻</h2>
-        <p>Explore the applications of my Linear Algebra, Calculus, and Python skills:</p>
+        <p>A showcase of my containerized applications, data analysis, and code repositories.</p>
 
         <ul>
             <li>
@@ -128,5 +164,48 @@
         <a href="mailto:francefarms@outlook.com" class="social-link">Email Us</a>
     </footer>
 
+    <script>
+        function fetchNewCommodityData() {
+            // --- ALPHABETICALLY SORTED MOCK DATA ARRAY ---
+            const MOCK_COMMODITY_DATA = [
+                { id: 'cocoa-price', name: 'Cocoa', price: (Math.random() * 500 + 8000).toFixed(2), unit: 'USD/Tonne' },
+                { id: 'coffee-price', name: 'Coffee (Arabica)', price: (Math.random() * 0.5 + 2.0).toFixed(2), unit: 'USD/lb' },
+                { id: 'corn-price', name: 'Corn (Futures)', price: (Math.random() * 0.2 + 4.7).toFixed(2), unit: 'USD/bushel' },
+                { id: 'cotton-price', name: 'Cotton #2', price: (Math.random() * 5 + 60).toFixed(2), unit: 'US cents/lb' },
+                { id: 'cattle-price', name: 'Live Cattle', price: (Math.random() * 1 + 225).toFixed(2), unit: 'US cents/lb' },
+                { id: 'oats-price', name: 'Oats (Seeds)', price: (Math.random() * 0.1 + 3.5).toFixed(2), unit: 'USD/bushel' },
+                { id: 'palm-price', name: 'Palm Oil', price: (Math.random() * 100 + 4000).toFixed(2), unit: 'USD/ton' },
+                { id: 'rapeseed-price', name: 'Rapeseed (Seeds)', price: (Math.random() * 5 + 445).toFixed(2), unit: 'EUR/ton' },
+                { id: 'soybeans-price', name: 'Soybeans (Seeds)', price: (Math.random() * 0.3 + 13.4).toFixed(2), unit: 'USD/bushel' },
+                { id: 'sugar-price', name: 'Sugar #11', price: (Math.random() * 0.5 + 14.5).toFixed(2), unit: 'US cents/lb' },
+                { id: 'wheat-price', name: 'Wheat (Futures)', price: (Math.random() * 0.2 + 6.1).toFixed(2), unit: 'USD/bushel' }
+            ];
+            // --- END MOCK DATA ARRAY ---
+
+            const currentTime = new Date().toLocaleTimeString();
+
+            MOCK_COMMODITY_DATA.forEach(item => {
+                const element = document.getElementById(item.id);
+                if (element) {
+                    element.textContent = `$${item.price} (${item.unit})`;
+                }
+            });
+
+            // Clean up old timestamps and add a new one
+            const container = document.getElementById('commodity-data');
+            let timestampElement = document.querySelector('#commodity-data em');
+            if (!timestampElement) {
+                timestampElement = document.createElement('em');
+                container.appendChild(timestampElement);
+            }
+            timestampElement.textContent = `Last updated: ${currentTime}`;
+        }
+
+        // Run the function immediately on page load
+        fetchNewCommodityData();
+
+        // **Set the function to run repeatedly every 30 seconds (30000 milliseconds)**
+        setInterval(fetchNewCommodityData, 30000);
+    </script>
 </body>
 </html>
