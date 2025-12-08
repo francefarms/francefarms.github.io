@@ -5,15 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agricultural Commodities Data</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: black; color: white; }
         header { background-color: #4CAF50; color: white; padding: 15px; text-align: center; }
         nav a { margin: 0 15px; text-decoration: none; color: white; font-weight: bold; }
-        table { width: 80%; margin: 30px auto; border-collapse: collapse; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #f2f2f2; color: #333; }
-        .change-up { color: green; font-weight: bold; }
-        .change-down { color: red; font-weight: bold; }
-        .note { text-align: center; margin-top: 20px; color: #555; }
+        h2 { text-align: center; color: #4CAF50; }
+        table { width: 90%; margin: 30px auto; border-collapse: collapse; box-shadow: 0 4px 8px rgba(0,0,0,0.5); background-color: #1a1a1a; }
+        th, td { border: 1px solid #444; padding: 12px; text-align: left; }
+        th { background-color: #333; color: #f2f2f2; }
+        .change-up { color: lightgreen; font-weight: bold; }
+        .change-down { color: #ff6666; font-weight: bold; }
+        .note { text-align: center; margin-top: 20px; color: #ccc; }
     </style>
 </head>
 <body>
@@ -22,6 +23,7 @@
         <nav>
             <a href="index.html">Home</a>
             <a href="data.html">Commodity Data</a>
+            <a href="demographics.html">T&T Data Viz</a>
         </nav>
     </header>
 
@@ -34,23 +36,31 @@
         document.addEventListener('DOMContentLoaded', () => {
             const container = document.getElementById('data-container');
             
-            // 🚨 IMPORTANT: REPLACE THIS URL WITH A REAL, LIVE API ENDPOINT.
-            // For this demonstration, we are using a **MOCK DATA** structure.
-            // You will need a key from a provider like USDA, API Ninjas, or other financial data services
-            // to fetch actual real-time data.
+            // --- ALPHABETICALLY SORTED MOCK DATA ARRAY ---
+            // Includes various seeds, grains, and soft commodities
             const MOCK_COMMODITY_DATA = [
-                { name: 'Wheat (Futures)', price: 6.25, unit: 'USD/bushel', change: '+0.03', source: 'CME' },
-                { name: 'Corn (Futures)', price: 4.80, unit: 'USD/bushel', change: '-0.01', source: 'CME' },
-                { name: 'Soybeans', price: 13.50, unit: 'USD/bushel', change: '+0.15', source: 'CBOT' },
+                { name: 'Cocoa', price: 8500.00, unit: 'USD/ton', change: '+25.00', source: 'ICE' },
                 { name: 'Coffee (Arabica)', price: 2.10, unit: 'USD/lb', change: '-0.05', source: 'ICE' },
-                { name: 'Cocoa', price: 8500.00, unit: 'USD/ton', change: '+25.00', source: 'ICE' }
+                { name: 'Corn (Futures)', price: 4.80, unit: 'USD/bushel', change: '-0.01', source: 'CME' },
+                { name: 'Cotton #2', price: 63.90, unit: 'US cents/lb', change: '-0.05', source: 'ICE' },
+                { name: 'Live Cattle', price: 227.25, unit: 'US cents/lb', change: '+0.10', source: 'CME' },
+                { name: 'Oats (Seeds)', price: 3.55, unit: 'USD/bushel', change: '+0.02', source: 'CBOT' },
+                { name: 'Palm Oil', price: 4094.00, unit: 'USD/ton', change: '-58.00', source: 'Bursa' },
+                { name: 'Rapeseed (Seeds)', price: 450.75, unit: 'EUR/ton', change: '+4.50', source: 'Euronext' },
+                { name: 'Soybeans (Seeds)', price: 13.50, unit: 'USD/bushel', change: '+0.15', source: 'CBOT' },
+                { name: 'Sugar #11', price: 14.85, unit: 'US cents/lb', change: '+0.34', source: 'ICE' },
+                { name: 'Wheat (Futures)', price: 6.25, unit: 'USD/bushel', change: '+0.03', source: 'CME' }
             ];
+            // --- END MOCK DATA ARRAY ---
             
             function displayCommodities(data) {
                 let html = '<table>';
                 html += '<thead><tr><th>Commodity</th><th>Price</th><th>Unit</th><th>Daily Change</th><th>Source</th></tr></thead>';
                 html += '<tbody>';
                 
+                // Sorting the data by name before rendering to ensure dynamic alphabetical order
+                data.sort((a, b) => a.name.localeCompare(b.name));
+
                 data.forEach(item => {
                     // Determine CSS class for color based on price change
                     const changeClass = item.change.startsWith('+') ? 'change-up' : 'change-down';
@@ -67,18 +77,14 @@
                 });
                 
                 html += '</tbody></table>';
-                html += '<p class="note">Data is typically delayed by 10-15 minutes or simulated (as in this example).</p>';
+                html += '<p class="note">Data is simulated (mock data). For real-time data, an external API connection is required.</p>';
                 container.innerHTML = html;
             }
 
-            // --- 
-            // This is where you would place your real 'fetch' call.
-            // For now, we simulate a delay and display the mock data:
-            // ---
-
+            // Simulate 1-second delay for loading
             setTimeout(() => {
                 displayCommodities(MOCK_COMMODITY_DATA);
-            }, 1000); // Simulate 1-second delay for loading
+            }, 1000); 
 
         });
     </script>
