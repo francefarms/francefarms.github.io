@@ -10,7 +10,7 @@ body {
     text-align: center; /* Center aligns all body content */
 
     /* --- Image Background Styles Start --- */
-    background-image: url('images/fractal-background.jpg'); /* IMPORTANT: Replace with your actual filename */
+    background-image: url('farm_background.jpg'); /* IMPORTANT: Replace with your actual filename */
     background-size: cover; /* Ensures the image covers the entire background */
     background-position: center; /* Centers the image */
     background-repeat: no-repeat; /* Prevents the image from repeating */
