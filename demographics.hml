@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>T&T Demographics Visualization</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: black; color: white; }
+        header { background-color: #4CAF50; color: white; padding: 15px; text-align: center; margin-bottom: 20px; }
+        nav a { margin: 0 15px; text-decoration: none; color: white; font-weight: bold; }
+        .chart-container { 
+            width: 80%; 
+            max-width: 800px; 
+            margin: 40px auto; 
+            background-color: #1a1a1a; 
+            padding: 20px; 
+            border-radius: 8px; 
+        }
+        h2 { color: #4CAF50; text-align: center; }
+        p.analysis { 
+            background-color: #333; 
+            padding: 15px; 
+            border-left: 5px solid #4CAF50; 
+            margin-top: 20px; 
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>T&T Demographics: Population by Age Group</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="data.html">Commodity Feed</a>
+        </nav>
+    </header>
+
+    <div class="chart-container">
+        <h2>2024 Population Distribution (Mock Data)</h2>
+        <canvas id="demographicsChart"></canvas>
+
+        <p class="analysis">
+            <strong>Data Analysis Summary:</strong> This visualization demonstrates the use of JavaScript and Chart.js to present complex data. The distribution shows the highest concentration in the prime working age group (25-54), while the '65+' category highlights the increasing need for senior care infrastructure. This kind of analysis is crucial for government planning and resource allocation.
+        </p>
+    </div>
+
+    <script>
+        // Data derived from sources like UN Population Division estimates for T&T
+        const demographicsData = {
+            labels: ['0-14 (Youth Dependency)', '15-24 (Students/New Workers)', '25-54 (Prime Working Age)', '55-64 (Pre-Retirement)', '65+ (Senior Population)'],
+            data: [250000, 180000, 600000, 150000, 180000], // Mock population count
+            colors: ['rgba(54, 162, 235, 0.7)', 'rgba(75, 192, 192, 0.7)', 'rgba(255, 206, 86, 0.7)', 'rgba(255, 159, 64, 0.7)', 'rgba(153, 102, 255, 0.7)']
+        };
+
+        const ctx = document.getElementById('demographicsChart').getContext('2d');
+        
+        const myChart = new Chart(ctx, {
+            type: 'bar', // Type of chart: Bar Chart
+            data: {
+                labels: demographicsData.labels,
+                datasets: [{
+                    label: 'Estimated Population Count (2024)',
+                    data: demographicsData.data,
+                    backgroundColor: demographicsData.colors,
+                    borderColor: 'rgba(255, 255, 255, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Population Count',
+                            color: 'white'
+                        },
+                        ticks: { color: 'white' },
+                        grid: { color: '#333' }
+                    },
+                    x: {
+                        ticks: { color: 'white' },
+                        grid: { color: '#333' }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: { color: 'white' }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Trinidad and Tobago Age Distribution',
+                        color: 'white',
+                        font: { size: 18 }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
