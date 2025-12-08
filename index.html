@@ -9,19 +9,22 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            /* --- NEW BACKGROUND STYLES START --- */
-            background-image: url('http://googleusercontent.com/image_generation_content/0'); 
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+            
+            /* --- FINAL IMAGE BACKGROUND STYLES --- */
+            background-image: url('farm_background.jpg'); 
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat;
+            background-attachment: fixed; 
+            /* --- END BACKGROUND STYLES --- */
+
             background-color: #1a1a1a; /* Fallback color */
             color: white; 
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8); /* Improves text readability over the background image */
-            /* --- NEW BACKGROUND STYLES END --- */
         }
         
         header { 
-            background-color: rgba(0, 0, 0, 0.6); /* Slightly transparent dark background for the header */
+            background-color: rgba(0, 0, 0, 0.6); 
             color: white; 
             padding: 20px; 
             text-align: center; 
@@ -45,8 +48,8 @@
         main {
             padding: 50px 20px;
             text-align: center;
-            background-color: rgba(0, 0, 0, 0.4); /* Transparent overlay for main content */
-            min-height: 80vh; /* Ensures the background covers most of the viewable area */
+            background-color: rgba(0, 0, 0, 0.4); 
+            min-height: 80vh; 
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -56,7 +59,7 @@
         h2 {
             font-size: 3em;
             margin-bottom: 20px;
-            color: #E0FFE0; /* Light green for contrast */
+            color: #E0FFE0; 
         }
 
         .project-list {
@@ -70,7 +73,7 @@
         }
 
         .project-item {
-            background-color: rgba(68, 179, 68, 0.8); /* Semi-transparent green background for project boxes */
+            background-color: rgba(68, 179, 68, 0.8); 
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
