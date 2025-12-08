@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>T&T Demographics Visualization</title>
+    <title>T&T Data Viz & Commodity Trends</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
     <style>
@@ -23,12 +23,13 @@
             padding: 15px; 
             border-left: 5px solid #4CAF50; 
             margin-top: 20px; 
+            font-size: 0.9em;
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>T&T Demographics: Population by Age Group</h1>
+        <h1>Trinidad & Tobago Data Storytelling</h1>
         <nav>
             <a href="index.html">Home</a>
             <a href="data.html">Commodity Feed</a>
@@ -38,24 +39,31 @@
     <div class="chart-container">
         <h2>2024 Population Distribution (Mock Data)</h2>
         <canvas id="demographicsChart"></canvas>
-
         <p class="analysis">
-            <strong>Data Analysis Summary:</strong> This visualization demonstrates the use of JavaScript and Chart.js to present complex data. The distribution shows the highest concentration in the prime working age group (25-54), while the '65+' category highlights the increasing need for senior care infrastructure. This kind of analysis is crucial for government planning and resource allocation.
+            <strong>Analysis:</strong> This visualization shows demographic data by age group. The largest category in the prime working age demonstrates a reliance on data for social and economic infrastructure planning.
+        </p>
+    </div>
+
+    <div class="chart-container">
+        <h2>Historical Price Trend: Cocoa Futures (Mock Data)</h2>
+        <canvas id="historicalPriceChart"></canvas>
+        <p class="analysis">
+            <strong>Time Series Analysis:</strong> This line chart simulates the 12-month trend for Cocoa Futures. The demonstrated price volatility requires advanced time-series modeling (ARIMA, LSTM) to forecast future supply and demand shocks.
+            <br><em>Data Source: Simulated from typical market behavior (USD/Tonne).</em>
         </p>
     </div>
 
     <script>
-        // Data derived from sources like UN Population Division estimates for T&T
+        // --- 1. POPULATION CHART DATA AND LOGIC (BAR CHART) ---
         const demographicsData = {
-            labels: ['0-14 (Youth Dependency)', '15-24 (Students/New Workers)', '25-54 (Prime Working Age)', '55-64 (Pre-Retirement)', '65+ (Senior Population)'],
-            data: [250000, 180000, 600000, 150000, 180000], // Mock population count
+            labels: ['0-14 (Youth)', '15-24 (Students)', '25-54 (Working Age)', '55-64 (Pre-Retirement)', '65+ (Senior)'],
+            data: [250000, 180000, 600000, 150000, 180000],
             colors: ['rgba(54, 162, 235, 0.7)', 'rgba(75, 192, 192, 0.7)', 'rgba(255, 206, 86, 0.7)', 'rgba(255, 159, 64, 0.7)', 'rgba(153, 102, 255, 0.7)']
         };
 
-        const ctx = document.getElementById('demographicsChart').getContext('2d');
-        
-        const myChart = new Chart(ctx, {
-            type: 'bar', // Type of chart: Bar Chart
+        const ctxDemo = document.getElementById('demographicsChart').getContext('2d');
+        new Chart(ctxDemo, {
+            type: 'bar',
             data: {
                 labels: demographicsData.labels,
                 datasets: [{
@@ -67,36 +75,60 @@
                 }]
             },
             options: {
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: 'Population Count', color: 'white' }, ticks: { color: 'white' }, grid: { color: '#333' } },
+                    x: { ticks: { color: 'white' }, grid: { color: '#333' } }
+                },
+                plugins: { legend: { labels: { color: 'white' } }, title: { display: true, text: 'Trinidad and Tobago Age Distribution', color: 'white', font: { size: 18 } } }
+            }
+        });
+
+
+        // --- 2. HISTORICAL PRICE CHART DATA AND LOGIC (LINE CHART) ---
+        const historicalData = {
+            months: ['Dec 23', 'Jan 24', 'Feb 24', 'Mar 24', 'Apr 24', 'May 24', 'Jun 24', 'Jul 24', 'Aug 24', 'Sep 24', 'Oct 24', 'Nov 24'],
+            // Mock Cocoa Prices in USD/Tonne, simulating high volatility
+            prices: [4200, 4800, 5600, 6800, 8000, 9500, 9100, 8500, 8800, 9000, 8700, 8500] 
+        };
+
+        const ctxPrice = document.getElementById('historicalPriceChart').getContext('2d');
+        new Chart(ctxPrice, {
+            type: 'line',
+            data: {
+                labels: historicalData.months,
+                datasets: [{
+                    label: 'Cocoa Futures Price (USD/Tonne)',
+                    data: historicalData.prices,
+                    borderColor: '#FFC107', // Gold/Yellow color for line
+                    backgroundColor: 'rgba(255, 193, 7, 0.2)', // Light fill color
+                    borderWidth: 3,
+                    tension: 0.3, // Makes the line slightly curved
+                    pointBackgroundColor: '#FFC107',
+                    pointBorderColor: '#fff'
+                }]
+            },
+            options: {
                 responsive: true,
                 scales: {
                     y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Population Count',
-                            color: 'white'
-                        },
-                        ticks: { color: 'white' },
+                        beginAtZero: false,
+                        title: { display: true, text: 'Price (USD/Tonne)', color: 'white' },
+                        ticks: { color: 'white', callback: function(value) { return '$' + value; } },
                         grid: { color: '#333' }
                     },
                     x: {
+                        title: { display: true, text: 'Month', color: 'white' },
                         ticks: { color: 'white' },
                         grid: { color: '#333' }
                     }
                 },
                 plugins: {
-                    legend: {
-                        labels: { color: 'white' }
-                    },
-                    title: {
-                        display: true,
-                        text: 'Trinidad and Tobago Age Distribution',
-                        color: 'white',
-                        font: { size: 18 }
-                    }
+                    legend: { labels: { color: 'white' } },
+                    title: { display: true, text: '12-Month Simulated Historical Cocoa Price', color: 'white', font: { size: 18 } }
                 }
             }
         });
+
     </script>
 </body>
 </html>
