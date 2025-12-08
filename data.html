@@ -9,7 +9,7 @@
         header { background-color: #4CAF50; color: white; padding: 15px; text-align: center; }
         nav a { margin: 0 15px; text-decoration: none; color: white; font-weight: bold; }
         h2 { text-align: center; color: #4CAF50; }
-        table { width: 90%; margin: 30px auto; border-collapse: collapse; box-shadow: 0 4px 8px rgba(0,0,0,0.5); background-color: #1a1a1a; }
+        table { width: 95%; margin: 30px auto; border-collapse: collapse; box-shadow: 0 4px 8px rgba(0,0,0,0.5); background-color: #1a1a1a; }
         th, td { border: 1px solid #444; padding: 12px; text-align: left; }
         th { background-color: #333; color: #f2f2f2; }
         .change-up { color: lightgreen; font-weight: bold; }
@@ -27,7 +27,7 @@
         </nav>
     </header>
 
-    <h2>Global Agricultural Futures Prices</h2>
+    <h2>Global Agricultural & Related Futures Prices (25 Contracts)</h2>
     <div id="data-container">
         <p class="note">Loading market data...</p>
     </div>
@@ -36,19 +36,32 @@
         document.addEventListener('DOMContentLoaded', () => {
             const container = document.getElementById('data-container');
             
-            // --- ALPHABETICALLY SORTED MOCK DATA ARRAY ---
-            // Includes various seeds, grains, and soft commodities
+            // --- ALPHABETICALLY SORTED MOCK DATA ARRAY (25 Major Commodity Contracts) ---
             const MOCK_COMMODITY_DATA = [
+                // Note: The table is dynamically sorted by name in the display function below.
+                { name: 'Barley', price: 235.00, unit: 'EUR/ton', change: '+2.00', source: 'Euronext' },
+                { name: 'Canola (Rapeseed)', price: 610.50, unit: 'CAD/ton', change: '+5.50', source: 'ICE Futures Canada' },
+                { name: 'Class III Milk', price: 17.20, unit: 'USD/cwt', change: '-0.10', source: 'CME' },
                 { name: 'Cocoa', price: 8500.00, unit: 'USD/ton', change: '+25.00', source: 'ICE' },
                 { name: 'Coffee (Arabica)', price: 2.10, unit: 'USD/lb', change: '-0.05', source: 'ICE' },
                 { name: 'Corn (Futures)', price: 4.80, unit: 'USD/bushel', change: '-0.01', source: 'CME' },
                 { name: 'Cotton #2', price: 63.90, unit: 'US cents/lb', change: '-0.05', source: 'ICE' },
+                { name: 'Ethanol', price: 1.55, unit: 'USD/gal', change: '+0.01', source: 'CBOT' },
+                { name: 'Feeder Cattle', price: 241.00, unit: 'US cents/lb', change: '+0.50', source: 'CME' },
+                { name: 'Fertilizer (Urea)', price: 355.00, unit: 'USD/ton', change: '+3.00', source: 'CBOT' },
+                { name: 'Lean Hogs', price: 81.50, unit: 'US cents/lb', change: '-0.20', source: 'CME' },
                 { name: 'Live Cattle', price: 227.25, unit: 'US cents/lb', change: '+0.10', source: 'CME' },
+                { name: 'Lumber', price: 425.00, unit: 'USD/1000 board ft', change: '+2.50', source: 'CME' },
+                { name: 'Natural Gas', price: 2.65, unit: 'USD/MMBtu', change: '+0.03', source: 'NYMEX' },
                 { name: 'Oats (Seeds)', price: 3.55, unit: 'USD/bushel', change: '+0.02', source: 'CBOT' },
+                { name: 'Orange Juice', price: 153.00, unit: 'US cents/lb', change: '+1.50', source: 'ICE' },
                 { name: 'Palm Oil', price: 4094.00, unit: 'USD/ton', change: '-58.00', source: 'Bursa' },
-                { name: 'Rapeseed (Seeds)', price: 450.75, unit: 'EUR/ton', change: '+4.50', source: 'Euronext' },
+                { name: 'Rough Rice', price: 16.50, unit: 'USD/cwt', change: '-0.05', source: 'CBOT' },
+                { name: 'Soybean Meal', price: 385.00, unit: 'USD/ton', change: '+1.50', source: 'CBOT' },
+                { name: 'Soybean Oil', price: 50.80, unit: 'US cents/lb', change: '-0.20', source: 'CBOT' },
                 { name: 'Soybeans (Seeds)', price: 13.50, unit: 'USD/bushel', change: '+0.15', source: 'CBOT' },
                 { name: 'Sugar #11', price: 14.85, unit: 'US cents/lb', change: '+0.34', source: 'ICE' },
+                { name: 'WTI Crude Oil', price: 77.50, unit: 'USD/barrel', change: '-1.10', source: 'NYMEX' },
                 { name: 'Wheat (Futures)', price: 6.25, unit: 'USD/bushel', change: '+0.03', source: 'CME' }
             ];
             // --- END MOCK DATA ARRAY ---
@@ -65,10 +78,18 @@
                     // Determine CSS class for color based on price change
                     const changeClass = item.change.startsWith('+') ? 'change-up' : 'change-down';
                     
+                    // Simple currency symbol formatting
+                    let displayPrice = `$${item.price.toFixed(2)}`;
+                    if (item.unit.startsWith('EUR')) {
+                        displayPrice = `€${item.price.toFixed(2)}`;
+                    } else if (item.unit.startsWith('CAD')) {
+                        displayPrice = `C$${item.price.toFixed(2)}`;
+                    }
+
                     html += `
                         <tr>
                             <td>${item.name}</td>
-                            <td>$${item.price.toFixed(2)}</td>
+                            <td>${displayPrice}</td>
                             <td>${item.unit}</td>
                             <td class="${changeClass}">${item.change}</td>
                             <td>${item.source}</td>
