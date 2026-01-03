@@ -9,19 +9,16 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            
-            /* --- REVERTED STYLES: SOLID BLACK BACKGROUND --- */
             background-color: black; 
-            background-image: none;
             color: white; 
-            text-shadow: none; 
         }
         
         header { 
-            background-color: rgba(0, 0, 0, 0.6); 
+            background-color: rgba(0, 0, 0, 0.8); 
             color: white; 
             padding: 20px; 
             text-align: center; 
+            border-bottom: 2px solid #4CAF50;
         }
         
         nav a { 
@@ -40,20 +37,24 @@
         }
 
         main {
-            padding: 50px 20px;
+            padding: 40px 20px;
             text-align: center;
-            background-color: transparent; 
-            min-height: 80vh; 
+            min-height: 60vh; 
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
         }
 
         h2 {
-            font-size: 3em;
-            margin-bottom: 20px;
+            font-size: 2.5em;
+            margin-bottom: 10px;
             color: #4CAF50; 
+        }
+
+        .subtitle {
+            color: #ccc;
+            margin-bottom: 40px;
+            font-style: italic;
         }
 
         .project-list {
@@ -63,91 +64,95 @@
             flex-wrap: wrap;
             justify-content: center;
             gap: 20px;
-            margin-top: 40px;
+            margin-bottom: 50px;
         }
 
         .project-item {
             background-color: #1a1a1a; 
-            padding: 20px;
+            padding: 25px;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-            width: 280px;
+            border: 1px solid #333;
+            width: 320px;
             text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: transform 0.3s;
         }
 
         .project-item:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+            border-color: #4CAF50;
         }
 
         .project-item a {
             color: #4CAF50; 
             text-decoration: none;
-            font-size: 1.2em;
+            font-size: 1.3em;
             font-weight: bold;
         }
 
         .project-item p {
-            font-size: 0.9em;
-            margin-top: 10px;
-            color: #ccc;
+            font-size: 0.95em;
+            margin-top: 15px;
+            color: #bbb;
+            line-height: 1.4;
+        }
+
+        .video-section {
+            background-color: #0a0a0a;
+            width: 100%;
+            padding: 50px 0;
+            border-top: 1px solid #333;
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>France Farms</h1>
+        <h1>Françe Farms</h1>
         <nav>
             <a href="index.html">Home</a>
-            <a href="data.html">Commodity Data</a>
-            <a href="demographics.html">T&T Data Viz</a>
+            <a href="https://github.com/francefarms/bio-estate" target="_blank">Bio-Estate Source</a>
+            <a href="mailto:francefarms@outlook.com">Contact</a>
         </nav>
     </header>
 
     <main>
-        <h2>Welcome to France Farms</h2>
+        <h2>Commercial Estate Management</h2>
+        <p class="subtitle">Bridging Agricultural Operations with Bio-IT Solutions</p>
         
         <ul class="project-list">
             <li class="project-item">
-                <a href="data.html">Live Commodity Prices</a>
-                <p>Simulated real-time data table for core agricultural futures (Grains, Softs, Livestock).</p>
+                <a href="https://francefarms-bio-estate.streamlit.app" target="_blank">Bio-Estate DNA Analyzer 🧬</a>
+                <p>A containerized Python tool analyzing Anthracnose genomic stability to optimize estate spraying cycles and chemical efficacy.</p>
             </li>
+
             <li class="project-item">
-                <a href="demographics.html">T&T Demographics Dashboard</a>
-                <p>Data visualizations using Chart.js to explore population and employment trends in Trinidad & Tobago.</p>
-            </li>
-            <li class="project-item">
-                <a href="#">Plant Assessor App</a>
-                <p>Placeholder for the final deployed link to the Plant Assessor image classification tool (To be deployed).</p>
+                <a href="#">Plant Assessor App 📸</a>
+                <p>An operational tool for real-time field health assessment and asset tracking across commercial mango groves.</p>
             </li>
         </ul>
+
+        <div class="video-section">
+            <h3 style="color: #4CAF50; margin-bottom: 25px;">Field Operations: Saint Julian Mango</h3>
+            <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@france_farms/video/7375612416320883973"
+                data-video-id="7375612416320883973" style="max-width: 605px; min-width: 325px; margin: 0 auto;">
+                <section>
+                    <a target="_blank" title="@france_farms" href="https://www.tiktok.com/@france_farms?refer=embed">@france_farms</a>
+                    Juicy Julie. Also known as Saint Julian #Mango.
+                </section>
+            </blockquote>
+            <script async src="https://www.tiktok.com/embed.js"></script>
+        </div>
     </main>
     
-    <div style="text-align: center; margin: 30px 0; padding-bottom: 20px;">
-        <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@france_farms/video/7375612416320883973"
-            data-video-id="7375612416320883973" style="max-width: 605px; min-width: 325px; display: inline-block;">
-            <section>
-                <a target="_blank" title="@france_farms" href="https://www.tiktok.com/@france_farms?refer=embed">@france_farms</a>
-                Juicy Julie. Also known as Saint Julian <a title="mango" target="_blank" href="https://www.tiktok.com/tag/mango?refer=embed">#Mango</a>.
-                <a target="_blank" title="♬ original sound - Françe Farms"
-                    href="https://www.tiktok.com/music/original-sound-7375612575465802502?refer=embed">
-                    ♬ original sound - Françe Farms
-                </a>
-            </section>
-        </blockquote>
-        <script async src="https://www.tiktok.com/embed.js"></script>
-    </div>
-    <hr style="width: 80%; border-color: #333;">
+    <hr style="width: 80%; border-color: #333; margin: 40px auto;">
 
     <footer>
         <p style="text-align: center; color: #ccc;">Connect with Françe Farms:</p>
-        <div style="text-align: center; padding-bottom: 20px;">
-            <a href="https://github.com/francefarms" target="_blank" style="font-weight: bold; color: #4CAF50; font-size: 1.1em; margin: 0 10px; text-decoration: none;">
+        <div style="text-align: center; padding-bottom: 40px;">
+            <a href="https://github.com/francefarms" target="_blank" style="font-weight: bold; color: #4CAF50; font-size: 1.1em; margin: 0 15px; text-decoration: none;">
                 GitHub Profile 🖥️
             </a>
-            <a href="https://www.instagram.com/?hl=en" target="_blank" style="margin: 0 10px; color: white; text-decoration: none;">Instagram</a>
-            <a href="mailto:francefarms@outlook.com" style="margin: 0 10px; color: white; text-decoration: none;">Email Us</a>
+            <a href="https://www.instagram.com/france_farms" target="_blank" style="margin: 0 15px; color: white; text-decoration: none;">Instagram</a>
+            <a href="mailto:francefarms@outlook.com" style="margin: 0 15px; color: white; text-decoration: none;">Email Us</a>
         </div>
     </footer>
 
