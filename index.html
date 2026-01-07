@@ -6,7 +6,7 @@
     <title>Françe Farms - Portfolio</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: black; 
@@ -14,7 +14,7 @@
         }
         
         header { 
-            background-color: rgba(0, 0, 0, 0.8); 
+            background-color: rgba(0, 0, 0, 0.9); 
             color: white; 
             padding: 20px; 
             text-align: center; 
@@ -61,45 +61,59 @@
             list-style: none;
             padding: 0;
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 1000px;
+            gap: 30px;
             margin-bottom: 50px;
         }
 
         .project-item {
             background-color: #1a1a1a; 
-            padding: 25px;
-            border-radius: 10px;
+            padding: 30px;
+            border-radius: 15px;
             border: 1px solid #333;
-            width: 320px;
+            width: 100%;
             text-align: center;
-            transition: transform 0.3s;
+            transition: border-color 0.3s;
         }
 
         .project-item:hover {
-            transform: translateY(-5px);
             border-color: #4CAF50;
         }
 
         .project-item a {
             color: #4CAF50; 
             text-decoration: none;
-            font-size: 1.3em;
+            font-size: 1.5em;
             font-weight: bold;
         }
 
         .project-item p {
-            font-size: 0.95em;
+            font-size: 1em;
             margin-top: 15px;
             color: #bbb;
-            line-height: 1.4;
+            line-height: 1.6;
+        }
+
+        .app-container {
+            margin-top: 25px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: #000;
         }
 
         .video-section {
             background-color: #0a0a0a;
             width: 100%;
             padding: 50px 0;
+            border-top: 1px solid #333;
+        }
+
+        footer {
+            padding: 40px 0;
             border-top: 1px solid #333;
         }
     </style>
@@ -120,13 +134,21 @@
         
         <ul class="project-list">
             <li class="project-item">
-                <a href="https://bio-estate-vqgktkp78gh8zokgf9b3su.streamlit.app/" target="_blank">Bio-Estate DNA Analyzer 🧬</a>
-                <p>A live genomic tool analyzing pathogen stability (GC-content) to optimize chemical applications and orchard health.</p>
+                <a href="https://bio-estate-vqgktkp78gh8zokgf9b3su.streamlit.app/" target="_blank">Bio-Estate DNA Analyzer & Ledger 🧬</a>
+                <p>Our flagship blockchain tool for Chaguanas mango estates. This secure node records DNA sequences and field evidence to ensure export-grade pathogen tracking.</p>
+                
+                <div class="app-container">
+                    <iframe 
+                        src="https://bio-estate-vqgktkp78gh8zokgf9b3su.streamlit.app/?embed=true"
+                        style="width: 100%; height: 700px; border: none;"
+                        allow="camera">
+                    </iframe>
+                </div>
             </li>
 
             <li class="project-item">
                 <a href="#">Plant Assessor App 📸</a>
-                <p>An operational tool for real-time field health assessment and asset tracking across commercial mango groves.</p>
+                <p>Operational tool for real-time field health assessment and asset tracking across commercial mango groves.</p>
             </li>
         </ul>
 
@@ -143,11 +165,9 @@
         </div>
     </main>
     
-    <hr style="width: 80%; border-color: #333; margin: 40px auto;">
-
     <footer>
         <p style="text-align: center; color: #ccc;">Connect with Françe Farms:</p>
-        <div style="text-align: center; padding-bottom: 40px;">
+        <div style="text-align: center;">
             <a href="https://github.com/francefarms" target="_blank" style="font-weight: bold; color: #4CAF50; font-size: 1.1em; margin: 0 15px; text-decoration: none;">
                 GitHub Profile 🖥️
             </a>
