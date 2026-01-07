@@ -3,119 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Françe Farms - Portfolio</title>
+    <title>Françe Farms</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: black; 
-            color: white; 
+        body { font-family: Arial, sans-serif; margin: 0; background-color: black; color: white; text-align: center; }
+        header { padding: 40px; border-bottom: 2px solid #4CAF50; }
+        nav { margin-top: 20px; }
+        nav a { margin: 0 15px; text-decoration: none; color: #4CAF50; font-weight: bold; }
+        main { padding: 60px 20px; }
+        h1 { font-size: 3em; margin: 0; }
+        h2 { font-size: 2em; color: #4CAF50; margin-bottom: 10px; }
+        .subtitle { color: #ccc; font-style: italic; font-size: 1.2em; margin-bottom: 50px; }
+        .cta-button { 
+            display: inline-block; padding: 15px 30px; background-color: #4CAF50; 
+            color: white; text-decoration: none; border-radius: 5px; font-weight: bold; margin-bottom: 60px;
         }
-        
-        header { 
-            background-color: rgba(0, 0, 0, 0.9); 
-            color: white; 
-            padding: 20px; 
-            text-align: center; 
-            border-bottom: 2px solid #4CAF50;
-        }
-        
-        nav a { 
-            margin: 0 15px; 
-            text-decoration: none; 
-            color: #4CAF50; 
-            font-weight: bold; 
-            padding: 5px 10px;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-        
-        nav a:hover {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        main {
-            padding: 40px 20px;
-            text-align: center;
-            min-height: 60vh; 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        h2 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            color: #4CAF50; 
-        }
-
-        .subtitle {
-            color: #ccc;
-            margin-bottom: 40px;
-            font-style: italic;
-        }
-
-        .project-list {
-            list-style: none;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            max-width: 1000px;
-            gap: 30px;
-            margin-bottom: 50px;
-        }
-
-        .project-item {
-            background-color: #1a1a1a; 
-            padding: 30px;
-            border-radius: 15px;
-            border: 1px solid #333;
-            width: 100%;
-            text-align: center;
-            transition: border-color 0.3s;
-        }
-
-        .project-item:hover {
-            border-color: #4CAF50;
-        }
-
-        .project-item a {
-            color: #4CAF50; 
-            text-decoration: none;
-            font-size: 1.5em;
-            font-weight: bold;
-        }
-
-        .project-item p {
-            font-size: 1em;
-            margin-top: 15px;
-            color: #bbb;
-            line-height: 1.6;
-        }
-
-        .app-container {
-            margin-top: 25px;
-            border: 2px solid #333;
-            border-radius: 10px;
-            overflow: hidden;
-            background-color: #000;
-        }
-
-        .video-section {
-            background-color: #0a0a0a;
-            width: 100%;
-            padding: 50px 0;
-            border-top: 1px solid #333;
-        }
-
-        footer {
-            padding: 40px 0;
-            border-top: 1px solid #333;
-        }
+        .video-section { padding: 50px 0; border-top: 1px solid #333; width: 100%; }
+        footer { padding: 40px; border-top: 1px solid #333; color: #ccc; }
+        footer a { color: #4CAF50; text-decoration: none; margin: 0 10px; }
     </style>
 </head>
 <body>
@@ -123,7 +27,7 @@
         <h1>Françe Farms</h1>
         <nav>
             <a href="index.html">Home</a>
-            <a href="https://github.com/francefarms/bio-estate" target="_blank">Bio-Estate Source</a>
+            <a href="bio-estate.html">Bio-Estate DNA</a>
             <a href="mailto:francefarms@outlook.com">Contact</a>
         </nav>
     </header>
@@ -132,49 +36,22 @@
         <h2>Commercial Estate Management</h2>
         <p class="subtitle">Bridging Agricultural Operations with Bio-IT Solutions</p>
         
-        <ul class="project-list">
-            <li class="project-item">
-                <a href="https://bio-estate-vqgktkp78gh8zokgf9b3su.streamlit.app/" target="_blank">Bio-Estate DNA Analyzer & Ledger 🧬</a>
-                <p>Our flagship blockchain tool for Chaguanas mango estates. This secure node records DNA sequences and field evidence to ensure export-grade pathogen tracking.</p>
-                
-                <div class="app-container">
-                    <iframe 
-                        src="https://bio-estate-vqgktkp78gh8zokgf9b3su.streamlit.app/?embed=true"
-                        style="width: 100%; height: 700px; border: none;"
-                        allow="camera">
-                    </iframe>
-                </div>
-            </li>
-
-            <li class="project-item">
-                <a href="#">Plant Assessor App 📸</a>
-                <p>Operational tool for real-time field health assessment and asset tracking across commercial mango groves.</p>
-            </li>
-        </ul>
+        <a href="bio-estate.html" class="cta-button">Launch Bio-Estate DNA Analyzer & Ledger 🥭</a>
 
         <div class="video-section">
-            <h3 style="color: #4CAF50; margin-bottom: 25px;">Field Operations: Saint Julian Mango</h3>
             <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@france_farms/video/7375612416320883973"
                 data-video-id="7375612416320883973" style="max-width: 605px; min-width: 325px; margin: 0 auto;">
-                <section>
-                    <a target="_blank" title="@france_farms" href="https://www.tiktok.com/@france_farms?refer=embed">@france_farms</a>
-                    Juicy Julie. Also known as Saint Julian #Mango.
-                </section>
+                <section><a target="_blank" href="https://www.tiktok.com/@france_farms">@france_farms</a> Juicy Julie Mango.</section>
             </blockquote>
             <script async src="https://www.tiktok.com/embed.js"></script>
         </div>
     </main>
     
     <footer>
-        <p style="text-align: center; color: #ccc;">Connect with Françe Farms:</p>
-        <div style="text-align: center;">
-            <a href="https://github.com/francefarms" target="_blank" style="font-weight: bold; color: #4CAF50; font-size: 1.1em; margin: 0 15px; text-decoration: none;">
-                GitHub Profile 🖥️
-            </a>
-            <a href="https://www.instagram.com/france_farms" target="_blank" style="margin: 0 15px; color: white; text-decoration: none;">Instagram</a>
-            <a href="mailto:francefarms@outlook.com" style="margin: 0 15px; color: white; text-decoration: none;">Email Us</a>
-        </div>
+        <p>Connect with Françe Farms:</p>
+        <a href="https://github.com/francefarms" target="_blank">GitHub Profile 🖥️</a>
+        <a href="https://www.instagram.com/france_farms" target="_blank">Instagram</a>
+        <a href="mailto:francefarms@outlook.com">Email Us</a>
     </footer>
-
 </body>
 </html>
