@@ -1,41 +1,190 @@
-/* ... your existing CSS ... */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Françe Farms | Bio-IT & Agriculture</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #0a0a0a; color: white; text-align: center; line-height: 1.6; scroll-behavior: smooth; }
+        header { padding: 60px 20px; border-bottom: 2px solid #4CAF50; background: linear-gradient(to bottom, #111, #0a0a0a); }
+        nav { margin-top: 20px; }
+        nav a { margin: 0 15px; text-decoration: none; color: #4CAF50; font-weight: bold; transition: 0.3s; cursor: pointer; }
+        nav a:hover { color: #81C784; text-shadow: 0 0 10px #4CAF50; }
+        
+        main { padding: 40px 20px; max-width: 1000px; margin: auto; }
+        h1 { font-size: 3.5em; margin: 0; letter-spacing: 2px; }
+        h2 { font-size: 2.2em; color: #4CAF50; margin-bottom: 10px; }
+        .subtitle { color: #aaa; font-style: italic; font-size: 1.2em; margin-bottom: 40px; }
+        
+        .commodities-container, .lab-container {
+            background: #161616;
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 40px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: left;
+        }
+
+        .price-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .price-card {
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            border-bottom: 3px solid #4CAF50;
+            transition: transform 0.2s;
+            text-align: center;
+        }
+        .price-card:hover { transform: translateY(-5px); }
+        .price-card h4 { margin: 0; color: #aaa; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; }
+        .price-card p { margin: 10px 0 0; font-size: 1.6em; font-weight: bold; color: #fff; }
+
+        /* Pathogen Lab Styling */
+        #preview-container {
+            width: 100%;
+            max-width: 400px;
+            border: 2px dashed #444;
+            height: 200px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0d0d0d;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        #analysis-results {
+            background: #000;
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            display: none;
+            margin-top: 20px;
+            color: #00ff00;
+        }
+
+        .cta-button { 
+            display: inline-block; padding: 15px 30px; background-color: #4CAF50; 
+            color: white; text-decoration: none; border-radius: 50px; font-weight: bold; 
+            margin: 10px 0; transition: 0.3s; cursor: pointer; border: none;
+        }
         .cta-button:hover { background-color: #45a049; transform: scale(1.05); }
+        
+        footer { padding: 40px; color: #555; font-size: 0.9em; }
     </style>
 </head>
 <body>
+
     <header>
         <h1>FRANÇE FARMS</h1>
-        <p class="subtitle">Bioinformatics & Agricultural Technology</p>
+        <p class="subtitle">Bioinformatics & Agricultural Tech Portal</p>
         <nav>
-            <a href="#market">Market</a>
+            <a href="#market">Market Insights</a>
             <a href="#lab">Pathogen Lab</a>
-            <a href="#contact">Contact</a>
+            <a href="mailto:david@francefarms.com">Contact</a>
         </nav>
     </header>
 
     <main>
         <section id="market" class="commodities-container">
             <h2>Market Real-Time</h2>
+            <p style="color: #888;">Live tracking of regional agricultural commodities.</p>
             <div class="price-grid" id="market-grid">
                 </div>
         </section>
+
+        <section id="lab" class="lab-container">
+            <h2>Crop Pathogen Scanner</h2>
+            <p>Upload a leaf sample image to run bioinformatics sequence matching.</p>
+            
+            <input type="file" id="file-input" style="display: none;" accept="image/*">
+            <div id="preview-container" onclick="document.getElementById('file-input').click()">
+                <span id="upload-text">Click to Upload Sample</span>
+                <img id="image-preview" style="display:none; width: 100%; height: 100%; object-fit: cover;">
+            </div>
+
+            <button class="cta-button" onclick="runAnalysis()">Run Sequence Analysis</button>
+
+            <div id="analysis-results">
+                > Initializing Bio-Scanner...<br>
+                > Loading Genomic Database...<br>
+                > [ANALYSIS COMPLETE]<br><br>
+                <strong>Result:</strong> No significant pathogens detected.<br>
+                <strong>Confidence:</strong> 98.4%
+            </div>
+        </section>
     </main>
 
+    <footer>
+        &copy; 2026 Françe Farms Integrated Systems. All Rights Reserved.
+    </footer>
+
     <script>
-        // Ensure your 'i' loop is wrapped in a check
-        const data = [
-            { name: "Wheat", price: "$7.40" },
-            { name: "Corn", price: "$4.50" }
+        // 1. The "i" Loop for Commodities
+        const commodityData = [
+            { name: "Soft Red Wheat", price: "$215.40", unit: "MT" },
+            { name: "Yellow Corn", price: "$172.10", unit: "MT" },
+            { name: "Soybeans", price: "$435.00", unit: "MT" },
+            { name: "Canola", price: "$590.25", unit: "MT" }
         ];
-        
-        const grid = document.getElementById('market-grid');
-        for (let i = 0; i < data.length; i++) {
-            grid.innerHTML += `
-                <div class="price-card">
-                    <h4>${data[i].name}</h4>
-                    <p>${data[i].price}</p>
-                </div>`;
+
+        function loadMarketData() {
+            const grid = document.getElementById('market-grid');
+            let htmlContent = "";
+            
+            // Using the requested 'i' loop
+            for (let i = 0; i < commodityData.length; i++) {
+                htmlContent += `
+                    <div class="price-card">
+                        <h4>${commodityData[i].name}</h4>
+                        <p>${commodityData[i].price}</p>
+                        <span style="font-size: 0.7em; color: #666;">PER ${commodityData[i].unit}</span>
+                    </div>
+                `;
+            }
+            grid.innerHTML = htmlContent;
         }
+
+        // 2. Pathogen Lab Simulation Logic
+        const fileInput = document.getElementById('file-input');
+        fileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('upload-text').style.display = 'none';
+                    const img = document.getElementById('image-preview');
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function runAnalysis() {
+            const results = document.getElementById('analysis-results');
+            results.style.display = 'block';
+            results.innerHTML = "> Initializing Bio-Scanner...<br>> Comparing sequences...";
+            
+            setTimeout(() => {
+                results.innerHTML = `
+                    > Initializing Bio-Scanner...<br>
+                    > Loading Genomic Database...<br>
+                    > [ANALYSIS COMPLETE]<br><br>
+                    <span style="color: #4CAF50;">[OK] No Pathogens Detected.</span><br>
+                    <strong>Timestamp:</strong> ${new Date().toLocaleString()}
+                `;
+            }, 1500);
+        }
+
+        // Initialize Page
+        window.onload = loadMarketData;
     </script>
 </body>
 </html>
