@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Françe Farms | Bio-IT & Agriculture</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #0a0a0a; color: white; text-align: center; line-height: 1.6; scroll-behavior: smooth; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #0a0a0a; color: white; text-align: center; line-height: 1.6; }
         header { padding: 60px 20px; border-bottom: 2px solid #4CAF50; background: linear-gradient(to bottom, #111, #0a0a0a); }
         nav { margin-top: 20px; }
         nav a { margin: 0 15px; text-decoration: none; color: #4CAF50; font-weight: bold; transition: 0.3s; cursor: pointer; }
@@ -16,16 +16,15 @@
         h2 { font-size: 2.2em; color: #4CAF50; margin-bottom: 10px; }
         .subtitle { color: #aaa; font-style: italic; font-size: 1.2em; margin-bottom: 40px; }
         
-        .commodities-container, .lab-container {
+        /* Commodities App Styling */
+        .commodities-container {
             background: #161616;
             border: 1px solid #333;
             border-radius: 15px;
             padding: 30px;
             margin: 40px 0;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            text-align: left;
         }
-
         .price-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -38,153 +37,104 @@
             border-radius: 10px;
             border-bottom: 3px solid #4CAF50;
             transition: transform 0.2s;
-            text-align: center;
         }
-        .price-card:hover { transform: translateY(-5px); }
+        .price-card:hover { transform: translateY(-5px); background: #2a2a2a; }
         .price-card h4 { margin: 0; color: #aaa; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; }
         .price-card p { margin: 10px 0 0; font-size: 1.6em; font-weight: bold; color: #fff; }
 
-        /* Pathogen Lab Styling */
-        #preview-container {
-            width: 100%;
-            max-width: 400px;
-            border: 2px dashed #444;
-            height: 200px;
-            margin: 20px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #0d0d0d;
-            border-radius: 10px;
-            overflow: hidden;
-            cursor: pointer;
-        }
-        #analysis-results {
-            background: #000;
-            border-left: 4px solid #4CAF50;
-            padding: 15px;
-            font-family: 'Courier New', Courier, monospace;
-            display: none;
-            margin-top: 20px;
-            color: #00ff00;
-        }
-
         .cta-button { 
-            display: inline-block; padding: 15px 30px; background-color: #4CAF50; 
+            display: inline-block; padding: 18px 35px; background-color: #4CAF50; 
             color: white; text-decoration: none; border-radius: 50px; font-weight: bold; 
-            margin: 10px 0; transition: 0.3s; cursor: pointer; border: none;
+            margin: 20px 0; transition: 0.3s; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
         }
         .cta-button:hover { background-color: #45a049; transform: scale(1.05); }
-        
-        footer { padding: 40px; color: #555; font-size: 0.9em; }
+
+        .status-badge { font-size: 0.8em; color: #4CAF50; display: block; margin-top: 15px; }
+        .video-section { padding: 50px 0; border-top: 1px solid #222; }
+        footer { padding: 60px; border-top: 1px solid #222; color: #777; font-size: 0.9em; }
     </style>
 </head>
 <body>
-
     <header>
-        <h1>FRANÇE FARMS</h1>
-        <p class="subtitle">Bioinformatics & Agricultural Tech Portal</p>
+        <h1>Françe Farms</h1>
         <nav>
-            <a href="#market">Market Insights</a>
-            <a href="#lab">Pathogen Lab</a>
-            <a href="mailto:david@francefarms.com">Contact</a>
+            <a href="index.html">Home</a>
+            <a href="#market">Market Intelligence</a>
+            <a href="bio-estate.html">Bio-Estate DNA</a>
+            <a href="mailto:francefarms@outlook.com">Contact</a>
         </nav>
     </header>
 
     <main>
+        <h2>Commercial Estate Management</h2>
+        <p class="subtitle">Bridging Agricultural Operations with Bio-IT Solutions</p>
+        
+        <a href="bio-estate.html" class="cta-button">Launch Bio-Estate DNA Analyzer 🥭</a>
+
         <section id="market" class="commodities-container">
-            <h2>Market Real-Time</h2>
-            <p style="color: #888;">Live tracking of regional agricultural commodities.</p>
-            <div class="price-grid" id="market-grid">
-                </div>
-        </section>
-
-        <section id="lab" class="lab-container">
-            <h2>Crop Pathogen Scanner</h2>
-            <p>Upload a leaf sample image to run bioinformatics sequence matching.</p>
+            <h3>Global Agricultural Markets</h3>
+            <p style="color: #666; font-size: 0.9em;">Twice-Daily Market Updates (7 AM / 7 PM AST)</p>
             
-            <input type="file" id="file-input" style="display: none;" accept="image/*">
-            <div id="preview-container" onclick="document.getElementById('file-input').click()">
-                <span id="upload-text">Click to Upload Sample</span>
-                <img id="image-preview" style="display:none; width: 100%; height: 100%; object-fit: cover;">
+            <div id="price-grid" class="price-grid">
+                <div class="price-card"><h4>Loading...</h4><p>---</p></div>
+                <div class="price-card"><h4>Loading...</h4><p>---</p></div>
+                <div class="price-card"><h4>Loading...</h4><p>---</p></div>
             </div>
-
-            <button class="cta-button" onclick="runAnalysis()">Run Sequence Analysis</button>
-
-            <div id="analysis-results">
-                > Initializing Bio-Scanner...<br>
-                > Loading Genomic Database...<br>
-                > [ANALYSIS COMPLETE]<br><br>
-                <strong>Result:</strong> No significant pathogens detected.<br>
-                <strong>Confidence:</strong> 98.4%
-            </div>
+            
+            <span id="update-status" class="status-badge">🟡 Connecting to Market Data...</span>
         </section>
-    </main>
 
+        <div class="video-section">
+            <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@france_farms/video/7375612416320883973"
+                data-video-id="7375612416320883973" style="max-width: 605px; min-width: 325px; margin: 0 auto;">
+                <section><a target="_blank" href="https://www.tiktok.com/@france_farms">@france_farms</a> Juicy Julie Mango.</section>
+            </blockquote>
+            <script async src="https://www.tiktok.com/embed.js"></script>
+        </div>
+    </main>
+    
     <footer>
-        &copy; 2026 Françe Farms Integrated Systems. All Rights Reserved.
+        <p>Managed by Françe Farms Tech Operations | Trinidad & Tobago</p>
     </footer>
 
     <script>
-        // 1. The "i" Loop for Commodities
-        const commodityData = [
-            { name: "Soft Red Wheat", price: "$215.40", unit: "MT" },
-            { name: "Yellow Corn", price: "$172.10", unit: "MT" },
-            { name: "Soybeans", price: "$435.00", unit: "MT" },
-            { name: "Canola", price: "$590.25", unit: "MT" }
-        ];
+        async function updateMarketData() {
+            const grid = document.getElementById('price-grid');
+            const status = document.getElementById('update-status');
 
-        function loadMarketData() {
-            const grid = document.getElementById('market-grid');
-            let htmlContent = "";
-            
-            // Using the requested 'i' loop
-            for (let i = 0; i < commodityData.length; i++) {
-                htmlContent += `
-                    <div class="price-card">
-                        <h4>${commodityData[i].name}</h4>
-                        <p>${commodityData[i].price}</p>
-                        <span style="font-size: 0.7em; color: #666;">PER ${commodityData[i].unit}</span>
-                    </div>
-                `;
-            }
-            grid.innerHTML = htmlContent;
-        }
-
-        // 2. Pathogen Lab Simulation Logic
-        const fileInput = document.getElementById('file-input');
-        fileInput.addEventListener('change', function() {
-            const file = this.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('upload-text').style.display = 'none';
-                    const img = document.getElementById('image-preview');
-                    img.src = e.target.result;
-                    img.style.display = 'block';
+            try {
+                // Fetch the JSON file generated by your GitHub Action
+                const response = await fetch('commodities.json');
+                
+                if (!response.ok) throw new Error('Network error');
+                
+                const data = await response.json();
+                
+                // Clear the "Loading..." boxes
+                grid.innerHTML = '';
+                
+                // Loop through the commodities and create cards
+                for (const [name, price] of Object.entries(data.rates)) {
+                    grid.innerHTML += `
+                        <div class="price-card">
+                            <h4>${name}</h4>
+                            <p>$${price.toLocaleString()}</p>
+                        </div>
+                    `;
                 }
-                reader.readAsDataURL(file);
-            }
-        });
 
-        function runAnalysis() {
-            const results = document.getElementById('analysis-results');
-            results.style.display = 'block';
-            results.innerHTML = "> Initializing Bio-Scanner...<br>> Comparing sequences...";
-            
-            setTimeout(() => {
-                results.innerHTML = `
-                    > Initializing Bio-Scanner...<br>
-                    > Loading Genomic Database...<br>
-                    > [ANALYSIS COMPLETE]<br><br>
-                    <span style="color: #4CAF50;">[OK] No Pathogens Detected.</span><br>
-                    <strong>Timestamp:</strong> ${new Date().toLocaleString()}
-                `;
-            }, 1500);
+                status.innerHTML = `🟢 Live Market Connection Active (Updated: ${data.last_updated})`;
+                status.style.color = "#4CAF50";
+
+            } catch (error) {
+                console.error('Market data error:', error);
+                status.innerHTML = "🔴 Connection Offline (Check GitHub Actions)";
+                status.style.color = "#ff4c4c";
+            }
         }
 
-        // Initialize Page
-        window.onload = loadMarketData;
+        // Run the "Live" update immediately when page loads
+        updateMarketData();
     </script>
 </body>
 </html>
