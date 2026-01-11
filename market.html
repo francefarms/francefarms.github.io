@@ -22,10 +22,10 @@
 
     <div class="container">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1 style="margin:0;">Market Analysis <span class="btn-live">LIVE</span></h1>
+            <h1 style="margin:0; color: white;">Market Analysis <span class="btn-live">LIVE</span></h1>
             <div id="currency-controls">
-                <button onclick="setCurrency('TTD')" id="btn-TTD" style="padding: 5px 15px; border-radius: 5px 0 0 5px; border: 1px solid var(--primary); background: var(--primary); color: white; cursor: pointer;">TTD</button>
-                <button onclick="setCurrency('USD')" id="btn-USD" style="padding: 5px 15px; border-radius: 0 5px 5px 0; border: 1px solid var(--primary); background: transparent; color: var(--primary); cursor: pointer;">USD</button>
+                <button onclick="setCurrency('TTD')" id="btn-TTD" style="padding: 5px 15px; border-radius: 5px 0 0 5px; border: 1px solid var(--primary); cursor: pointer;">TTD</button>
+                <button onclick="setCurrency('USD')" id="btn-USD" style="padding: 5px 15px; border-radius: 0 5px 5px 0; border: 1px solid var(--primary); cursor: pointer;">USD</button>
             </div>
         </div>
         
@@ -50,45 +50,43 @@
     </div>
 
     <script>
-        // 1. REGISTER THE TREEMAP PLUGIN IMMEDIATELY
+        // All JavaScript MUST be inside these script tags
         Chart.register(ChartTreemap);
 
         let currentCurrency = localStorage.getItem('userCurrency') || 'TTD';
         let marketData = null;
+        let chartInstance = null;
 
         function loadTicker() {
             const ticker = document.getElementById('ticker-content');
-            const news = [
-                "MACOYA MARKET: Tenders open - Deadline Feb 13, 2026",
-                "BUDGET 2026: TTD 1.13 Billion allocated to food security",
-                "NAMDEVCO: Macoya trading hours Mon-Fri 3:30 AM - 10:00 AM"
-            ];
+            const news = ["MACOYA MARKET: Tenders open", "BUDGET 2026: Food Security Focus", "NAMDEVCO: Trading Hours Active"];
             ticker.innerHTML = [...news, ...news].map(item => `<div class="ticker-item"><span>•</span> ${item}</div>`).join('');
         }
 
         async function fetchMarketData() {
             loadTicker();
             try {
-                // Fetch with a relative path for GitHub compatibility
+                // Fetching the local JSON file
                 const response = await fetch('./commodities.json');
-                if (!response.ok) throw new Error("JSON file not found");
+                if (!response.ok) throw new Error("JSON not found");
                 marketData = await response.json();
                 renderTable();
             } catch (e) {
                 console.error("Fetch Error:", e);
-                document.getElementById('market-body').innerHTML = `<tr><td colspan="5" style="color:red;">Error: ${e.message}. Ensure commodities.json is in your GitHub main folder.</td></tr>`;
+                document.getElementById('market-body').innerHTML = `<tr><td colspan="5" style="color:red;">Error loading commodities.json. Check file name.</td></tr>`;
             }
         }
 
         function setCurrency(curr) {
             currentCurrency = curr;
-            localStorage.setItem('userCurrency', curr);
+            localStorage.setItem('userCurrency', curr); // Saves preference
             
-            // Update button styles
-            document.getElementById('btn-TTD').style.background = curr === 'TTD' ? 'var(--primary)' : 'transparent';
-            document.getElementById('btn-TTD').style.color = curr === 'TTD' ? 'white' : 'var(--primary)';
-            document.getElementById('btn-USD').style.background = curr === 'USD' ? 'var(--primary)' : 'transparent';
-            document.getElementById('btn-USD').style.color = curr === 'USD' ? 'white' : 'var(--primary)';
+            // Update UI buttons
+            const isTTD = curr === 'TTD';
+            document.getElementById('btn-TTD').style.background = isTTD ? 'var(--primary)' : 'transparent';
+            document.getElementById('btn-TTD').style.color = isTTD ? 'white' : 'var(--primary)';
+            document.getElementById('btn-USD').style.background = !isTTD ? 'var(--primary)' : 'transparent';
+            document.getElementById('btn-USD').style.color = !isTTD ? 'white' : 'var(--primary)';
             
             renderTable();
         }
@@ -102,6 +100,7 @@
             Object.entries(marketData.rates).forEach(([name, priceString]) => {
                 const priceMatch = priceString.match(/([\d,.]+)/);
                 const rawValue = priceMatch ? parseFloat(priceMatch[0].replace(/,/g, '')) : 0;
+                const isOff = rawValue <= 0 || (name.toLowerCase().includes("mango") && rawValue < 2);
                 
                 let displayPrice;
                 const rate = 0.147; // TTD to USD
@@ -114,9 +113,7 @@
                     displayPrice = 'TTD ' + displayPrice;
                 }
 
-                const isOff = rawValue <= 0 || (name.toLowerCase().includes("mango") && rawValue < 2);
-                
-                treemapData.push({ name, value: isOff ? 1 : rawValue });
+                treemapData.push({ name, value: isOff ? 1 : parseFloat(rawValue) });
 
                 tableBody.innerHTML += `
                     <tr>
@@ -130,11 +127,9 @@
             drawChart(treemapData);
         }
 
-        let chartInstance = null;
         function drawChart(dataPoints) {
             const ctx = document.getElementById('treemapChart').getContext('2d');
             if (chartInstance) chartInstance.destroy();
-            
             chartInstance = new Chart(ctx, {
                 type: 'treemap',
                 data: {
@@ -151,32 +146,11 @@
             });
         }
 
+        // Initialize everything on load
         window.onload = () => {
             fetchMarketData();
-            // Initialize button styles from storage
-            setCurrency(currentCurrency);
+            setCurrency(currentCurrency); 
         };
     </script>
 </body>
 </html>
-
-// Function to save the user's preference
-function saveCurrencyPreference(currency) {
-    localStorage.setItem('userCurrency', currency);
-    console.log("Preference saved: " + currency);
-}
-
-// Function to load the preference when they return
-function loadCurrencyPreference() {
-    const pref = localStorage.getItem('userCurrency');
-    if (pref) {
-        console.log("Welcome back! Your preference is: " + pref);
-        // You can then trigger your currency math based on this
-    }
-}
-
-// Call this when the page loads
-window.onload = function() {
-    loadMarket(); // Your existing function
-    loadCurrencyPreference();
-};
