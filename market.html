@@ -13,6 +13,7 @@
         <a href="index.html">Home</a>
         <a href="market.html" style="background: var(--primary)">Market Terminal</a>
         <a href="bio-estate.html">DNA Analyzer</a>
+        <a href="mailto:francefarms@outlook.com">Contact</a>
     </nav>
 
     <div class="ticker-wrap">
@@ -20,26 +21,40 @@
     </div>
 
     <div class="container">
-        <h1>Market Analysis <span class="btn-live">LIVE</span></h1>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1 style="margin:0;">Market Analysis <span class="btn-live">LIVE</span></h1>
+            <div id="currency-controls">
+                <button onclick="setCurrency('TTD')" id="btn-TTD" style="padding: 5px 15px; border-radius: 5px 0 0 5px; border: 1px solid var(--primary); background: var(--primary); color: white; cursor: pointer;">TTD</button>
+                <button onclick="setCurrency('USD')" id="btn-USD" style="padding: 5px 15px; border-radius: 0 5px 5px 0; border: 1px solid var(--primary); background: transparent; color: var(--primary); cursor: pointer;">USD</button>
+            </div>
+        </div>
+        
         <div class="chart-container">
             <canvas id="treemapChart"></canvas>
         </div>
+
         <table>
             <thead>
                 <tr>
                     <th>Commodity</th>
-                    <th>Price (TTD)</th>
+                    <th>Price</th>
                     <th>Status</th>
                     <th>Unit</th>
-                    <th>Bio-IT Logic</th>
+                    <th>Bio-IT Verified</th>
                 </tr>
             </thead>
-            <tbody id="market-body"></tbody>
+            <tbody id="market-body">
+                <tr><td colspan="5" style="text-align:center;">Initializing Terminal...</td></tr>
+            </tbody>
         </table>
     </div>
 
     <script>
+        // 1. REGISTER THE TREEMAP PLUGIN IMMEDIATELY
         Chart.register(ChartTreemap);
+
+        let currentCurrency = localStorage.getItem('userCurrency') || 'TTD';
+        let marketData = null;
 
         function loadTicker() {
             const ticker = document.getElementById('ticker-content');
@@ -51,87 +66,101 @@
             ticker.innerHTML = [...news, ...news].map(item => `<div class="ticker-item"><span>•</span> ${item}</div>`).join('');
         }
 
-        async function loadMarket() {
+        async function fetchMarketData() {
             loadTicker();
             try {
-                const response = await fetch('commodities.json');
-                const data = await response.json();
-                const tableBody = document.getElementById('market-body');
-                const treemapData = [];
-                tableBody.innerHTML = '';
-                
-                Object.entries(data.rates).forEach(([name, priceString]) => {
-                    const priceMatch = priceString.match(/([\d,.]+)/);
-                    const rawPrice = priceMatch ? parseFloat(priceMatch[0].replace(/,/g, '')) : 0;
-                    const isOff = rawPrice <= 0 || (name.toLowerCase().includes("mango") && rawPrice < 2);
-                    const change = (Math.random() * 4 - 2).toFixed(2);
-
-                    treemapData.push({ name, value: isOff ? 5 : rawPrice, isOff, change: parseFloat(change) });
-
-                    tableBody.innerHTML += `
-                        <tr>
-                            <td><strong>${name}</strong></td>
-                            <td style="color: ${isOff ? '#555' : (change >= 0 ? 'var(--up)' : 'var(--down)')}">${isOff ? '---' : priceString.split('/')[0]}</td>
-                            <td><span class="status-pill ${isOff ? 'seasonal-off' : 'active'}">${isOff ? 'OFF-SEASON' : 'ACTIVE'}</span></td>
-                            <td>${priceString.split('/').pop().toUpperCase()}</td>
-                            <td><small style="color:#555">SHA-256: VERIFIED</small></td>
-                        </tr>`;
-                });
-
-                const ctx = document.getElementById('treemapChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'treemap',
-                    data: {
-                        datasets: [{
-                            tree: treemapData,
-                            key: 'value',
-                            groups: ['name'],
-                            spacing: 1,
-                            backgroundColor: (ctx) => {
-                                const d = ctx.dataset.data[ctx.dataIndex]?._data;
-                                if (!d) return '#111';
-                                return d.isOff ? '#222' : (d.change >= 0 ? 'rgba(38, 166, 154, 0.8)' : 'rgba(239, 83, 80, 0.8)');
-                            },
-                            labels: { display: true, color: 'white', formatter: (ctx) => ctx.raw._data.name }
-                        }]
-                    },
-                    options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
-                });
-            } catch (e) { console.error(e); }
+                // Fetch with a relative path for GitHub compatibility
+                const response = await fetch('./commodities.json');
+                if (!response.ok) throw new Error("JSON file not found");
+                marketData = await response.json();
+                renderTable();
+            } catch (e) {
+                console.error("Fetch Error:", e);
+                document.getElementById('market-body').innerHTML = `<tr><td colspan="5" style="color:red;">Error: ${e.message}. Ensure commodities.json is in your GitHub main folder.</td></tr>`;
+            }
         }
-        window.onload = loadMarket;
+
+        function setCurrency(curr) {
+            currentCurrency = curr;
+            localStorage.setItem('userCurrency', curr);
+            
+            // Update button styles
+            document.getElementById('btn-TTD').style.background = curr === 'TTD' ? 'var(--primary)' : 'transparent';
+            document.getElementById('btn-TTD').style.color = curr === 'TTD' ? 'white' : 'var(--primary)';
+            document.getElementById('btn-USD').style.background = curr === 'USD' ? 'var(--primary)' : 'transparent';
+            document.getElementById('btn-USD').style.color = curr === 'USD' ? 'white' : 'var(--primary)';
+            
+            renderTable();
+        }
+
+        function renderTable() {
+            if (!marketData) return;
+            const tableBody = document.getElementById('market-body');
+            const treemapData = [];
+            tableBody.innerHTML = '';
+
+            Object.entries(marketData.rates).forEach(([name, priceString]) => {
+                const priceMatch = priceString.match(/([\d,.]+)/);
+                const rawValue = priceMatch ? parseFloat(priceMatch[0].replace(/,/g, '')) : 0;
+                
+                let displayPrice;
+                const rate = 0.147; // TTD to USD
+
+                if (currentCurrency === 'USD') {
+                    displayPrice = priceString.includes('USD') ? rawValue : (rawValue * rate).toFixed(2);
+                    displayPrice = '$' + displayPrice;
+                } else {
+                    displayPrice = priceString.includes('USD') ? (rawValue / rate).toFixed(2) : rawValue;
+                    displayPrice = 'TTD ' + displayPrice;
+                }
+
+                const isOff = rawValue <= 0 || (name.toLowerCase().includes("mango") && rawValue < 2);
+                
+                treemapData.push({ name, value: isOff ? 1 : rawValue });
+
+                tableBody.innerHTML += `
+                    <tr>
+                        <td><strong>${name}</strong></td>
+                        <td class="price-up">${isOff ? '---' : displayPrice}</td>
+                        <td><span class="status-pill ${isOff ? 'seasonal-off' : 'active'}">${isOff ? 'OFF-SEASON' : 'ACTIVE'}</span></td>
+                        <td>${priceString.split('/').pop()}</td>
+                        <td><span class="verify-badge">VERIFIED</span></td>
+                    </tr>`;
+            });
+            drawChart(treemapData);
+        }
+
+        let chartInstance = null;
+        function drawChart(dataPoints) {
+            const ctx = document.getElementById('treemapChart').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+            
+            chartInstance = new Chart(ctx, {
+                type: 'treemap',
+                data: {
+                    datasets: [{
+                        tree: dataPoints,
+                        key: 'value',
+                        groups: ['name'],
+                        backgroundColor: 'rgba(76, 175, 80, 0.5)',
+                        borderColor: '#4CAF50',
+                        labels: { display: true, color: 'white', formatter: (ctx) => ctx.raw._data.name }
+                    }]
+                },
+                options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
+
+        window.onload = () => {
+            fetchMarketData();
+            // Initialize button styles from storage
+            setCurrency(currentCurrency);
+        };
     </script>
 </body>
 </html>
 
-Object.entries(data.rates).forEach(([name, priceString]) => {
-    const priceMatch = priceString.match(/([\d,.]+)/);
-    const rawPrice = priceMatch ? parseFloat(priceMatch[0].replace(/,/g, '')) : 0;
-    
-    // Check if the price is already in USD or TTD
-    let ttdPrice, usdPrice;
-    if (priceString.includes("USD")) {
-        usdPrice = rawPrice;
-        ttdPrice = (rawPrice / 0.147).toFixed(2); // Convert USD back to TTD for display
-    } else {
-        ttdPrice = rawPrice;
-        usdPrice = (rawPrice * 0.147).toFixed(2);
-    }
-
-    const isOff = rawPrice <= 0 || (name.toLowerCase().includes("mango") && rawPrice < 2);
-    
-    tableBody.innerHTML += `
-        <tr>
-            <td><strong>${name}</strong></td>
-            <td>${isOff ? '---' : 'TTD ' + ttdPrice}</td>
-            <td><span class="status-pill ${isOff ? 'seasonal-off' : 'active'}">${isOff ? 'OFF-SEASON' : 'ACTIVE'}</span></td>
-            <td>${priceString.split('/').pop().toUpperCase()}</td>
-            <td style="color:var(--primary)">$ ${usdPrice} USD</td>
-        </tr>
-    `;
-});
-
-        // Function to save the user's preference
+// Function to save the user's preference
 function saveCurrencyPreference(currency) {
     localStorage.setItem('userCurrency', currency);
     console.log("Preference saved: " + currency);
