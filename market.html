@@ -130,3 +130,24 @@ Object.entries(data.rates).forEach(([name, priceString]) => {
         </tr>
     `;
 });
+
+        // Function to save the user's preference
+function saveCurrencyPreference(currency) {
+    localStorage.setItem('userCurrency', currency);
+    console.log("Preference saved: " + currency);
+}
+
+// Function to load the preference when they return
+function loadCurrencyPreference() {
+    const pref = localStorage.getItem('userCurrency');
+    if (pref) {
+        console.log("Welcome back! Your preference is: " + pref);
+        // You can then trigger your currency math based on this
+    }
+}
+
+// Call this when the page loads
+window.onload = function() {
+    loadMarket(); // Your existing function
+    loadCurrencyPreference();
+};
