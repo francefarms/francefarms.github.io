@@ -3,86 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Françe Farms | Home</title>
+    <title>Françe Farms | Digital Agriculture</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #0a0a0a; color: white; text-align: center; line-height: 1.6; }
-        header { padding: 60px 20px; border-bottom: 2px solid #4CAF50; background: linear-gradient(to bottom, #111, #0a0a0a); }
-        nav { margin-top: 20px; }
-        nav a { margin: 0 15px; text-decoration: none; color: #4CAF50; font-weight: bold; transition: 0.3s; cursor: pointer; }
-        nav a:hover { color: #81C784; text-shadow: 0 0 10px #4CAF50; }
-        
-        main { padding: 40px 20px; max-width: 1000px; margin: auto; }
-        h1 { font-size: 3.5em; margin: 0; letter-spacing: 2px; }
-        h2 { font-size: 2.2em; color: #4CAF50; margin-bottom: 10px; }
-        .subtitle { color: #aaa; font-style: italic; font-size: 1.2em; margin-bottom: 40px; }
-        
+        :root {
+            --primary: #4CAF50;
+            --primary-glow: rgba(76, 175, 80, 0.4);
+            --bg: #050505;
+            --card-bg: rgba(25, 25, 25, 0.7);
+            --text: #e0e0e0;
+        }
+
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            margin: 0; 
+            background-color: var(--bg); 
+            color: var(--text); 
+            line-height: 1.6;
+            background-image: radial-gradient(circle at 50% -20%, #1a331a 0%, transparent 50%);
+        }
+
+        header { 
+            padding: 80px 20px 40px; 
+            text-align: center;
+        }
+
+        h1 { 
+            font-size: 4rem; 
+            margin: 0; 
+            letter-spacing: -2px;
+            background: linear-gradient(to right, #fff, #4CAF50);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        .subtitle { 
+            color: #888; 
+            font-size: 1.1rem; 
+            margin-top: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        nav { 
+            margin-top: 30px; 
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        nav a { 
+            text-decoration: none; 
+            color: #fff; 
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.3s;
+        }
+
+        nav a:hover { 
+            background: var(--primary);
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        main { padding: 40px 20px; max-width: 1100px; margin: auto; }
+
+        .section-title {
+            text-align: left;
+            border-left: 4px solid var(--primary);
+            padding-left: 15px;
+            margin-bottom: 30px;
+        }
+
         .commodities-container {
-            background: #161616;
-            border: 1px solid #333;
-            border-radius: 15px;
-            padding: 30px;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 24px;
+            padding: 40px;
             margin: 40px 0;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .price-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 20px;
-            margin-top: 20px;
         }
 
         .price-card {
-            background: #222;
-            padding: 20px;
-            border-radius: 10px;
-            border-bottom: 3px solid #4CAF50;
-            min-height: 100px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: left;
         }
-        .price-card h4 { margin: 0; color: #aaa; font-size: 0.85em; text-transform: uppercase; }
-        .price-card p { margin: 10px 0; font-size: 1.6em; font-weight: bold; color: #fff; }
 
-        .status-badge { font-size: 0.8em; color: #4CAF50; display: block; margin-top: 15px; }
-        .video-section { margin-top: 50px; padding: 20px; background: #111; border-radius: 15px; }
-        footer { padding: 60px; border-top: 1px solid #222; color: #777; font-size: 0.9em; }
+        .price-card:hover { 
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            background: rgba(76, 175, 80, 0.05);
+        }
+
+        .price-card h4 { margin: 0; color: #888; font-size: 0.75rem; text-transform: uppercase; }
+        .price-card p { margin: 8px 0 0; font-size: 2rem; font-weight: 700; color: #fff; }
+
+        .status-badge { 
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 12px;
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--primary);
+            font-size: 0.8rem;
+            margin-top: 20px;
+        }
+
+        .video-section { 
+            margin-top: 60px;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        footer { padding: 80px 20px; color: #444; font-size: 0.8rem; }
     </style>
 </head>
 <body>
     <header>
         <h1>Françe Farms</h1>
+        <p class="subtitle">Bio-IT & Commercial Agriculture</p>
         <nav>
             <a href="index.html">Home</a>
-            <a href="paypal.html">PayPal (Store)</a>
-            <a href="bio-estate.html">Bio-Estate DNA</a>
+            <a href="paypal.html" style="border-color: var(--primary); color: var(--primary);">Buy PDF (10¢)</a>
+            <a href="bio-estate.html">DNA Analyzer</a>
             <a href="mailto:francefarms@outlook.com">Contact</a>
         </nav>
     </header>
 
     <main>
-        <h2>Commercial Estate Management</h2>
-        <p class="subtitle">Bridging Agricultural Operations with Bio-IT Solutions</p>
+        <div class="section-title">
+            <h2>Market Intelligence</h2>
+            <p style="color: #666; margin: 0;">Twice-Daily Global Commodity Pulse</p>
+        </div>
 
-        <section id="market" class="commodities-container">
-            <h3>Global Agricultural Markets</h3>
-            <p style="color: #666; font-size: 0.9em;">Market Intelligence Data</p>
-            <div id="price-grid" class="price-grid"></div>
-            <span id="update-status" class="status-badge">🟡 Connecting...</span>
+        <section class="commodities-container">
+            <div id="price-grid" class="price-grid">
+                </div>
+            <span id="update-status" class="status-badge">🟡 System Initializing...</span>
         </section>
+
+        <div class="section-title" style="margin-top: 80px;">
+            <h2>Operations Showcase</h2>
+        </div>
 
         <div class="video-section">
             <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@france_farms/video/7375612416320883973" data-video-id="7375612416320883973" style="max-width: 605px; min-width: 325px; margin: 0 auto;">
-                <section><a target="_blank" href="https://www.tiktok.com/@france_farms">@france_farms</a> Juicy Julie Mango.</section>
+                <section><a target="_blank" href="https://www.tiktok.com/@france_farms">@france_farms</a></section>
             </blockquote>
             <script async src="https://www.tiktok.com/embed.js"></script>
         </div>
     </main>
     
     <footer>
-        <p>Managed by Françe Farms Tech Operations | Trinidad & Tobago</p>
+        <p>© 2026 FRANCĘ FARMS TECH OPERATIONS | TRINIDAD & TOBAGO</p>
     </footer>
 
     <script>
-        // Market Data Display Function
         async function updateMarketData() {
             const grid = document.getElementById('price-grid');
             const status = document.getElementById('update-status');
@@ -90,19 +178,24 @@
                 const response = await fetch('commodities.json');
                 const data = await response.json();
                 grid.innerHTML = '';
-                for (const [name, price] of Object.entries(data.rates)) {
-                    grid.innerHTML += `
-                        <div class="price-card">
-                            <h4>${name}</h4>
-                            <p>$${price.toLocaleString()}</p>
-                        </div>`;
-                }
-                status.innerHTML = `🟢 Market Data Active (Updated: ${data.last_updated})`;
+                
+                Object.entries(data.rates).forEach(([name, price], index) => {
+                    setTimeout(() => {
+                        const card = document.createElement('div');
+                        card.className = 'price-card';
+                        card.style.opacity = '0';
+                        card.style.transition = 'opacity 0.5s ease';
+                        card.innerHTML = `<h4>${name}</h4><p>$${price.toLocaleString()}</p>`;
+                        grid.appendChild(card);
+                        setTimeout(() => card.style.opacity = '1', 10);
+                    }, index * 100);
+                });
+
+                status.innerHTML = `🟢 Live: ${data.last_updated}`;
             } catch (error) {
-                status.innerHTML = "🔴 Market Data Offline";
+                status.innerHTML = "🔴 Data Sync Failed";
             }
         }
-
         window.onload = updateMarketData;
     </script>
 </body>
