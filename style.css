@@ -1,117 +1,79 @@
+/* --- Global Variables --- */
+:root { 
+    --primary: #4CAF50; 
+    --primary-glow: rgba(76, 175, 80, 0.4);
+    --bg: #050505; 
+    --card: rgba(17, 17, 17, 0.9); 
+    --up: #26a69a; 
+    --down: #ef5350; 
+    --text: #e0e0e0;
+}
+
+/* --- Global Body & Background --- */
 body {
-    font-family: Arial, sans-serif; /* Changed back to Arial for better general readability */
+    font-family: Arial, sans-serif;
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    color: #ffffff; /* White text for contrast against the dark background */
+    color: #ffffff;
     display: flex;
-    flex-direction: column; /* Changed from previous flex setup to stack content */
+    flex-direction: column;
     min-height: 100vh;
-    text-align: center; /* Center aligns all body content */
-
-    /* --- Image Background Styles Start --- */
-    background-image: url('farm_background.jpg'); /* IMPORTANT: Replace with your actual filename */
-    background-size: cover; /* Ensures the image covers the entire background */
-    background-position: center; /* Centers the image */
-    background-repeat: no-repeat; /* Prevents the image from repeating */
-    background-attachment: fixed; /* Keeps the background fixed when scrolling */
-    /* --- Image Background Styles End --- */
+    text-align: center;
+    background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('farm_background.jpg'); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 /* --- Navigation Bar --- */
 nav {
-    background: rgba(0, 0, 0, 0.7); /* Semi-transparent dark background for nav */
-    padding: 1rem 0;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 1.2rem 0;
     text-align: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
 nav a {
     color: white;
     text-decoration: none;
-    padding: 1rem;
+    padding: 0.8rem 1.2rem;
     font-weight: bold;
-    transition: background-color 0.3s ease;
+    font-size: 0.9rem;
+    transition: 0.3s ease;
+    border-radius: 20px;
+    margin: 0 5px;
 }
 
 nav a:hover {
-    background-color: rgba(51, 51, 51, 0.8); /* Darker hover effect */
+    background-color: var(--primary);
+    box-shadow: 0 0 15px var(--primary-glow);
 }
 
-/* --- Main Content Styling --- */
-h1, p {
-    text-align: center;
-    color: #ffffff; /* Ensure headings and paragraphs are white */
-    margin: 1rem auto; /* Add some vertical margin and auto horizontal for centering */
-    max-width: 90%; /* Limit width for better readability */
-}
+/* --- News Ticker --- */
+.ticker-wrap { width: 100%; background: rgba(0,0,0,0.9); border-bottom: 1px solid var(--primary); padding: 10px 0; overflow: hidden; }
+.ticker { display: flex; white-space: nowrap; animation: marquee 40s linear infinite; }
+.ticker-item { padding: 0 40px; color: #eee; font-size: 0.85rem; display: flex; align-items: center; }
+.ticker-item span { color: var(--primary); margin-right: 10px; font-weight: 900; }
+@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+.ticker-wrap:hover .ticker { animation-play-state: paused; }
 
-/* Style for the TikTok embed to make it stand out on the background */
-blockquote.tiktok-embed {
-    margin: 2rem auto; /* Center the TikTok embed and add vertical spacing */
-    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background for readability */
-    padding: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-}
+/* --- Containers & Cards --- */
+.container { max-width: 1200px; margin: 30px auto; padding: 20px; background: rgba(0,0,0,0.75); border-radius: 15px; backdrop-filter: blur(5px); }
+.chart-container { background: var(--card); border-radius: 12px; padding: 20px; margin-bottom: 30px; height: 450px; border: 1px solid #333; }
 
+/* --- Tables --- */
+table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+th { text-align: left; padding: 15px; color: #888; border-bottom: 1px solid #444; font-size: 0.75rem; text-transform: uppercase; }
+td { padding: 15px; border-bottom: 1px solid #222; font-size: 0.9rem; text-align: left; }
 
-/* --- Footer Styles --- */
-footer {
-    text-align: center;
-    padding: 1.5rem; /* Increased padding */
-    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent dark background for footer */
-    margin-top: auto; /* Pushes the footer to the bottom of the page */
-    width: 100%; /* Ensure footer spans full width */
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.5); /* Shadow for footer */
-}
+/* --- Components --- */
+.status-pill { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
+.active { background: rgba(38, 166, 154, 0.1); color: var(--up); }
+.seasonal-off { background: rgba(255, 152, 0, 0.1); color: #ff9800; }
+.btn-live { background: var(--up); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; animation: blink 2s infinite; vertical-align: middle; }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-footer p {
-    margin-bottom: 0.5rem;
-    color: #ffffff;
-}
-
-.social-link {
-    color: #90ee90; /* A distinct green for social links */
-    text-decoration: none;
-    font-weight: bold;
-    margin: 0 15px;
-    transition: color 0.3s ease;
-}
-
-.social-link:hover {
-    color: #c8f5c8; /* Lighter green on hover */
-}
-
-/* Responsive adjustments */
-@media (max-width: 600px) {
-    h1 {
-        font-size: 2rem;
-    }
-    p {
-        font-size: 0.9rem;
-    }
-    nav a {
-        padding: 0.8rem;
-    }
-}
-
-
-/* Inside style.css */
-:root { 
-    --primary: #4CAF50; 
-    --bg: #050505; 
-    --card: rgba(17, 17, 17, 0.9); 
-    --up: #26a69a; 
-    --down: #ef5350; 
-}
-
-body {
-    font-family: Arial, sans-serif;
-    background-image: url('farm_background.jpg'); 
-    background-size: cover;
-    background-attachment: fixed;
-    /* ... the rest of your body styles ... */
-}
-
-/* ... all other classes like .ticker-wrap, .container, etc. ... */
+footer { padding: 2rem; background: rgba(0,0,0,0.8); margin-top: auto; font-size: 0.8rem; color: #666; }
