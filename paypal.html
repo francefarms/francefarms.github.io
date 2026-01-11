@@ -6,57 +6,141 @@
     <title>Françe Farms | Secure Store</title>
     <script src="https://www.paypal.com/sdk/js?client-id=AQbiMF6NJ_cj8MlSqi6UEAbFeIU6Nn3T6XvdgiT0iYsVEbluI3BAULx6Zycv-KX0R9tRybujAIEmJ3CR&currency=USD"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #0a0a0a; color: white; text-align: center; margin: 0; }
-        header { padding: 40px; border-bottom: 2px solid #4CAF50; }
-        nav a { margin: 0 15px; text-decoration: none; color: #4CAF50; font-weight: bold; }
-        .store-card { background: #161616; padding: 40px; border-radius: 15px; max-width: 600px; margin: 50px auto; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        #file-hash { color: #4CAF50; font-family: monospace; font-size: 0.85em; word-break: break-all; background: #000; padding: 10px; display: block; margin: 10px 0; }
+        :root {
+            --primary: #4CAF50;
+            --bg: #050505;
+            --card-bg: rgba(25, 25, 25, 0.8);
+            --text: #e0e0e0;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            background-color: var(--bg); 
+            color: var(--text); 
+            background-image: radial-gradient(circle at 50% -20%, #1a331a 0%, transparent 50%);
+            min-height: 100vh;
+        }
+
+        header { padding: 40px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        
+        nav a { 
+            text-decoration: none; color: var(--primary); font-weight: 600; 
+            padding: 10px 20px; border: 1px solid var(--primary); border-radius: 20px;
+            transition: 0.3s;
+        }
+        nav a:hover { background: var(--primary); color: white; }
+
+        .store-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 60px;
+            max-width: 1000px;
+            margin: 60px auto;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* The Book Cover Styling */
+        .book-preview {
+            flex: 1;
+            min-width: 300px;
+            perspective: 1000px;
+        }
+
+        .book-image {
+            width: 100%;
+            max-width: 350px;
+            border-radius: 5px 15px 15px 5px;
+            box-shadow: -10px 20px 50px rgba(0,0,0,0.8), 5px 0 15px rgba(255,255,255,0.1) inset;
+            transform: rotateY(-15deg);
+            transition: 0.5s;
+        }
+
+        .book-preview:hover .book-image {
+            transform: rotateY(0deg) scale(1.02);
+        }
+
+        .purchase-details {
+            flex: 1;
+            min-width: 300px;
+            text-align: left;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        h2 { font-size: 2rem; margin-top: 0; color: white; }
+        .hash-box {
+            background: #000;
+            padding: 15px;
+            border-radius: 12px;
+            font-family: 'monospace';
+            font-size: 0.8rem;
+            color: var(--primary);
+            border: 1px solid #222;
+            word-break: break-all;
+            margin: 20px 0;
+        }
+
+        .price-tag { font-size: 1.5rem; font-weight: 800; margin-bottom: 20px; color: white; }
+
+        footer { text-align: center; padding: 40px; color: #444; font-size: 0.8rem; }
     </style>
 </head>
 <body>
     <header>
-        <h1>Françe Farms Store</h1>
-        <nav>
-            <a href="index.html">← Back to Home</a>
-        </nav>
+        <nav><a href="index.html">← Back to Home Intelligence</a></nav>
     </header>
-    <main>
-        <div class="store-card">
+
+    <main class="store-container">
+        <div class="book-preview">
+            <img src="citrus-cover.jpg" alt="Farmer's Guide Cover" class="book-image">
+        </div>
+
+        <div class="purchase-details">
             <h2>A Farmer's Guide to Citrus Production</h2>
-            <p>Verified Bio-IT Digital Publication</p>
-            <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
-            <p><strong>Digital Asset Security Hash:</strong></p>
-            <span id="file-hash">Calculating SHA-256 Fingerprint...</span>
-            <p>Investment: <strong>$0.10 USD</strong></p>
+            <p style="color: #888;">Complete Digital Edition • 2026 Verified</p>
+            
+            <div class="hash-box">
+                <span style="color: #666; font-size: 0.7rem; text-transform: uppercase;">Blockchain Security Hash</span><br>
+                <span id="file-hash">Computing Digital Fingerprint...</span>
+            </div>
+
+            <div class="price-tag">$0.10 <span style="font-size: 0.9rem; color: #666; font-weight: 400;">USD</span></div>
+            
             <div id="paypal-button-container"></div>
+            <p style="font-size: 0.75rem; color: #555; margin-top: 20px;">Instant access granted via secure redirect upon payment verification.</p>
         </div>
     </main>
 
+    <footer>© 2026 FRANCĘ FARMS TECH OPS</footer>
+
     <script>
-        // GENERATE PDF HASH
         async function getHash() {
             const msg = new TextEncoder().encode("AfarmersGuide-Secure-FranceFarms-v1");
             const hashBuffer = await crypto.subtle.digest('SHA-256', msg);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
             document.getElementById('file-hash').innerText = hashHex;
         }
 
         window.onload = function() {
             getHash();
             paypal.Buttons({
-                style: { layout: 'vertical', color: 'blue', shape: 'rect' },
+                style: { layout: 'vertical', color: 'blue', shape: 'pill' },
                 createOrder: (data, actions) => {
                     return actions.order.create({
                         purchase_units: [{ 
-                            description: "Farmer's Guide to Citrus (PDF)", 
+                            description: "Farmer's Guide to Citrus PDF", 
                             amount: { currency_code: 'USD', value: '0.10' } 
                         }]
                     });
                 },
                 onApprove: (data, actions) => {
                     return actions.order.capture().then(details => {
-                        alert('Transaction Verified! Your secure download is starting.');
                         window.location.href = "AfarmersGuide.pdf";
                     });
                 }
