@@ -1,21 +1,9 @@
 {
-    "last_updated": "2026-01-11 06:00 AM",
-    "market_source": "NAMDEVCO Macoya Wholesale",
-    "base_currency": "TTD",
+    "last_updated": "2026-01-11 11:19",
     "rates": {
-        "Mango (Julie)": 0,
-        "Cocoa (Premium)": 28500,
-        "Coffee (Arabica)": 17.50,
-        "Hot Peppers": 12.00,
-        "Valencia Orange": 350.00,
-        "Seedless Lime": 400.00
-    },
-    "metadata": {
-        "Mango (Julie)": { "unit": "lb", "status": "Off-Season", "currency": "TTD" },
-        "Cocoa (Premium)": { "unit": "MT", "status": "Active", "currency": "TTD" },
-        "Coffee (Arabica)": { "unit": "lb", "status": "Active", "currency": "TTD" },
-        "Hot Peppers": { "unit": "lb", "status": "Active", "currency": "TTD" },
-        "Valencia Orange": { "unit": "40lb Crate", "status": "Active", "currency": "TTD" },
-        "Seedless Lime": { "unit": "100ct Bag", "status": "Active", "currency": "TTD" }
+        "Mango (Julie)": "TTD 15.00/lb",
+        "Cocoa (Premium)": "USD 4,200/MT",
+        "Coffee (Arabica)": "USD 2.50/lb",
+        "Hot Peppers": "TTD 12.00/lb"
     }
 }
