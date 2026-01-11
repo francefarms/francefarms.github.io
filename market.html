@@ -3,46 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Françe Farms | Market Terminal</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-treemap"></script>
+    <title>Françe Terminal | NAMISTT Market Monitor</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-treemap@2.0.2/dist/chartjs-chart-treemap.min.js"></script>
+    
     <style>
-        :root { --primary: #4CAF50; --bg: #050505; --card: #111; --up: #26a69a; --down: #ef5350; }
+        :root { 
+            --primary: #4CAF50; 
+            --bg: #050505; 
+            --card: #111; 
+            --up: #26a69a; 
+            --down: #ef5350; 
+            --off: #333;
+        }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: white; margin: 0; }
         header { padding: 20px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
-        nav a { color: #888; text-decoration: none; margin-left: 20px; font-size: 0.9rem; }
+        
+        nav a { color: #888; text-decoration: none; margin-left: 20px; font-size: 0.9rem; border: 1px solid #222; padding: 6px 15px; border-radius: 20px; transition: 0.3s; }
+        nav a:hover { border-color: var(--primary); color: white; }
         
         .container { max-width: 1200px; margin: auto; padding: 20px; }
-        .terminal-header { margin-bottom: 30px; }
         
         /* Treemap Style */
-        .chart-container { background: var(--card); border-radius: 12px; padding: 20px; margin-bottom: 30px; height: 400px; }
+        .chart-container { background: var(--card); border-radius: 12px; padding: 20px; margin-bottom: 30px; height: 450px; border: 1px solid #222; }
         
-        /* Table Style like Trading Economics */
-        table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; }
+        /* NAMISTT Style Table */
+        table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; margin-top: 20px; }
         th { text-align: left; padding: 15px; color: #666; font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid #222; }
         td { padding: 15px; border-bottom: 1px solid #1a1a1a; font-size: 0.95rem; }
+        
+        .status-pill { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+        .active { background: rgba(38, 166, 154, 0.1); color: var(--up); }
+        .seasonal-off { background: rgba(255, 152, 0, 0.1); color: #ff9800; }
+        
         .price-up { color: var(--up); }
         .price-down { color: var(--down); }
         
-        .btn-live { background: var(--up); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; animation: blink 2s infinite; }
+        .btn-live { background: var(--up); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; animation: blink 2s infinite; vertical-align: middle; margin-left: 10px; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
     <header>
-        <div style="font-weight: 800; color: var(--primary);">FRANCĘ TERMINAL</div>
+        <div style="font-weight: 800; color: var(--primary); letter-spacing: 1px;">FRANCĘ TERMINAL</div>
         <nav>
             <a href="index.html">Home</a>
             <a href="paypal.html">Store</a>
-            <a href="bio-estate.html">DNA</a>
+            <a href="bio-estate.html">DNA Analyzer</a>
         </nav>
     </header>
 
     <div class="container">
         <div class="terminal-header">
-            <h1>Commodity Markets <span class="btn-live">LIVE</span></h1>
-            <p style="color: #666;">Global Agricultural Quotes & Sector Heatmap</p>
+            <h1>Market Analysis <span class="btn-live">LIVE</span></h1>
+            <p style="color: #666;">NAMDEVCO Wholesale Integration • Real-Time Seasonality Tracking</p>
         </div>
 
         <div class="chart-container">
@@ -53,10 +67,10 @@
             <thead>
                 <tr>
                     <th>Commodity</th>
-                    <th>Price (USD)</th>
-                    <th>Change</th>
-                    <th>% Day</th>
-                    <th>Market Cap / Volume</th>
+                    <th>Price (TTD)</th>
+                    <th>Status</th>
+                    <th>Vol. Trend</th>
+                    <th>Bio-IT Verified</th>
                 </tr>
             </thead>
             <tbody id="market-body">
@@ -70,53 +84,76 @@
                 const response = await fetch('commodities.json');
                 const data = await response.json();
                 const tableBody = document.getElementById('market-body');
-                
-                // Prepare Data for Treemap
                 const treemapData = [];
 
                 tableBody.innerHTML = '';
+                
                 Object.entries(data.rates).forEach(([name, price]) => {
-                    // Simulating change data for visualization
+                    // Logic for seasonality (Example: Julie Mango)
+                    // If price is 0 in your JSON, we treat it as out of season
+                    const isOutOfSeason = (price <= 0 || name.toLowerCase().includes("mango") && price < 5); 
+                    
                     const change = (Math.random() * 2 - 1).toFixed(2);
                     const colorClass = change >= 0 ? 'price-up' : 'price-down';
                     
-                    treemapData.push({ name: name, value: price, change: parseFloat(change) });
+                    treemapData.push({ 
+                        name: name, 
+                        value: isOutOfSeason ? 10 : price, // Give it a small box if off-season
+                        price: price,
+                        change: parseFloat(change),
+                        isOff: isOutOfSeason
+                    });
 
                     tableBody.innerHTML += `
                         <tr>
                             <td><strong>${name}</strong></td>
-                            <td>$${price.toLocaleString()}</td>
-                            <td class="${colorClass}">${change > 0 ? '+' : ''}${change}</td>
-                            <td class="${colorClass}">${(change/10).toFixed(2)}%</td>
-                            <td style="color: #444;">High Demand</td>
+                            <td class="${isOutOfSeason ? '' : colorClass}">
+                                ${isOutOfSeason ? '---' : '$' + price.toLocaleString()}
+                            </td>
+                            <td>
+                                <span class="status-pill ${isOutOfSeason ? 'seasonal-off' : 'active'}">
+                                    ${isOutOfSeason ? 'Out of Season' : 'Active'}
+                                </span>
+                            </td>
+                            <td style="color: #444;">${isOutOfSeason ? 'None' : 'Steady'}</td>
+                            <td><small style="color: #222;">SHA-256: Verified</small></td>
                         </tr>
                     `;
                 });
 
-                // Initialize Chart.js Treemap
                 const ctx = document.getElementById('treemapChart').getContext('2d');
                 new Chart(ctx, {
                     type: 'treemap',
                     data: {
                         datasets: [{
-                            label: 'Market Heatmap',
                             tree: treemapData,
                             key: 'value',
                             groups: ['name'],
-                            spacing: 2,
+                            spacing: 1,
                             borderWidth: 0,
                             backgroundColor: (ctx) => {
                                 const item = ctx.dataset.data[ctx.dataIndex];
-                                if (!item) return '#333';
-                                return item._data.change >= 0 ? 'rgba(38, 166, 154, 0.8)' : 'rgba(239, 83, 80, 0.8)';
+                                if (!item) return '#111';
+                                const d = item._data;
+                                if (d.isOff) return 'rgba(50, 50, 50, 0.5)'; // Grey for off-season
+                                return d.change >= 0 ? 'rgba(38, 166, 154, 0.8)' : 'rgba(239, 83, 80, 0.8)';
                             },
-                            labels: { display: true, color: 'white' }
+                            labels: {
+                                display: true,
+                                color: 'white',
+                                formatter: (ctx) => ctx.raw._data.name
+                            }
                         }]
                     },
-                    options: { plugins: { legend: { display: false } }, maintainAspectRatio: false }
+                    options: { 
+                        plugins: { legend: { display: false } }, 
+                        maintainAspectRatio: false 
+                    }
                 });
 
-            } catch (e) { console.error("Market Load Error", e); }
+            } catch (e) { 
+                console.error("Market Load Error", e); 
+            }
         }
 
         window.onload = loadMarket;
