@@ -157,3 +157,51 @@ td { padding: 15px; border-bottom: 1px solid #222; font-size: 0.9rem; text-align
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
 footer { padding: 3rem; background: rgba(0,0,0,0.9); margin-top: auto; font-size: 0.8rem; color: #555; }
+
+
+/* --- Trading Economics Table Style --- */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 20px;
+    background: #ffffff; /* Trading Economics uses a clean white/light look for tables */
+    color: #333;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+th {
+    background-color: #f8f9fa;
+    color: #212529;
+    font-weight: 700;
+    text-transform: none;
+    padding: 12px 15px;
+    border-bottom: 2px solid #dee2e6;
+    text-align: left;
+}
+
+td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.95rem;
+}
+
+tr:hover {
+    background-color: #f1f3f5;
+}
+
+/* Price colors like Trading Economics */
+.price-up { color: #008000; font-weight: bold; }
+.price-down { color: #ff0000; font-weight: bold; }
+
+/* The "Bio-IT Logic" column - make it look like a tech verification */
+.verify-badge {
+    background: #e7f3ff;
+    color: #007bff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
