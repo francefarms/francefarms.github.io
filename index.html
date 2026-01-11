@@ -33,6 +33,8 @@
             gap: 20px;
             margin-top: 20px;
         }
+
+        /* FIXED CSS FOR BUTTON VISIBILITY */
         .price-card {
             background: #222;
             padding: 20px;
@@ -42,7 +44,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 250px;
+            min-height: 380px; /* Increased to fit PayPal buttons */
         }
         .price-card:hover { transform: translateY(-5px); background: #2a2a2a; }
         .price-card h4 { margin: 0; color: #aaa; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; }
@@ -50,7 +52,7 @@
 
         .paypal-btn-area {
             margin-top: 15px;
-            min-height: 45px;
+            min-height: 150px; /* Required room for PayPal iFrame */
         }
 
         .cta-button { 
@@ -71,4 +73,111 @@
             <a href="index.html">Home</a>
             <a href="#market">Market Intelligence</a>
             <a href="bio-estate.html">Bio-Estate DNA</a>
-            <a href="mailto:francefarms
+            <a href="mailto:francefarms@outlook.com">Contact</a>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Commercial Estate Management</h2>
+        <p class="subtitle">Bridging Agricultural Operations with Bio-IT Solutions</p>
+        
+        <a href="bio-estate.html" class="cta-button">Launch Bio-Estate DNA Analyzer 🥭</a>
+
+        <section id="market" class="commodities-container">
+            <h3>Global Agricultural Markets</h3>
+            <p style="color: #666; font-size: 0.9em;">Twice-Daily Market Updates (7 AM / 7 PM AST)</p>
+            
+            <div id="price-grid" class="price-grid">
+                </div>
+            
+            <span id="update-status" class="status-badge">🟡 Connecting to Market Data...</span>
+        </section>
+
+        <div class="video-section">
+            <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@france_farms/video/7375612416320883973"
+                data-video-id="7375612416320883973" style="max-width: 605px; min-width: 325px; margin: 0 auto;">
+                <section><a target="_blank" href="https://www.tiktok.com/@france_farms">@france_farms</a> Juicy Julie Mango.</section>
+            </blockquote>
+            <script async src="https://www.tiktok.com/embed.js"></script>
+        </div>
+    </main>
+    
+    <footer>
+        <p>Managed by Françe Farms Tech Operations | Trinidad & Tobago</p>
+    </footer>
+
+    <script>
+        function initPayPalButton(containerId, itemName, itemPrice) {
+            if (typeof paypal !== 'undefined') {
+                paypal.Buttons({
+                    style: {
+                        shape: 'pill',
+                        color: 'gold',
+                        layout: 'vertical',
+                        label: 'buynow',
+                        height: 35
+                    },
+                    createOrder: function(data, actions) {
+                        return actions.order.create({
+                            purchase_units: [{
+                                description: itemName,
+                                amount: {
+                                    currency_code: 'USD',
+                                    value: itemPrice.toString()
+                                }
+                            }]
+                        });
+                    },
+                    onApprove: function(data, actions) {
+                        return actions.order.capture().then(function(orderData) {
+                            alert('Transaction successful for ' + itemName + '! Reference: ' + orderData.id);
+                        });
+                    }
+                }).render('#' + containerId);
+            }
+        }
+
+        async function updateMarketData() {
+            const grid = document.getElementById('price-grid');
+            const status = document.getElementById('update-status');
+
+            try {
+                const response = await fetch('commodities.json');
+                if (!response.ok) throw new Error('Network error');
+                const data = await response.json();
+                
+                grid.innerHTML = '';
+                
+                for (const [name, price] of Object.entries(data.rates)) {
+                    const safeName = name.replace(/[^a-z0-9]/gi, '-');
+                    const btnContainerId = `btn-${safeName}`;
+
+                    grid.innerHTML += `
+                        <div class="price-card">
+                            <div>
+                                <h4>${name}</h4>
+                                <p>$${price.toLocaleString()}</p>
+                            </div>
+                            <div id="${btnContainerId}" class="paypal-btn-area"></div>
+                        </div>
+                    `;
+
+                    setTimeout(() => {
+                        initPayPalButton(btnContainerId, name, price);
+                    }, 400);
+                }
+
+                status.innerHTML = `🟢 Live Market Connection Active (Updated: ${data.last_updated})`;
+
+            } catch (error) {
+                console.error('Market data error:', error);
+                status.innerHTML = "🔴 Connection Offline (Check GitHub Actions)";
+            }
+        }
+
+        window.onload = function() {
+            updateMarketData();
+        };
+    </script>
+</body>
+</html>
