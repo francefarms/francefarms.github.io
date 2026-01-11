@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Françe Farms | Market Terminal</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-treemap"></script>
+    <style>
+        :root { --primary: #4CAF50; --bg: #050505; --card: #111; --up: #26a69a; --down: #ef5350; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: white; margin: 0; }
+        header { padding: 20px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+        nav a { color: #888; text-decoration: none; margin-left: 20px; font-size: 0.9rem; }
+        
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+        .terminal-header { margin-bottom: 30px; }
+        
+        /* Treemap Style */
+        .chart-container { background: var(--card); border-radius: 12px; padding: 20px; margin-bottom: 30px; height: 400px; }
+        
+        /* Table Style like Trading Economics */
+        table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; }
+        th { text-align: left; padding: 15px; color: #666; font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid #222; }
+        td { padding: 15px; border-bottom: 1px solid #1a1a1a; font-size: 0.95rem; }
+        .price-up { color: var(--up); }
+        .price-down { color: var(--down); }
+        
+        .btn-live { background: var(--up); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; animation: blink 2s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body>
+    <header>
+        <div style="font-weight: 800; color: var(--primary);">FRANCĘ TERMINAL</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="paypal.html">Store</a>
+            <a href="bio-estate.html">DNA</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="terminal-header">
+            <h1>Commodity Markets <span class="btn-live">LIVE</span></h1>
+            <p style="color: #666;">Global Agricultural Quotes & Sector Heatmap</p>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="treemapChart"></canvas>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Commodity</th>
+                    <th>Price (USD)</th>
+                    <th>Change</th>
+                    <th>% Day</th>
+                    <th>Market Cap / Volume</th>
+                </tr>
+            </thead>
+            <tbody id="market-body">
+                </tbody>
+        </table>
+    </div>
+
+    <script>
+        async function loadMarket() {
+            try {
+                const response = await fetch('commodities.json');
+                const data = await response.json();
+                const tableBody = document.getElementById('market-body');
+                
+                // Prepare Data for Treemap
+                const treemapData = [];
+
+                tableBody.innerHTML = '';
+                Object.entries(data.rates).forEach(([name, price]) => {
+                    // Simulating change data for visualization
+                    const change = (Math.random() * 2 - 1).toFixed(2);
+                    const colorClass = change >= 0 ? 'price-up' : 'price-down';
+                    
+                    treemapData.push({ name: name, value: price, change: parseFloat(change) });
+
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td><strong>${name}</strong></td>
+                            <td>$${price.toLocaleString()}</td>
+                            <td class="${colorClass}">${change > 0 ? '+' : ''}${change}</td>
+                            <td class="${colorClass}">${(change/10).toFixed(2)}%</td>
+                            <td style="color: #444;">High Demand</td>
+                        </tr>
+                    `;
+                });
+
+                // Initialize Chart.js Treemap
+                const ctx = document.getElementById('treemapChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'treemap',
+                    data: {
+                        datasets: [{
+                            label: 'Market Heatmap',
+                            tree: treemapData,
+                            key: 'value',
+                            groups: ['name'],
+                            spacing: 2,
+                            borderWidth: 0,
+                            backgroundColor: (ctx) => {
+                                const item = ctx.dataset.data[ctx.dataIndex];
+                                if (!item) return '#333';
+                                return item._data.change >= 0 ? 'rgba(38, 166, 154, 0.8)' : 'rgba(239, 83, 80, 0.8)';
+                            },
+                            labels: { display: true, color: 'white' }
+                        }]
+                    },
+                    options: { plugins: { legend: { display: false } }, maintainAspectRatio: false }
+                });
+
+            } catch (e) { console.error("Market Load Error", e); }
+        }
+
+        window.onload = loadMarket;
+    </script>
+</body>
+</html>
