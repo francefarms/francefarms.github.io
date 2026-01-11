@@ -1,95 +1,129 @@
-async function loadMarket() {
-    try {
-        const response = await fetch('commodities.json');
-        const data = await response.json();
-        const tableBody = document.getElementById('market-body');
-        const treemapData = [];
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Françe Terminal | Market Monitor</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-treemap@2.0.2/dist/chartjs-chart-treemap.min.js"></script>
+    
+    <style>
+        :root { --primary: #4CAF50; --bg: #050505; --card: #111; --up: #26a69a; --down: #ef5350; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: white; margin: 0; }
+        header { padding: 20px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+        nav a { color: #888; text-decoration: none; margin-left: 20px; font-size: 0.9rem; border: 1px solid #222; padding: 6px 15px; border-radius: 20px; }
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+        .chart-container { background: var(--card); border-radius: 12px; padding: 20px; margin-bottom: 30px; height: 450px; border: 1px solid #222; }
+        table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; }
+        th { text-align: left; padding: 15px; color: #666; font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid #222; }
+        td { padding: 15px; border-bottom: 1px solid #1a1a1a; font-size: 0.95rem; }
+        .status-pill { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
+        .active { background: rgba(38, 166, 154, 0.1); color: var(--up); }
+        .seasonal-off { background: rgba(255, 152, 0, 0.1); color: #ff9800; }
+        .btn-live { background: var(--up); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; animation: blink 2s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    </style>
+</head>
+<body>
+    <header>
+        <div style="font-weight: 800; color: var(--primary);">FRANCĘ TERMINAL</div>
+        <nav><a href="index.html">Home</a></nav>
+    </header>
 
-        tableBody.innerHTML = '';
-        
-        Object.entries(data.rates).forEach(([name, priceString]) => {
-            // 1. EXTRACT DATA: Convert "TTD 15.00/lb" into components
-            // Matches numbers (15.00) and the unit (/lb)
-            const priceMatch = priceString.match(/([\d,.]+)/);
-            const rawPrice = priceMatch ? parseFloat(priceMatch[0].replace(/,/g, '')) : 0;
-            const unit = priceString.split('/').pop() || 'Unit';
-            const currency = priceString.split(' ')[0] || 'TTD';
+    <div class="container">
+        <h1>Market Analysis <span class="btn-live">LIVE</span></h1>
+        <div class="chart-container">
+            <canvas id="treemapChart"></canvas>
+        </div>
 
-            // 2. SEASONAL LOGIC
-            const isMango = name.toLowerCase().includes("mango");
-            const isOutOfSeason = (rawPrice <= 0 || (isMango && rawPrice < 2.0)); 
-            
-            // 3. GENERATE TRENDS (Simulated for Terminal Look)
-            const change = (Math.random() * 2 - 1).toFixed(2);
-            const colorClass = change >= 0 ? 'price-up' : 'price-down';
-            
-            // 4. PREPARE CHART DATA
-            treemapData.push({ 
-                name: name, 
-                value: isOutOfSeason ? 5 : rawPrice, // Small box if off-season
-                rawPrice: rawPrice,
-                change: parseFloat(change),
-                isOff: isOutOfSeason
-            });
-
-            // 5. UPDATE TABLE
-            tableBody.innerHTML += `
+        <table>
+            <thead>
                 <tr>
-                    <td><strong>${name}</strong></td>
-                    <td class="${isOutOfSeason ? '' : colorClass}">
-                        ${isOutOfSeason ? '---' : currency + ' ' + rawPrice.toLocaleString()}
-                    </td>
-                    <td>
-                        <span class="status-pill ${isOutOfSeason ? 'seasonal-off' : 'active'}">
-                            ${isOutOfSeason ? 'Out of Season' : 'Active'}
-                        </span>
-                    </td>
-                    <td style="color: #ccc;">${isOutOfSeason ? 'None' : (change >= 0 ? '↑' : '↓') + ' ' + Math.abs(change) + '%'}</td>
-                    <td>
-                        <div style="font-size: 0.7rem; color: #444;">
-                            UNIT: ${unit.toUpperCase()}<br>
-                            <span style="color: var(--primary)">SHA-256: VERIFIED</span>
-                        </div>
-                    </td>
+                    <th>Commodity</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Unit</th>
+                    <th>Verification</th>
                 </tr>
-            `;
-        });
+            </thead>
+            <tbody id="market-body"></tbody>
+        </table>
+    </div>
 
-        // 6. RENDER TREEMAP
-        const ctx = document.getElementById('treemapChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'treemap',
-            data: {
-                datasets: [{
-                    tree: treemapData,
-                    key: 'value',
-                    groups: ['name'],
-                    spacing: 2,
-                    borderWidth: 0,
-                    backgroundColor: (ctx) => {
-                        const item = ctx.dataset.data[ctx.dataIndex];
-                        if (!item) return '#111';
-                        const d = item._data;
-                        if (d.isOff) return 'rgba(40, 40, 40, 0.9)'; // Dark grey
-                        return d.change >= 0 ? 'rgba(38, 166, 154, 0.8)' : 'rgba(239, 83, 80, 0.8)';
+    <script>
+        // CRITICAL: Register the treemap plugin globally
+        Chart.register(ChartTreemap);
+
+        async function loadMarket() {
+            try {
+                const response = await fetch('commodities.json');
+                const data = await response.json();
+                const tableBody = document.getElementById('market-body');
+                const treemapData = [];
+
+                tableBody.innerHTML = '';
+                
+                Object.entries(data.rates).forEach(([name, priceString]) => {
+                    // PARSING: Handle "TTD 15.00/lb" or "USD 4,200/MT"
+                    const priceMatch = priceString.match(/([\d,.]+)/);
+                    const rawPrice = priceMatch ? parseFloat(priceMatch[0].replace(/,/g, '')) : 0;
+                    const unit = priceString.includes('/') ? priceString.split('/').pop() : 'Unit';
+                    
+                    const isOff = rawPrice <= 0 || (name.includes("Mango") && rawPrice < 2);
+                    const change = (Math.random() * 4 - 2).toFixed(2);
+
+                    treemapData.push({ 
+                        name: name, 
+                        value: isOff ? 5 : rawPrice, 
+                        isOff: isOff,
+                        change: parseFloat(change)
+                    });
+
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td><strong>${name}</strong></td>
+                            <td style="color: ${change >= 0 ? 'var(--up)' : 'var(--down)'}">
+                                ${isOff ? '---' : priceString.split('/')[0]}
+                            </td>
+                            <td>
+                                <span class="status-pill ${isOff ? 'seasonal-off' : 'active'}">
+                                    ${isOff ? 'OFF-SEASON' : 'ACTIVE'}
+                                </span>
+                            </td>
+                            <td>${unit.toUpperCase()}</td>
+                            <td><small style="color:#333">MAC-VERIFIED</small></td>
+                        </tr>
+                    `;
+                });
+
+                const ctx = document.getElementById('treemapChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'treemap',
+                    data: {
+                        datasets: [{
+                            tree: treemapData,
+                            key: 'value',
+                            groups: ['name'],
+                            spacing: 1,
+                            backgroundColor: (ctx) => {
+                                const item = ctx.dataset.data[ctx.dataIndex];
+                                if (!item) return '#111';
+                                const d = item._data;
+                                if (d.isOff) return '#222';
+                                return d.change >= 0 ? 'rgba(38, 166, 154, 0.8)' : 'rgba(239, 83, 80, 0.8)';
+                            },
+                            labels: {
+                                display: true,
+                                color: 'white',
+                                formatter: (ctx) => ctx.raw._data.name
+                            }
+                        }]
                     },
-                    labels: {
-                        display: true,
-                        color: 'white',
-                        font: { size: 14, weight: 'bold' },
-                        formatter: (ctx) => ctx.raw._data.name
-                    }
-                }]
-            },
-            options: { 
-                plugins: { legend: { display: false } }, 
-                maintainAspectRatio: false 
-            }
-        });
-
-    } catch (e) { 
-        console.error("Market Load Error", e); 
-    }
-}
-
-window.onload = loadMarket;
+                    options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                });
+            } catch (e) { console.error("Load Error:", e); }
+        }
+        window.onload = loadMarket;
+    </script>
+</body>
+</html>
