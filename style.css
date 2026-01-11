@@ -95,3 +95,23 @@ footer p {
         padding: 0.8rem;
     }
 }
+
+
+/* Inside style.css */
+:root { 
+    --primary: #4CAF50; 
+    --bg: #050505; 
+    --card: rgba(17, 17, 17, 0.9); 
+    --up: #26a69a; 
+    --down: #ef5350; 
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-image: url('farm_background.jpg'); 
+    background-size: cover;
+    background-attachment: fixed;
+    /* ... the rest of your body styles ... */
+}
+
+/* ... all other classes like .ticker-wrap, .container, etc. ... */
