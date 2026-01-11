@@ -166,3 +166,69 @@
 </body>
 </html>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Françe Farms | Home</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #0a0a0a; color: white; text-align: center; line-height: 1.6; }
+        header { padding: 60px 20px; border-bottom: 2px solid #4CAF50; background: linear-gradient(to bottom, #111, #0a0a0a); }
+        nav { margin-top: 20px; }
+        nav a { margin: 0 15px; text-decoration: none; color: #4CAF50; font-weight: bold; transition: 0.3s; cursor: pointer; }
+        nav a:hover { color: #81C784; text-shadow: 0 0 10px #4CAF50; }
+        main { padding: 40px 20px; max-width: 1000px; margin: auto; }
+        h1 { font-size: 3.5em; margin: 0; letter-spacing: 2px; }
+        .commodities-container { background: #161616; border: 1px solid #333; border-radius: 15px; padding: 30px; margin: 40px 0; }
+        .price-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px; }
+        .price-card { background: #222; padding: 20px; border-radius: 10px; border-bottom: 3px solid #4CAF50; }
+        .status-badge { font-size: 0.8em; color: #4CAF50; display: block; margin-top: 15px; }
+        .video-section { margin-top: 50px; padding: 20px; background: #111; border-radius: 15px; }
+        footer { padding: 60px; color: #777; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Françe Farms</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="paypal.html">PayPal (Store)</a>
+            <a href="bio-estate.html">Bio-Estate DNA</a>
+            <a href="mailto:francefarms@outlook.com">Contact</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="market" class="commodities-container">
+            <h3>Global Agricultural Markets</h3>
+            <div id="price-grid" class="price-grid"></div>
+            <span id="update-status" class="status-badge">🟢 Connecting to Market Data...</span>
+        </section>
+
+        <div class="video-section">
+            <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@france_farms/video/7375612416320883973" data-video-id="7375612416320883973" style="max-width: 605px; min-width: 325px; margin: 0 auto;">
+                <section><a target="_blank" href="https://www.tiktok.com/@france_farms">@france_farms</a> Juicy Julie Mango.</section>
+            </blockquote>
+            <script async src="https://www.tiktok.com/embed.js"></script>
+        </div>
+    </main>
+
+    <script>
+        async function updateMarketData() {
+            const grid = document.getElementById('price-grid');
+            const status = document.getElementById('update-status');
+            try {
+                const response = await fetch('commodities.json');
+                const data = await response.json();
+                grid.innerHTML = '';
+                for (const [name, price] of Object.entries(data.rates)) {
+                    grid.innerHTML += `<div class="price-card"><h4>${name}</h4><p>$${price.toLocaleString()}</p></div>`;
+                }
+                status.innerHTML = `🟢 Market Data Active`;
+            } catch (e) { status.innerHTML = "🔴 Offline"; }
+        }
+        window.onload = updateMarketData;
+    </script>
+</body>
+</html>
