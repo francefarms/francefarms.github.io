@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Françe Farms | Store</title>
+    <script src="https://www.paypal.com/sdk/js?client-id=AQbiMF6NJ_cj8MlSqi6UEAbFeIU6Nn3T6XvdgiT0iYsVEbluI3BAULx6Zycv-KX0R9tRybujAIEmJ3CR&currency=USD"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #0a0a0a; color: white; text-align: center; }
+        header { padding: 40px; border-bottom: 2px solid #4CAF50; }
+        nav a { margin: 0 15px; text-decoration: none; color: #4CAF50; font-weight: bold; }
+        .store-card { background: #161616; padding: 40px; border-radius: 15px; max-width: 600px; margin: 50px auto; border: 1px solid #333; }
+        #file-hash { color: #4CAF50; font-family: monospace; font-size: 0.8em; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Françe Farms Store</h1>
+        <nav>
+            <a href="index.html">Back to Home</a>
+        </nav>
+    </header>
+    <main>
+        <div class="store-card">
+            <h2>A Farmer's Guide to Citrus Production</h2>
+            <p>Verified Bio-IT Digital Publication</p>
+            <p>Hash: <span id="file-hash">Calculating...</span></p>
+            <p>Price: <strong>$0.10 USD</strong></p>
+            <div id="paypal-button-container"></div>
+        </div>
+    </main>
+
+    <script>
+        // HASH GENERATOR
+        async function getHash() {
+            const msg = new TextEncoder().encode("AfarmersGuide-Secure-v1");
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msg);
+            document.getElementById('file-hash').innerText = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // PAYPAL BUTTON
+        window.onload = function() {
+            getHash();
+            paypal.Buttons({
+                style: { layout: 'vertical', color: 'blue', shape: 'rect' },
+                createOrder: (data, actions) => {
+                    return actions.order.create({
+                        purchase_units: [{ description: "Citrus Guide PDF", amount: { currency_code: 'USD', value: '0.10' } }]
+                    });
+                },
+                onApprove: (data, actions) => {
+                    return actions.order.capture().then(details => {
+                        alert('Success! Opening Guide...');
+                        window.location.href = "AfarmersGuide.pdf";
+                    });
+                }
+            }).render('#paypal-button-container');
+        };
+    </script>
+</body>
+</html>
