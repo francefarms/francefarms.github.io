@@ -103,3 +103,30 @@
     </script>
 </body>
 </html>
+
+Object.entries(data.rates).forEach(([name, priceString]) => {
+    const priceMatch = priceString.match(/([\d,.]+)/);
+    const rawPrice = priceMatch ? parseFloat(priceMatch[0].replace(/,/g, '')) : 0;
+    
+    // Check if the price is already in USD or TTD
+    let ttdPrice, usdPrice;
+    if (priceString.includes("USD")) {
+        usdPrice = rawPrice;
+        ttdPrice = (rawPrice / 0.147).toFixed(2); // Convert USD back to TTD for display
+    } else {
+        ttdPrice = rawPrice;
+        usdPrice = (rawPrice * 0.147).toFixed(2);
+    }
+
+    const isOff = rawPrice <= 0 || (name.toLowerCase().includes("mango") && rawPrice < 2);
+    
+    tableBody.innerHTML += `
+        <tr>
+            <td><strong>${name}</strong></td>
+            <td>${isOff ? '---' : 'TTD ' + ttdPrice}</td>
+            <td><span class="status-pill ${isOff ? 'seasonal-off' : 'active'}">${isOff ? 'OFF-SEASON' : 'ACTIVE'}</span></td>
+            <td>${priceString.split('/').pop().toUpperCase()}</td>
+            <td style="color:var(--primary)">$ ${usdPrice} USD</td>
+        </tr>
+    `;
+});
