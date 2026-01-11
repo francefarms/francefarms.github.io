@@ -4,61 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Françe Terminal | Market Monitor</title>
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-treemap@2.0.2/dist/chartjs-chart-treemap.min.js"></script>
-    
-    <style>
-        :root { --primary: #4CAF50; --bg: #050505; --card: #111; --up: #26a69a; --down: #ef5350; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: white; margin: 0; overflow-x: hidden; }
-        header { padding: 20px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
-        nav a { color: #888; text-decoration: none; margin-left: 20px; font-size: 0.9rem; border: 1px solid #222; padding: 6px 15px; border-radius: 20px; transition: 0.3s; }
-        nav a:hover { border-color: var(--primary); color: white; }
-
-        /* --- 1. NEW TICKER STYLES --- */
-        .ticker-wrap { width: 100%; background: #0a0a0a; border-bottom: 1px solid #333; padding: 8px 0; overflow: hidden; }
-        .ticker { display: flex; white-space: nowrap; animation: marquee 40s linear infinite; }
-        .ticker-item { padding: 0 50px; color: #eee; font-size: 0.8rem; font-weight: 500; display: flex; align-items: center; }
-        .ticker-item span { color: var(--primary); margin-right: 12px; font-weight: 900; }
-        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
-        .ticker-wrap:hover .ticker { animation-play-state: paused; }
-
-        .container { max-width: 1200px; margin: auto; padding: 20px; }
-        .chart-container { background: var(--card); border-radius: 12px; padding: 20px; margin-bottom: 30px; height: 450px; border: 1px solid #222; position: relative; }
-        table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; margin-top: 10px; }
-        th { text-align: left; padding: 15px; color: #666; font-size: 0.75rem; text-transform: uppercase; border-bottom: 1px solid #222; }
-        td { padding: 15px; border-bottom: 1px solid #1a1a1a; font-size: 0.9rem; }
-        .status-pill { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
-        .active { background: rgba(38, 166, 154, 0.1); color: var(--up); }
-        .seasonal-off { background: rgba(255, 152, 0, 0.1); color: #ff9800; }
-        .btn-live { background: var(--up); color: white; padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; animation: blink 2s infinite; vertical-align: middle; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-    </style>
 </head>
 <body>
-    <header>
-        <div style="font-weight: 800; color: var(--primary); letter-spacing: 1px;">FRANCĘ TERMINAL</div>
-        <nav><a href="index.html">Home</a></nav>
-    </header>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="market.html" style="background: var(--primary)">Market Terminal</a>
+        <a href="bio-estate.html">DNA Analyzer</a>
+    </nav>
 
     <div class="ticker-wrap">
         <div class="ticker" id="ticker-content"></div>
     </div>
 
     <div class="container">
-        <div style="display: flex; justify-content: space-between; align-items: baseline;">
-            <h1>Market Analysis <span class="btn-live">LIVE</span></h1>
-            <p style="color: #444; font-size: 0.8rem;">NORTHERN WHOLESALE MARKET (MACOYA) FEED</p>
-        </div>
-        
+        <h1>Market Analysis <span class="btn-live">LIVE</span></h1>
         <div class="chart-container">
             <canvas id="treemapChart"></canvas>
         </div>
-
         <table>
             <thead>
                 <tr>
                     <th>Commodity</th>
-                    <th>Price</th>
+                    <th>Price (TTD)</th>
                     <th>Status</th>
                     <th>Unit</th>
                     <th>Bio-IT Logic</th>
@@ -69,23 +39,16 @@
     </div>
 
     <script>
-        // CRITICAL: Register the treemap plugin
         Chart.register(ChartTreemap);
 
-        // --- 3. TICKER & MARKET LOGIC ---
         function loadTicker() {
             const ticker = document.getElementById('ticker-content');
             const news = [
-                "MACOYA MARKET: Tenders open for SME area infrastructure - Deadline Feb 13, 2026",
-                "BUDGET 2026: TTD 1.13 Billion allocated to food security and export growth",
-                "ALERT: VAT removed from local Pumpkin, Watermelon, and Cucumber as of Q1 2026",
-                "NAMDEVCO: Macoya trading hours Mon-Fri 3:30 AM - 10:00 AM (Wholesale)",
-                "CROP WATCH: Moruga Pepper & Cocoa identified as key 2026 export drivers",
-                "TECH: India-donated agro-processing equipment arrives for value-added strategy"
+                "MACOYA MARKET: Tenders open - Deadline Feb 13, 2026",
+                "BUDGET 2026: TTD 1.13 Billion allocated to food security",
+                "NAMDEVCO: Macoya trading hours Mon-Fri 3:30 AM - 10:00 AM"
             ];
-            ticker.innerHTML = [...news, ...news].map(item => `
-                <div class="ticker-item"><span>•</span> ${item}</div>
-            `).join('');
+            ticker.innerHTML = [...news, ...news].map(item => `<div class="ticker-item"><span>•</span> ${item}</div>`).join('');
         }
 
         async function loadMarket() {
@@ -95,41 +58,24 @@
                 const data = await response.json();
                 const tableBody = document.getElementById('market-body');
                 const treemapData = [];
-
                 tableBody.innerHTML = '';
                 
                 Object.entries(data.rates).forEach(([name, priceString]) => {
-                    // Extract numeric price from strings like "TTD 15.00/lb"
                     const priceMatch = priceString.match(/([\d,.]+)/);
                     const rawPrice = priceMatch ? parseFloat(priceMatch[0].replace(/,/g, '')) : 0;
-                    const unit = priceString.includes('/') ? priceString.split('/').pop() : 'Unit';
-                    
-                    // Seasonality Logic (Julie Mango is usually off in Jan)
                     const isOff = rawPrice <= 0 || (name.toLowerCase().includes("mango") && rawPrice < 2);
                     const change = (Math.random() * 4 - 2).toFixed(2);
 
-                    treemapData.push({ 
-                        name: name, 
-                        value: isOff ? 5 : rawPrice, 
-                        isOff: isOff,
-                        change: parseFloat(change)
-                    });
+                    treemapData.push({ name, value: isOff ? 5 : rawPrice, isOff, change: parseFloat(change) });
 
                     tableBody.innerHTML += `
                         <tr>
                             <td><strong>${name}</strong></td>
-                            <td style="color: ${isOff ? '#555' : (change >= 0 ? 'var(--up)' : 'var(--down)')}">
-                                ${isOff ? 'OFF-SEASON' : priceString.split('/')[0]}
-                            </td>
-                            <td>
-                                <span class="status-pill ${isOff ? 'seasonal-off' : 'active'}">
-                                    ${isOff ? 'Out of Season' : 'Active'}
-                                </span>
-                            </td>
-                            <td>${unit.toUpperCase()}</td>
-                            <td><small style="color:#222">SHA-256: ${isOff ? 'RESERVED' : 'VERIFIED'}</small></td>
-                        </tr>
-                    `;
+                            <td style="color: ${isOff ? '#555' : (change >= 0 ? 'var(--up)' : 'var(--down)')}">${isOff ? '---' : priceString.split('/')[0]}</td>
+                            <td><span class="status-pill ${isOff ? 'seasonal-off' : 'active'}">${isOff ? 'OFF-SEASON' : 'ACTIVE'}</span></td>
+                            <td>${priceString.split('/').pop().toUpperCase()}</td>
+                            <td><small style="color:#555">SHA-256: VERIFIED</small></td>
+                        </tr>`;
                 });
 
                 const ctx = document.getElementById('treemapChart').getContext('2d');
@@ -140,36 +86,20 @@
                             tree: treemapData,
                             key: 'value',
                             groups: ['name'],
-                            spacing: 2,
-                            borderWidth: 0,
+                            spacing: 1,
                             backgroundColor: (ctx) => {
-                                const item = ctx.dataset.data[ctx.dataIndex];
-                                if (!item) return '#111';
-                                const d = item._data;
-                                if (d.isOff) return 'rgba(30, 30, 30, 0.8)';
-                                return d.change >= 0 ? 'rgba(38, 166, 154, 0.8)' : 'rgba(239, 83, 80, 0.8)';
+                                const d = ctx.dataset.data[ctx.dataIndex]?._data;
+                                if (!d) return '#111';
+                                return d.isOff ? '#222' : (d.change >= 0 ? 'rgba(38, 166, 154, 0.8)' : 'rgba(239, 83, 80, 0.8)');
                             },
-                            labels: {
-                                display: true,
-                                color: 'white',
-                                font: { size: 12, weight: 'bold' },
-                                formatter: (ctx) => ctx.raw._data.name
-                            }
+                            labels: { display: true, color: 'white', formatter: (ctx) => ctx.raw._data.name }
                         }]
                     },
                     options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
                 });
-            } catch (e) { console.error("Load Error:", e); }
+            } catch (e) { console.error(e); }
         }
         window.onload = loadMarket;
     </script>
 </body>
 </html>
-
-<head>
-    <meta charset="UTF-8">
-    <title>Françe Terminal</title>
-    <link rel="stylesheet" href="style.css">
-    
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
-</head>
