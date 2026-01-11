@@ -1,9 +1,8 @@
 {
-    "last_updated": "2026-01-11 23:21",
-    "rates": {
-        "Mango (Julie)": "TTD 15.00/lb",
-        "Cocoa (Premium)": "USD 4,200/MT",
-        "Coffee (Arabica)": "USD 2.50/lb",
-        "Hot Peppers": "TTD 12.00/lb"
-    }
+  "rates": {
+    "Cacao (Grade A)": "TTD 35.00/kg",
+    "Julie Mango": "TTD 15.00/unit",
+    "Starch Mango": "TTD 5.00/unit",
+    "Pimentoes": "TTD 20.00/bundle"
+  }
 }
