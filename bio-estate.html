@@ -3,20 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bio-Estate DNA Analyzer</title>
+    <title>Françe Bio-Estate | DNA Analyzer</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; background-color: #0e1117; color: white; }
-        header { padding: 20px; background: black; border-bottom: 2px solid #4CAF50; display: flex; justify-content: space-between; align-items: center; }
-        header a { color: #4CAF50; text-decoration: none; font-weight: bold; padding: 0 20px; }
-        iframe { width: 100%; height: 90vh; border: none; }
+        /* Unique styles for the DNA Analyzer */
+        .analyzer-box {
+            background: var(--card);
+            border: 1px solid var(--primary);
+            padding: 40px;
+            border-radius: 20px;
+            margin-top: 50px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            background: #000;
+            color: var(--primary);
+            border: 1px solid #333;
+            padding: 15px;
+            font-family: monospace;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .dna-btn {
+            background: var(--primary);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
-    <header>
-        <span style="font-size: 1.5em; padding-left: 20px;">🥭 Bio-Estate DNA Analyzer</span>
-        <a href="index.html">← Back to Home</a>
-    </header>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="market.html">Market Terminal</a> 
+        <a href="bio-estate.html" style="background: var(--primary)">DNA Analyzer</a>
+    </nav>
 
-    <iframe src="https://bio-estate-vqgktkp78gh8zokgf9b3su.streamlit.app/?embed=true"></iframe>
+    <div class="container">
+        <h1>Bio-Estate DNA Analyzer</h1>
+        <p>Analyze genetic markers for crop resilience and provenance.</p>
+
+        <div class="analyzer-box">
+            <h3>Input Genetic Sequence</h3>
+            <textarea placeholder="Paste DNA Sequence here (A, T, C, G)..."></textarea>
+            <button class="dna-btn">RUN ANALYSIS</button>
+            <div id="results" style="margin-top: 20px; color: #888;">System Ready for Sequence...</div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 FRANCĘ FARMS TECH OPERATIONS | TRINIDAD & TOBAGO</p>
+    </footer>
 </body>
 </html>
