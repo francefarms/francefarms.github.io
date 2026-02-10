@@ -3,31 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Françe Bio-Estate | DNA Analyzer</title>
+    <title>Françe Farms | DNA Ledger</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .iframe-container {
-            width: 100%;
-            height: 90vh; /* Adjust height as needed */
-            border: none;
-            background: #0e1117; /* Streamlit's default dark color */
+        :root {
+            --primary: #4CAF50;
+            --card: rgba(255, 255, 255, 0.05);
+            --text-dim: #888;
         }
+
+        body {
+            background-color: #0a0a0a;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
+
+        nav { padding: 20px; display: flex; gap: 20px; justify-content: center; background: rgba(0,0,0,0.5); }
+        nav a { color: white; text-decoration: none; font-size: 0.9rem; padding: 8px 16px; border-radius: 20px; transition: 0.3s; }
+        nav a:hover { background: var(--primary); }
+
+        .hero-card {
+            background: var(--card);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 24px;
+            padding: 40px;
+            margin: 20px 0;
+        }
+
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: var(--primary); font-weight: 600; text-transform: uppercase; font-size: 0.8rem; }
+        
+        input, textarea {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 15px;
+            color: white;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .btn-cta {
+            background: var(--primary);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            width: 100%;
+            transition: 0.3s;
+        }
+        .btn-cta:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(76, 175, 80, 0.4); }
+
+        #ledger-output { margin-top: 40px; }
+        .block {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 20px;
+            border-radius: 16px;
+            border-left: 4px solid var(--primary);
+            margin-bottom: 15px;
+            animation: slideIn 0.5s ease-out;
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .hash-text { font-family: 'Courier New', monospace; color: #ffeb3b; font-size: 0.8rem; word-break: break-all; }
     </style>
 </head>
 <body>
+
     <nav>
         <a href="index.html">Home</a>
         <a href="market.html">Market Terminal</a> 
         <a href="bio-estate.html" style="background: var(--primary)">DNA Analyzer</a>
+        <a href="mailto:francefarms@outlook.com">Contact</a>
     </nav>
 
-    <iframe 
-        src="https://bio-estate-vqgktkp78gh8zokgf9b3su.streamlit.app/?embed=true" 
-        class="iframe-container">
-    </iframe>
+    <main class="container">
+        <header style="text-align: center; margin-bottom: 40px;">
+            <h1 style="font-size: 2.5rem; margin-bottom: 10px;">DNA Ledger <span style="color: var(--primary);">Analyzer</span></h1>
+            <p style="color: var(--text-dim);">Caribbean Biosecurity & Export Verification Terminal</p>
+        </header>
 
-    <footer>
+        <section class="hero-card">
+            <div class="input-group">
+                <label>Pathogen Identity</label>
+                <input type="text" id="pathogen-name" placeholder="e.g. Colletotrichum gloeosporioides (Anthracnose)">
+            </div>
+
+            <div class="input-group">
+                <label>Genomic Sequence (DNA)</label>
+                <textarea id="dna-sequence" rows="5" placeholder="Paste ATGC sequence here..."></textarea>
+            </div>
+
+            <button onclick="createBlock()" class="btn-cta">GENERATE SECURE BLOCK</button>
+        </section>
+
+        <div style="border-left: 4px solid var(--primary); padding-left: 15px; margin-top: 40px;">
+            <h2>Blockchain <span style="color: var(--primary);">Ledger</span></h2>
+            <p style="color: var(--text-dim); margin: 0;">Verified Transaction History</p>
+        </div>
+
+        <div id="ledger-output">
+            </div>
+    </main>
+
+    <footer style="text-align: center; padding: 40px; color: var(--text-dim); font-size: 0.8rem;">
         <p>© 2026 FRANCĘ FARMS TECH OPERATIONS | TRINIDAD & TOBAGO</p>
     </footer>
+
+    <script>
+        async function createBlock() {
+            const pathogen = document.getElementById('pathogen-name').value;
+            const dna = document.getElementById('dna-sequence').value;
+            
+            if (!pathogen || !dna) {
+                alert("Please fill in both the Pathogen Name and DNA Sequence.");
+                return;
+            }
+
+            const timestamp = new Date().toLocaleString();
+            
+            // 1. Create the data string for hashing
+            const rawData = pathogen + dna + timestamp;
+
+            // 2. Generate SHA-256 Hash
+            const msgBuffer = new TextEncoder().encode(rawData);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+            // 3. Simple GC Content Calculation (Science Value)
+            const cleanDNA = dna.toUpperCase().replace(/[^ATGC]/g, "");
+            const gcCount = (cleanDNA.match(/[GC]/g) || []).length;
+            const gcContent = cleanDNA.length > 0 ? ((gcCount / cleanDNA.length) * 100).toFixed(2) : 0;
+
+            // 4. Update the UI
+            const ledgerOutput = document.getElementById('ledger-output');
+            const newBlock = `
+                <div class="block">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <h3 style="margin: 0; color: var(--primary);">${pathogen}</h3>
+                            <p style="margin: 5px 0; font-size: 0.9rem;"><strong>GC Content:</strong> ${gcContent}%</p>
+                        </div>
+                        <span style="font-size: 0.7rem; color: #666;">${timestamp}</span>
+                    </div>
+                    <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.05); margin: 15px 0;">
+                    <p style="font-size: 0.7rem; margin-bottom: 5px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;">Transaction Hash (Digital Seal)</p>
+                    <p class="hash-text">${hashHex}</p>
+                </div>
+            `;
+            
+            ledgerOutput.innerHTML = newBlock + ledgerOutput.innerHTML;
+
+            // Clear inputs for next entry
+            document.getElementById('pathogen-name').value = '';
+            document.getElementById('dna-sequence').value = '';
+        }
+    </script>
 </body>
 </html>
