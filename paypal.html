@@ -3,149 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Françe Farms | Secure Store</title>
-    <script src="https://www.paypal.com/sdk/js?client-id=AQbiMF6NJ_cj8MlSqi6UEAbFeIU6Nn3T6XvdgiT0iYsVEbluI3BAULx6Zycv-KX0R9tRybujAIEmJ3CR&currency=USD"></script>
+    <title>Buy | Françe Farms</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        :root {
-            --primary: #4CAF50;
-            --bg: #050505;
-            --card-bg: rgba(25, 25, 25, 0.8);
-            --text: #e0e0e0;
-        }
-
-        body { 
-            font-family: 'Inter', sans-serif; 
-            margin: 0; 
-            background-color: var(--bg); 
-            color: var(--text); 
-            background-image: radial-gradient(circle at 50% -20%, #1a331a 0%, transparent 50%);
-            min-height: 100vh;
-        }
-
-        header { padding: 40px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        
-        nav a { 
-            text-decoration: none; color: var(--primary); font-weight: 600; 
-            padding: 10px 20px; border: 1px solid var(--primary); border-radius: 20px;
-            transition: 0.3s;
-        }
-        nav a:hover { background: var(--primary); color: white; }
-
-        .store-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 60px;
-            max-width: 1000px;
-            margin: 60px auto;
-            padding: 20px;
-            flex-wrap: wrap;
-        }
-
-        /* The Book Cover Styling */
-        .book-preview {
-            flex: 1;
-            min-width: 300px;
-            perspective: 1000px;
-        }
-
-        .book-image {
-            width: 100%;
-            max-width: 350px;
-            border-radius: 5px 15px 15px 5px;
-            box-shadow: -10px 20px 50px rgba(0,0,0,0.8), 5px 0 15px rgba(255,255,255,0.1) inset;
-            transform: rotateY(-15deg);
-            transition: 0.5s;
-        }
-
-        .book-preview:hover .book-image {
-            transform: rotateY(0deg) scale(1.02);
-        }
-
-        .purchase-details {
-            flex: 1;
-            min-width: 300px;
-            text-align: left;
-            background: var(--card-bg);
-            padding: 40px;
-            border-radius: 24px;
-            border: 1px solid rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px);
-        }
-
-        h2 { font-size: 2rem; margin-top: 0; color: white; }
-        .hash-box {
-            background: #000;
-            padding: 15px;
-            border-radius: 12px;
-            font-family: 'monospace';
-            font-size: 0.8rem;
-            color: var(--primary);
-            border: 1px solid #222;
-            word-break: break-all;
-            margin: 20px 0;
-        }
-
-        .price-tag { font-size: 1.5rem; font-weight: 800; margin-bottom: 20px; color: white; }
-
-        footer { text-align: center; padding: 40px; color: #444; font-size: 0.8rem; }
+        :root { --primary: #4CAF50; --bg: #050505; --card-bg: rgba(25, 25, 25, 0.7); --text: #e0e0e0; }
+        body { font-family: 'Inter', sans-serif; margin: 0; background-color: var(--bg); color: var(--text); line-height: 1.6; background-image: radial-gradient(circle at 50% -20%, #1a331a 0%, transparent 50%); }
+        header { padding: 80px 20px 40px; text-align: center; }
+        h1 { font-size: 3rem; margin: 0; background: linear-gradient(to right, #fff, #4CAF50); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
+        nav { margin-top: 30px; display: flex; justify-content: center; gap: 20px; }
+        nav a { text-decoration: none; color: #fff; font-size: 0.9rem; padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
+        main { padding: 40px 20px; max-width: 800px; margin: auto; text-align: center; }
+        .product-card { background: var(--card-bg); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; padding: 40px; margin-top: 20px; }
+        .image-container { position: relative; display: inline-block; border-radius: 16px; overflow: hidden; }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); display: flex; justify-content: center; align-items: center; }
+        .status-badge { color: #ff4444; font-size: 1.5rem; font-weight: 800; border: 3px solid #ff4444; padding: 10px 20px; text-transform: uppercase; transform: rotate(-5deg); }
+        footer { padding: 60px 20px; color: #444; font-size: 0.8rem; text-align: center; }
     </style>
 </head>
 <body>
     <header>
-        <nav><a href="index.html">← Back to Home Intelligence</a></nav>
+        <h1>Inventory</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="paypal.html" style="background: var(--primary)">Buy</a>
+            <a href="bio-estate.html">DNA Analyzer</a>
+            <a href="mailto:francefarms@outlook.com">Contact</a>
+            <a href="blog.html">Blog</a>
+        </nav>
     </header>
-
-    <main class="store-container">
-        <div class="book-preview">
-            <img src="citrus-cover.jpg" alt="Farmer's Guide Cover" class="book-image">
-        </div>
-
-        <div class="purchase-details">
-            <h2>A Farmer's Guide to Citrus Production</h2>
-            <p style="color: #888;">Complete Digital Edition • 2026 Verified</p>
-            
-            <div class="hash-box">
-                <span style="color: #666; font-size: 0.7rem; text-transform: uppercase;">Blockchain Security Hash</span><br>
-                <span id="file-hash">Computing Digital Fingerprint...</span>
+    <main>
+        <div class="product-card">
+            <h2>Starch Mangoes (Batch: SG-2026-01)</h2>
+            <div class="image-container">
+                <img src="starchmango.jpeg" alt="Starch Mango" style="max-width: 450px; width: 100%; display: block;">
+                <div class="overlay"><div class="status-badge">Out of Stock</div></div>
             </div>
-
-            <div class="price-tag">$0.10 <span style="font-size: 0.9rem; color: #666; font-weight: 400;">USD</span></div>
-            
-            <div id="paypal-button-container"></div>
-            <p style="font-size: 0.75rem; color: #555; margin-top: 20px;">Instant access granted via secure redirect upon payment verification.</p>
+            <p style="margin-top: 30px; font-size: 1.1rem;">
+                Our current tranche of export-grade mangoes is fully committed.
+            </p>
+            <p style="color: #888;">
+                We are currently processing SHA-256 integrity hashes for the next harvest to ensure full phytosanitary compliance for our global partners.
+            </p>
         </div>
     </main>
-
-    <footer>© 2026 FRANCĘ FARMS TECH OPS</footer>
-
-    <script>
-        async function getHash() {
-            const msg = new TextEncoder().encode("AfarmersGuide-Secure-FranceFarms-v1");
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msg);
-            const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-            document.getElementById('file-hash').innerText = hashHex;
-        }
-
-        window.onload = function() {
-            getHash();
-            paypal.Buttons({
-                style: { layout: 'vertical', color: 'blue', shape: 'pill' },
-                createOrder: (data, actions) => {
-                    return actions.order.create({
-                        purchase_units: [{ 
-                            description: "Farmer's Guide to Citrus PDF", 
-                            amount: { currency_code: 'USD', value: '0.10' } 
-                        }]
-                    });
-                },
-                onApprove: (data, actions) => {
-                    return actions.order.capture().then(details => {
-                        window.location.href = "AfarmersGuide.pdf";
-                    });
-                }
-            }).render('#paypal-button-container');
-        };
-    </script>
+    <footer><p>© 2026 FRANCĘ FARMS TECH OPERATIONS | TRINIDAD & TOBAGO</p></footer>
 </body>
 </html>
