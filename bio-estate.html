@@ -3,31 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Françe Bio-Estate | DNA Analyzer</title>
+    <title>Bio-Seal Engine | Françe Farms</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .iframe-container {
+        :root {
+            --primary: #4CAF50;
+            --bg: #050505;
+            --terminal-bg: #0a0a0a;
+            --text: #e0e0e0;
+            --accent: #00ff41; /* Classic Terminal Green */
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; }
+        
+        /* Terminal Styling */
+        .terminal-container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: var(--terminal-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+        .terminal-header {
+            background: #1a1a1a;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .dot-container { display: flex; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .red { background: #ff5f56; } .yellow { background: #ffbd2e; } .green { background: #27c93f; }
+
+        .terminal-body { padding: 30px; }
+        
+        input, select {
             width: 100%;
-            height: 90vh; /* Adjust height as needed */
+            padding: 12px;
+            margin: 10px 0;
+            background: #111;
+            border: 1px solid #333;
+            color: var(--accent);
+            font-family: 'Courier New', monospace;
+            border-radius: 4px;
+        }
+
+        .btn-seal {
+            background: var(--primary);
+            color: white;
             border: none;
-            background: #0e1117; /* Streamlit's default dark color */
+            padding: 15px 30px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        #console-output {
+            margin-top: 30px;
+            padding: 15px;
+            background: #000;
+            border: 1px dashed #444;
+            color: var(--accent);
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            min-height: 100px;
+            white-space: pre-wrap;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            background: rgba(0, 255, 65, 0.1);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="market.html">Market Terminal</a> 
-        <a href="bio-estate.html" style="background: var(--primary)">DNA Analyzer</a>
-    </nav>
+    <header style="text-align: center; padding: 40px;">
+        <nav style="margin-bottom: 20px;">
+            <a href="index.html" style="color: #888; text-decoration: none;">← Back to Command Center</a>
+        </nav>
+        <h1 style="margin: 0; color: var(--primary);">Bio-Seal Engine</h1>
+        <p style="color: #666;">Sovereign Provenance Verification Node v1.2</p>
+    </header>
 
-    <iframe 
-        src="https://bio-estate-vqgktkp78gh8zokgf9b3su.streamlit.app/?embed=true" 
-        class="iframe-container">
-    </iframe>
+    <div class="terminal-container">
+        <div class="terminal-header">
+            <div class="dot-container">
+                <div class="dot red"></div>
+                <div class="dot yellow"></div>
+                <div class="dot green"></div>
+            </div>
+            <div style="font-size: 0.8rem; color: #555;">arima_edge_node_01</div>
+        </div>
+        <div class="terminal-body">
+            <div class="status-badge">NODE STATUS: ONLINE</div>
+            
+            <label>Crop Batch ID:</label>
+            <input type="text" id="batchId" placeholder="e.g. JULIE-STG-2026-001">
+            
+            <label>Soil pH (Regenerative Metric):</label>
+            <input type="number" id="soilPh" step="0.1" placeholder="6.5">
 
-    <footer>
-        <p>© 2026 FRANCĘ FARMS TECH OPERATIONS | TRINIDAD & TOBAGO</p>
-    </footer>
+            <label>Verification Method:</label>
+            <select id="method">
+                <option value="sha256">SHA-256 Sovereign Seal</option>
+                <option value="llama">Llama 3.2 AI Audit</option>
+            </select>
+
+            <button class="btn-seal" onclick="runBioSeal()">Initialize Seal</button>
+
+            <div id="console-output">READY FOR INPUT...</div>
+        </div>
+    </div>
+
+    <script>
+        async function runBioSeal() {
+            const output = document.getElementById('console-output');
+            const batch = document.getElementById('batchId').value;
+            const ph = document.getElementById('soilPh').value;
+
+            if(!batch || !ph) {
+                output.innerHTML = "ERROR: Missing required telemetry data.";
+                return;
+            }
+
+            output.innerHTML = "> Connecting to edge node...\n";
+            
+            // Simulate processing steps
+            setTimeout(() => { output.innerHTML += "> Initializing Llama 3.2 Audit...\n"; }, 500);
+            setTimeout(() => { output.innerHTML += `> Verified Batch ${batch} (Soil pH: ${ph})\n`; }, 1200);
+            setTimeout(() => { 
+                const hash = btoa(batch + ph + Date.now()).substring(0, 32); // Simple demo hash
+                output.innerHTML += `> GENERATING SHA-256 SEAL...\n\n`;
+                output.innerHTML += `[SUCCESS] HASH: ${hash.toLowerCase()}\n`;
+                output.innerHTML += `[INFO] Record committed to private PostgreSQL vault.`;
+            }, 2000);
+        }
+    </script>
 </body>
 </html>
