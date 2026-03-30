@@ -1,33 +1,146 @@
-<header>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Françe Farms | Digital Agriculture</title>
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --primary-glow: rgba(76, 175, 80, 0.4);
+            --bg: #050505;
+            --card-bg: rgba(15, 15, 15, 0.9);
+            --text: #e0e0e0;
+            --accent: #00ff41;
+        }
+
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            margin: 0; 
+            background-color: var(--bg); 
+            color: var(--text); 
+            line-height: 1.6; 
+            background-image: radial-gradient(circle at 50% 0%, #1a2a1a 0%, transparent 50%);
+        }
+
+        header { padding: 80px 20px 40px; text-align: center; }
+
+        h1 { 
+            font-size: 3.5rem; 
+            margin: 0; 
+            letter-spacing: -2px; 
+            font-weight: 800; 
+            color: #fff;
+        }
+
+        .subtitle { 
+            color: var(--primary); 
+            font-size: 0.9rem; 
+            margin-top: 10px; 
+            letter-spacing: 3px; 
+            text-transform: uppercase; 
+            font-weight: 600;
+        }
+
+        nav { 
+            margin-top: 30px; 
+            display: flex; 
+            justify-content: center; 
+            gap: 15px; 
+        }
+
+        nav a { 
+            text-decoration: none; 
+            color: #888; 
+            font-size: 0.85rem; 
+            padding: 10px 20px; 
+            border: 1px solid #222; 
+            border-radius: 4px; 
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        nav a:hover { 
+            border-color: var(--primary); 
+            color: var(--accent); 
+            background: rgba(76, 175, 80, 0.05);
+        }
+
+        main { padding: 40px 20px; max-width: 1100px; margin: auto; }
+
+        .hero-card { 
+            background: var(--card-bg); 
+            border: 1px solid #1a1a1a; 
+            border-radius: 12px; 
+            padding: 60px 40px; 
+            margin: 40px 0; 
+        }
+
+        .section-title h2 { font-size: 2rem; margin: 0; color: #fff; }
+
+        .esg-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 30px; 
+            margin-top: 50px; 
+            text-align: left;
+        }
+
+        .esg-card { 
+            border-left: 2px solid #222; 
+            padding-left: 20px; 
+        }
+
+        .esg-card h3 { color: var(--primary); font-size: 1rem; text-transform: uppercase; margin-bottom: 10px; }
+        .esg-card p { color: #888; font-size: 0.9rem; margin: 0; }
+
+        .btn-cta { 
+            display: inline-block; 
+            margin-top: 40px; 
+            color: var(--accent); 
+            text-decoration: none; 
+            font-weight: 600; 
+            border-bottom: 1px solid var(--accent);
+            padding-bottom: 4px;
+            font-size: 0.9rem;
+        }
+
+        .btn-cta:hover { color: #fff; border-color: #fff; }
+
+        .product-section { margin-top: 80px; text-align: center; }
+        .product-preview { 
+            margin-top: 30px; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            border: 1px solid #1a1a1a; 
+            display: inline-block;
+            position: relative;
+        }
+        
+        .overlay { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; 
+        }
+        .overlay-text { color: white; border: 1px solid white; padding: 10px 20px; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; }
+
+        .video-section { margin-top: 80px; border: 1px solid #1a1a1a; padding: 20px; border-radius: 12px; background: #000; }
+
+        footer { padding: 100px 20px; color: #333; font-size: 0.7rem; text-align: center; letter-spacing: 2px; }
+    </style>
+</head>
+<body>
+    <header>
         <h1>Françe Farms</h1>
         <p class="subtitle">Sovereign Bio-IT & Commercial Agriculture</p>
         <nav>
-            <a href="index.html" style="background: var(--primary)">Home</a>
+            <a href="index.html" style="border-color: var(--primary); color: var(--accent);">Home</a>
             <a href="bio-estate.html">Bio-Seal Engine</a>
             <a href="mailto:francefarms@outlook.com">Contact</a>
         </nav>
     </header>
+
     <main>
         <section class="hero-card">
             <div class="section-title">
                 <h2>Sovereign Data Infrastructure</h2>
-                <p style="color: #666; margin: 0;">Securing Agricultural Assets through Open-Source Protocols</p>
-            </div>
-            <div class="esg-grid">
-                <div class="esg-card">
-                    <h3>Environmental</h3>
-                    <p>Verified soil carbon sequestration data tracked via local edge-nodes in Arima.</p>
-                </div>
-                <div class="esg-card">
-                    <h3>Social</h3>
-                    <p>Technological sovereignty: Empowering regional estates with private, unmonitored data vaults.</p>
-                </div>
-                <div class="esg-card">
-                    <h3>Governance</h3>
-                    <p>SHA-256 Hashed Provenance: Immutable audit trails powered by a hardened Linux stack.</p>
-                </div>
-            </div>
-            <a href="mailto:francefarms@outlook.com" class="btn-cta">Request Technical Whitepaper</a>
-        </section>
-        
-    
+                <p style="color: #666; margin-top: 5px;">Securing Agricultural Assets through Open-Source Protocols</
