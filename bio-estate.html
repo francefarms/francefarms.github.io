@@ -9,28 +9,31 @@
     <style>
         :root { --primary: #4CAF50; --bg: #050505; --card: #111; --text-main: #e0e0e0; --accent: #00ff41; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; padding: 10px; }
-        .app-container { max-width: 480px; margin: 0 auto; background: var(--card); border: 1px solid #222; border-radius: 24px; overflow: hidden; }
+        .app-container { max-width: 480px; margin: 0 auto; background: var(--card); border: 1px solid #222; border-radius: 24px; overflow: hidden; position: relative; }
         
-        /* THE LINK BANNER */
         #link-banner { display: none; background: #1b331b; color: var(--accent); padding: 12px; font-size: 0.65rem; border-bottom: 1px solid var(--accent); text-align: center; }
         .clear-link { margin-left: 10px; color: #ff5f56; cursor: pointer; font-weight: bold; text-decoration: underline; }
 
         .step-box { padding: 20px; border-bottom: 1px solid #222; }
         label { font-size: 0.7rem; color: #555; text-transform: uppercase; display: block; margin-bottom: 8px; }
-        input[type="text"] { width: 100%; padding: 16px; background: #080808; border: 1px solid #1a1a1a; color: var(--accent); border-radius: 8px; box-sizing: border-box; }
+        input[type="text"] { width: 100%; padding: 16px; background: #080808; border: 1px solid #1a1a1a; color: var(--accent); border-radius: 8px; box-sizing: border-box; font-family: monospace; }
         
         .upload-area { display: flex; flex-direction: column; align-items: center; background: #0a0a0a; border: 2px dashed #333; padding: 30px; border-radius: 12px; cursor: pointer; position: relative;}
         .upload-area input[type="file"] { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 
         .btn-action { background: var(--primary); color: #fff; border: none; width: 100%; padding: 18px; border-radius: 12px; font-weight: bold; text-transform: uppercase; cursor: pointer; margin-top: 10px; }
-        .btn-link { background: #1a1a1a; color: var(--primary); border: 1px solid #333; font-size: 0.7rem; }
+        .btn-link { background: #1a1a1a; color: var(--primary); border: 1px solid #333; font-size: 0.7rem; flex: 1; }
         
         #reader { width: 100%; display: none; margin-bottom: 10px; border-radius: 12px; overflow: hidden; }
         #qr-result { display: none; text-align: center; padding: 30px; background: #000; }
         #qrcode { display: inline-block; margin: 20px 0; padding: 10px; background: #fff; border-radius: 8px; }
         
-        #vault-viewer { display: none; padding: 20px; background: #080808; border-top: 1px solid #222; }
-        .history-item { margin-bottom: 10px; padding: 10px; border: 1px solid #222; border-radius: 8px; font-size: 0.7rem; }
+        #vault-viewer { display: none; padding: 20px; background: #080808; border-top: 1px solid #222; max-height: 400px; overflow-y: auto; }
+        .history-item { margin-bottom: 10px; padding: 12px; border: 1px solid #222; border-radius: 8px; background: #000; }
+        
+        .sync-bar { background: #0a0a0a; padding: 15px 20px; border-top: 1px solid #222; display: flex; justify-content: space-between; font-size: 0.65rem; color: #444; font-family: monospace; }
+        .gps-active { color: var(--accent); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
     </style>
 </head>
 <body>
@@ -38,31 +41,31 @@
 <div class="app-container">
     <div id="link-banner">
         🔗 LINKED TO: <span id="link-name-val"></span>
-        <span class="clear-link" onclick="clearActiveLink()">[REMOVE / CHANGE]</span>
+        <span class="clear-link" onclick="clearActiveLink()">[REMOVE]</span>
     </div>
 
     <div class="step-box" style="text-align: center; padding: 20px 0;">
-        <h1 style="margin:0; font-size: 1.2rem;">Françe Farms</h1>
-        <div style="font-size: 0.6rem; color: var(--primary); letter-spacing: 2px;">SOVEREIGN NODE</div>
+        <h1 style="margin:0; font-size: 1.2rem; letter-spacing: -1px;">Françe Farms</h1>
+        <div style="font-size: 0.6rem; color: var(--primary); letter-spacing: 2px;">SOVEREIGN HARVEST NODE</div>
     </div>
 
     <div id="main-form">
         <div class="step-box">
-            <label>1. Identity / Linkage</label>
-            <input type="text" id="batchId" placeholder="e.g. jamun-processed-1">
-            <div style="display: flex; gap: 10px; margin-top:10px;">
-                <button class="btn-action btn-link" onclick="toggleVault()">📜 FROM MY HISTORY</button>
-                <button class="btn-action btn-link" onclick="startScanner()" style="background:var(--accent); color:#000;">📷 SCAN SOMEONE'S QR</button>
+            <label>1. Identity & Provenance</label>
+            <input type="text" id="batchId" placeholder="e.g. jamun-grande-01">
+            <div style="display: flex; gap: 8px; margin-top:10px;">
+                <button class="btn-action btn-link" onclick="toggleVault()">📜 HISTORY</button>
+                <button class="btn-action btn-link" onclick="startScanner()" style="background:var(--accent); color:#000;">📷 SCAN QR</button>
             </div>
             <div id="reader"></div>
         </div>
 
         <div class="step-box">
-            <label>2. Current Evidence</label>
+            <label>2. Visual Evidence</label>
             <div class="upload-area">
-                <span style="font-size: 1.5rem;">📸</span>
-                <span style="font-size: 0.7rem; color:#666;">SNAP CURRENT BATCH</span>
-                <input type="file" id="imageInput" accept="image/*" onchange="document.getElementById('img-check').innerText='✅ Photo Ready'">
+                <span style="font-size: 1.8rem;">📸</span>
+                <span style="font-size: 0.7rem; color:#555; margin-top:5px;">TAP TO SNAP BATCH</span>
+                <input type="file" id="imageInput" accept="image/*" onchange="handleImageSelect()">
             </div>
             <div id="img-check" style="font-size:0.6rem; color:var(--primary); text-align:center; margin-top:5px;"></div>
         </div>
@@ -73,23 +76,48 @@
     </div>
 
     <div id="vault-viewer">
-        <h2 style="font-size: 0.7rem; color: var(--primary);">MY RECENT HASHES</h2>
+        <h2 style="font-size: 0.7rem; color: var(--primary); margin-bottom:12px;">LOCAL HASH VAULT</h2>
         <div id="history-items"></div>
-        <button class="btn-action" style="background:#cc0000; font-size:0.6rem;" onclick="wipeVault()">WIPE ALL HISTORY</button>
+        <button class="btn-action" style="background:#cc0000; font-size:0.6rem; margin-top:20px;" onclick="wipeVault()">⚠️ WIPE ALL HISTORY</button>
     </div>
 
     <div id="qr-result">
-        <h2 style="color:var(--primary);">SEAL CREATED</h2>
+        <h2 style="color:var(--primary); margin:0;">SEAL INITIALIZED</h2>
         <div id="qrcode"></div>
-        <div id="hash-display" style="font-size:8px; font-family:monospace; color:#444; word-break:break-all; margin-bottom:20px;"></div>
-        <button class="btn-action" onclick="location.reload()">START NEXT STEP</button>
+        <div id="hash-display" style="font-size:8px; font-family:monospace; color:#555; word-break:break-all; margin-bottom:20px; padding:0 20px;"></div>
+        <button class="btn-action" style="background:#222;" onclick="location.reload()">START NEW SESSION</button>
+    </div>
+
+    <div class="sync-bar">
+        <div>LOC: <span id="gps-val" class="gps-active">LOCKING...</span></div>
+        <div>VAULT: <span id="outbox-val" style="color:var(--accent)">0</span></div>
     </div>
 </div>
 
 <script>
     let activeParentHash = "GENESIS";
+    let gpsCoords = "0,0";
+    let currentImageName = "no_image";
     let vault = JSON.parse(localStorage.getItem('françe_vault')) || [];
     let html5QrCode = null;
+
+    updateOutboxUI();
+
+    // Start GPS Tracking immediately
+    navigator.geolocation.watchPosition(pos => {
+        gpsCoords = `${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
+        document.getElementById('gps-val').innerText = gpsCoords;
+    }, err => {
+        document.getElementById('gps-val').innerText = "GPS Error";
+    }, { enableHighAccuracy: true });
+
+    function handleImageSelect() {
+        const file = document.getElementById('imageInput').files[0];
+        if(file) {
+            currentImageName = file.name;
+            document.getElementById('img-check').innerText = `✅ Evidence: ${file.name}`;
+        }
+    }
 
     function startScanner() {
         document.getElementById('reader').style.display = 'block';
@@ -98,11 +126,11 @@
             { facingMode: "environment" }, 
             { fps: 10, qrbox: { width: 250, height: 250 } },
             (decodedText) => {
-                applyLink(decodedText, "Scanned External Hash");
+                applyLink(decodedText, "Scanned Link");
                 html5QrCode.stop();
                 document.getElementById('reader').style.display = 'none';
             }
-        );
+        ).catch(err => alert("Camera error: Check permissions"));
     }
 
     function applyLink(hash, name) {
@@ -110,6 +138,7 @@
         document.getElementById('link-banner').style.display = 'block';
         document.getElementById('link-name-val').innerText = name.substring(0, 15) + "...";
         document.getElementById('vault-viewer').style.display = 'none';
+        window.scrollTo(0,0);
     }
 
     function clearActiveLink() {
@@ -122,36 +151,48 @@
         v.style.display = v.style.display === 'block' ? 'none' : 'block';
         const items = document.getElementById('history-items');
         items.innerHTML = "";
+        
         vault.forEach(rec => {
+            const dateStr = new Date(rec.ts).toLocaleTimeString();
             items.innerHTML += `
-                <div style="background:#000; padding:8px; margin-bottom:5px; border-radius:6px; border:1px solid #222;">
-                    <div style="font-size:0.7rem; color:#fff;">${rec.batch}</div>
-                    <button onclick="applyLink('${rec.hash}', '${rec.batch}')" style="background:var(--primary); border:none; font-size:0.5rem; padding:4px 8px; border-radius:4px; margin-top:5px;">USE AS PARENT</button>
+                <div class="history-item">
+                    <div style="color:#fff; font-weight:bold;">${rec.batch} <span style="color:#444; font-size:0.6rem; float:right;">${dateStr}</span></div>
+                    <div style="font-size:0.5rem; color:var(--accent); word-break:break-all; margin: 4px 0;">HASH: ${rec.hash}</div>
+                    <div style="font-size:0.55rem; color:#555;">📍 ${rec.location}</div>
+                    <button onclick="applyLink('${rec.hash}', '${rec.batch}')" style="background:var(--primary); border:none; font-size:0.5rem; padding:6px 10px; border-radius:4px; margin-top:8px; cursor:pointer; font-weight:bold;">LINK THIS HASH</button>
                 </div>`;
         });
     }
 
     async function finalizeSession() {
         const batch = document.getElementById('batchId').value;
-        if(!batch) return alert("Enter Batch ID");
+        const timestamp = Date.now();
+        if(!batch) return alert("Please enter a Batch Identifier.");
 
-        const raw = batch + activeParentHash + Date.now();
+        // THE CRYPTOGRAPHIC CHAIN: 
+        // We crush [BatchID + ParentHash + GPS + ImageName + Time] into a unique SHA-256 string.
+        const rawString = batch + activeParentHash + gpsCoords + currentImageName + timestamp;
+        
         const encoder = new TextEncoder();
-        const data = encoder.encode(raw);
+        const data = encoder.encode(rawString);
         const hashBuf = await crypto.subtle.digest('SHA-256', data);
         const hash = Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
 
-        vault.unshift({ batch, hash, parent: activeParentHash, ts: Date.now() });
+        // Save metadata to local vault for verification
+        vault.unshift({ batch, hash, parent: activeParentHash, location: gpsCoords, ts: timestamp });
         localStorage.setItem('françe_vault', JSON.stringify(vault));
+        updateOutboxUI();
 
+        // Show result
         document.getElementById('main-form').style.display = 'none';
         document.getElementById('qr-result').style.display = 'block';
-        document.getElementById('hash-display').innerText = hash;
+        document.getElementById('hash-display').innerText = `HASH: ${hash}`;
         document.getElementById('qrcode').innerHTML = "";
-        new QRCode(document.getElementById("qrcode"), { text: hash, width: 200, height: 200 });
+        new QRCode(document.getElementById("qrcode"), { text: hash, width: 220, height: 220 });
     }
 
-    function wipeVault() { if(confirm("Wipe all?")) { localStorage.removeItem('françe_vault'); location.reload(); } }
+    function updateOutboxUI() { document.getElementById('outbox-val').innerText = vault.length; }
+    function wipeVault() { if(confirm("Confirm: Delete all local hash history?")) { localStorage.removeItem('françe_vault'); location.reload(); } }
 </script>
 </body>
 </html>
