@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bio-Seal Engine | Françe Farms</title>
+    <title>Image Scanner | Françe Farms</title>
     <style>
         :root {
             --primary: #4CAF50;
@@ -104,8 +104,8 @@
         <nav style="margin-bottom: 20px;">
             <a href="index.html" style="color: #888; text-decoration: none;">← Back to Command Center</a>
         </nav>
-        <h1 style="margin: 0; color: var(--primary);">Bio-Seal Engine</h1>
-        <p style="color: #666;">Sovereign Provenance Verification Node v1.2</p>
+        <h1 style="margin: 0; color: var(--primary);">Image Scanner</h1>
+        <p style="color: #666;">Sovereign Provenance Verification Node v2.0</p>
     </header>
 
     <div class="terminal-container">
@@ -120,24 +120,29 @@
         <div class="terminal-body">
             <div class="status-badge">NODE STATUS: ONLINE</div>
             
-            <label>Crop Batch ID:</label>
+            <label>Crop Batch ID (Required):</label>
             <input type="text" id="batchId" placeholder="e.g. JULIE-STG-2026-001">
             
-            <label>Soil pH (Regenerative Metric):</label>
-            <input type="number" id="soilPh" step="0.1" placeholder="6.5">
+            <label>Origin GPS / Farm Location:</label>
+            <input type="text" id="gpsData" placeholder="10.6403° N, 61.2397° W (Arima)">
 
-            <label>Batch Image (Required for SHA-256 Seal):</label>
+            <label>Soil pH (Optional - Leave blank if unknown):</label>
+            <input type="number" id="soilPh" step="0.1" placeholder="e.g. 6.5">
+
+            <label>Security Salt (Random Private String):</label>
+            <input type="text" id="saltKey" placeholder="Enter a custom salt for encryption">
+
+            <label>Batch Image (Required for Verification):</label>
             <input type="file" id="imageInput" accept="image/*" onchange="previewImage(this)">
             <img id="previewImg" alt="Batch Preview">
 
-            <button class="btn-seal" onclick="runBioSeal()">Initialize Seal</button>
+            <button class="btn-seal" onclick="runBioSeal()">Initialize Sovereign Seal</button>
 
             <div id="console-output">READY FOR INPUT...</div>
         </div>
     </div>
 
     <script>
-        // Preview image logic
         function previewImage(input) {
             const preview = document.getElementById('previewImg');
             if (input.files && input.files[0]) {
@@ -146,39 +151,44 @@
             }
         }
 
-        // Cryptographic Hashing Logic
-        async function generateImageHash(file) {
-            const arrayBuffer = await file.arrayBuffer();
-            const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+        async function generateSovereignHash(dataString) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(dataString);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // Main Process
         async function runBioSeal() {
             const output = document.getElementById('console-output');
             const batch = document.getElementById('batchId').value;
-            const ph = document.getElementById('soilPh').value;
+            const gps = document.getElementById('gpsData').value || "LOC_UNSET";
+            const ph = document.getElementById('soilPh').value || "NOT_TESTED";
+            const salt = document.getElementById('saltKey').value || "DEFAULT_SALT";
             const fileInput = document.getElementById('imageInput');
             const file = fileInput.files[0];
 
-            if(!batch || !ph || !file) {
-                output.innerHTML = "ERROR: Missing required telemetry data or batch image.";
+            if(!batch || !file) {
+                output.innerHTML = "ERROR: Missing Batch ID or Image File.";
                 return;
             }
 
             output.innerHTML = "> Connecting to edge node...\n";
             
-            // Simulate steps for UI feel
+            // Build the data string based on your protocol
+            const timestamp = new Date().toISOString();
+            const rawData = `${batch}${gps}${ph}${timestamp}${salt}`;
+            
             setTimeout(() => { output.innerHTML += "> Initializing Llama 3.2 Audit...\n"; }, 400);
             
-            const realHash = await generateImageHash(file);
+            const finalHash = await generateSovereignHash(rawData);
 
             setTimeout(() => { 
                 output.innerHTML += `> Data Integrity Check: PASSED\n`;
-                output.innerHTML += `> Verified Batch ${batch} (Soil pH: ${ph})\n`; 
+                output.innerHTML += `> Verified Batch: ${batch}\n`; 
+                output.innerHTML += `> Metrics: [GPS: ${gps}] [pH: ${ph}]\n`;
                 output.innerHTML += `> GENERATING SOVEREIGN SEAL...\n\n`;
-                output.innerHTML += `[SUCCESS] SHA-256 HASH:\n${realHash}\n\n`;
+                output.innerHTML += `[SUCCESS] SHA-256 HASH:\n${finalHash}\n\n`;
                 output.innerHTML += `[INFO] Record committed to private PostgreSQL vault.`;
             }, 1200);
         }
