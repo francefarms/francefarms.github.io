@@ -3,218 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Scanner | Françe Farms</title>
+    <title>Françe Farms | Easy Scanner</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        :root {
-            --primary: #4CAF50;
-            --bg: #050505;
-            --terminal-bg: #0a0a0a;
-            --text: #e0e0e0;
-            --accent: #00ff41; 
-        }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; }
+        :root { --primary: #4CAF50; --bg: #f9f9f9; --card: #ffffff; --text: #333; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
         
-        .terminal-container {
-            max-width: 800px;
-            margin: 50px auto;
-            background: var(--terminal-bg);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            overflow: hidden;
-        }
-        .terminal-header {
-            background: #1a1a1a;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .dot-container { display: flex; gap: 8px; }
-        .dot { width: 12px; height: 12px; border-radius: 50%; }
-        .red { background: #ff5f56; } .yellow { background: #ffbd2e; } .green { background: #27c93f; }
-
-        .terminal-body { padding: 30px; }
+        .app-container { max-width: 500px; margin: auto; background: var(--card); border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; }
+        .app-header { background: var(--primary); color: white; padding: 30px 20px; text-align: center; }
+        .app-header h1 { margin: 0; font-size: 1.5rem; }
         
-        label { display: block; margin-top: 15px; font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            background: #111;
-            border: 1px solid #222;
-            color: var(--accent);
-            font-family: 'Courier New', monospace;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        input:focus { border-color: var(--primary); outline: none; }
+        .step-box { padding: 25px; border-bottom: 1px solid #eee; }
+        .step-number { background: var(--primary); color: white; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.8rem; margin-right: 10px; }
+        h2 { display: inline; font-size: 1rem; color: #555; text-transform: uppercase; letter-spacing: 1px; }
 
-        .chain-input { border-left: 3px solid var(--primary); padding-left: 15px; margin: 20px 0; background: rgba(76, 175, 80, 0.03); }
-
-        .btn-seal {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 18px 30px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 25px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            transition: 0.3s;
-        }
-        .btn-seal:hover { background: #388E3C; box-shadow: 0 0 20px var(--primary); }
-
-        #console-output {
-            margin-top: 30px;
-            padding: 20px;
-            background: #000;
-            border: 1px dashed #333;
-            color: var(--accent);
-            font-family: 'Courier New', monospace;
-            font-size: 0.85rem;
-            min-height: 160px;
-            white-space: pre-wrap;
-            line-height: 1.6;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            background: rgba(0, 255, 65, 0.1);
-            color: var(--accent);
-            border: 1px solid var(--accent);
-            margin-bottom: 20px;
-        }
-
-        #previewImg {
-            display: none;
-            width: 100%;
-            max-height: 250px;
-            object-fit: cover;
-            margin-top: 15px;
-            border: 1px solid #333;
-            border-radius: 4px;
-        }
+        input[type="file"] { display: none; }
+        .upload-btn { display: block; background: #f0f0f0; border: 2px dashed #ccc; padding: 40px 20px; text-align: center; border-radius: 12px; cursor: pointer; margin-top: 15px; color: #777; }
+        .upload-btn:hover { border-color: var(--primary); background: #e8f5e9; }
+        
+        .action-btn { background: var(--primary); color: white; border: none; width: 100%; padding: 20px; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        
+        #qr-result { display: none; text-align: center; padding: 30px; background: #fff; border-top: 5px solid var(--primary); }
+        #qrcode { display: inline-block; margin: 20px 0; }
+        
+        .status-msg { font-family: monospace; font-size: 0.75rem; color: #888; margin-top: 10px; text-align: center; }
+        #previewImg { width: 100%; border-radius: 12px; margin-top: 15px; display: none; }
     </style>
 </head>
 <body>
-    <header style="text-align: center; padding: 40px;">
-        <nav style="margin-bottom: 20px;">
-            <a href="index.html" style="color: #666; text-decoration: none; font-size: 0.8rem; letter-spacing: 1px;">← COMMAND CENTER</a>
-        </nav>
-        <h1 style="margin: 0; color: var(--primary); letter-spacing: -1px;">Image Scanner</h1>
-        <p style="color: #555; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 2px;">Sovereign Protocol v2.2 | Chain of Custody Enabled</p>
-    </header>
 
-    <div class="terminal-container">
-        <div class="terminal-header">
-            <div class="dot-container">
-                <div class="dot red"></div>
-                <div class="dot yellow"></div>
-                <div class="dot green"></div>
-            </div>
-            <div style="font-size: 0.7rem; color: #444; font-family: monospace;">NODE: ARIMA_EDGE_01</div>
+<div class="app-container">
+    <div class="app-header">
+        <h1>Françe Farms</h1>
+        <p style="margin: 5px 0 0; font-size: 0.8rem; opacity: 0.8;">Sovereign Harvest Tracker</p>
+    </div>
+
+    <div id="setup-view">
+        <div class="step-box">
+            <span class="step-number">1</span><h2>Identification</h2>
+            <input type="text" id="batchId" placeholder="Enter Crate/Batch Name" style="width:100%; padding:15px; margin-top:15px; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
         </div>
-        <div class="terminal-body">
-            <div class="status-badge">LEDGER STATUS: READY</div>
-            
-            <label>1. Current Batch ID:</label>
-            <input type="text" id="batchId" placeholder="e.g. GRANDE-MAR-30-001">
-            
-            <div class="chain-input">
-                <label style="color: var(--primary);">2. Previous Block Hash (The Link):</label>
-                <input type="text" id="prevHash" placeholder="Leave blank for Genesis / Picked from tree">
-                <small style="color: #444; font-size: 0.65rem;">Paste the hash from the previous checkpoint to establish the chain.</small>
-            </div>
 
-            <label>3. Origin GPS (Auto-captured):</label>
-            <input type="text" id="gpsData" placeholder="Awaiting GPS Lock..." readonly style="background: #070707; color: #444; border: 1px solid #111;">
+        <div class="step-box">
+            <span class="step-number">2</span><h2>Capture Photo</h2>
+            <label class="upload-btn" for="imageInput">
+                <span id="upload-label">📸 TAP TO TAKE PIC</span>
+                <input type="file" id="imageInput" accept="image/*" onchange="handleFile(this)">
+                <img id="previewImg">
+            </label>
+        </div>
 
-            <label>4. Security Salt:</label>
-            <input type="text" id="saltKey" placeholder="Private encryption key">
-
-            <label>5. Product Scan (Required):</label>
-            <input type="file" id="imageInput" accept="image/*" onchange="previewImage(this)">
-            <img id="previewImg" alt="Batch Preview">
-
-            <button class="btn-seal" onclick="runBioSeal()">Initialize Sovereign Seal</button>
-
-            <div id="console-output">SYSTEM READY. CONFIGURE PARAMETERS TO BEGIN...</div>
+        <div style="padding: 25px;">
+            <button class="action-btn" onclick="generateSeal()">GENERATE HARVEST QR</button>
+            <div id="status" class="status-msg">GPS: Awaiting Lock...</div>
         </div>
     </div>
 
-    <script>
-        function previewImage(input) {
-            const preview = document.getElementById('previewImg');
-            if (input.files && input.files[0]) {
-                preview.src = URL.createObjectURL(input.files[0]);
-                preview.style.display = 'block';
-            }
+    <div id="qr-result">
+        <h2 style="color: var(--primary);">✅ SEAL GENERATED</h2>
+        <p style="font-size: 0.8rem; color: #666;">Show this code at the next checkpoint</p>
+        <div id="qrcode"></div>
+        <div id="hash-display" style="font-family:monospace; font-size: 10px; color: #ccc; word-break: break-all;"></div>
+        <button class="action-btn" style="background:#333;" onclick="location.reload()">START NEW SCAN</button>
+    </div>
+</div>
+
+<script>
+    let capturedGps = "Fetching...";
+
+    // Grab GPS as soon as page loads
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            capturedGps = `${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
+            document.getElementById('status').innerText = `GPS Locked: ${capturedGps}`;
+        },
+        () => { document.getElementById('status').innerText = "GPS Error: Please enable location"; }
+    );
+
+    function handleFile(input) {
+        const preview = document.getElementById('previewImg');
+        const label = document.getElementById('upload-label');
+        if (input.files && input.files[0]) {
+            preview.src = URL.createObjectURL(input.files[0]);
+            preview.style.display = 'block';
+            label.style.display = 'none';
+        }
+    }
+
+    async function generateSeal() {
+        const batch = document.getElementById('batchId').value;
+        const file = document.getElementById('imageInput').files[0];
+
+        if(!batch || !file) {
+            alert("Please enter a Name and take a Photo!");
+            return;
         }
 
-        function getGPS() {
-            return new Promise((resolve) => {
-                if (!navigator.geolocation) resolve("GPS_UNSUPPORTED");
-                else {
-                    navigator.geolocation.getCurrentPosition(
-                        (pos) => resolve(`${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`),
-                        () => resolve("LOC_DENIED"),
-                        { enableHighAccuracy: true, timeout: 5000 }
-                    );
-                }
-            });
-        }
+        // Create the Hash (The Secret Math)
+        const encoder = new TextEncoder();
+        const data = encoder.encode(batch + capturedGps + Date.now());
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const finalHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-        async function generateHash(dataString) {
-            const encoder = new TextEncoder();
-            const data = encoder.encode(dataString);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
+        // Switch Views
+        document.getElementById('setup-view').style.display = 'none';
+        document.getElementById('qr-result').style.display = 'block';
 
-        async function runBioSeal() {
-            const output = document.getElementById('console-output');
-            const batch = document.getElementById('batchId').value;
-            const prevHash = document.getElementById('prevHash').value || "GENESIS_BLOCK";
-            const salt = document.getElementById('saltKey').value || "FRANCE_FARMS_01";
-            const fileInput = document.getElementById('imageInput');
-            const file = fileInput.files[0];
+        // Generate the QR Code containing the Hash
+        document.getElementById('qrcode').innerHTML = "";
+        new QRCode(document.getElementById("qrcode"), {
+            text: finalHash,
+            width: 200,
+            height: 200,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+        });
 
-            if(!batch || !file) {
-                output.innerHTML = "ERROR: Missing required data/visual inputs.";
-                return;
-            }
+        document.getElementById('hash-display').innerText = "HASH: " + finalHash;
+    }
+</script>
 
-            output.innerHTML = "> Establishing connection to Node...\n";
-            output.innerHTML += "> Requesting Geolocation Telemetry...\n";
-
-            const gps = await getGPS();
-            document.getElementById('gpsData').value = gps;
-
-            // Protocol: Batch + Location + Parent Link + Salt
-            const timestamp = new Date().toISOString();
-            const rawData = `${batch}|${gps}|${prevHash}|${timestamp}|${salt}`;
-            
-            setTimeout(() => { output.innerHTML += "> Running Llama 3.2 Audit on Batch Visual...\n"; }, 400);
-            
-            const finalHash = await generateHash(rawData);
-
-            setTimeout(() => { 
-                output.innerHTML += `> Data Integrity Check: PASSED\n`;
-                output.innerHTML += `> Location Verified: [${gps}]\n`;
-                output.innerHTML += `> Link Status: ${prevHash === "GENESIS_BLOCK" ? "NEW CHAIN" : "CONNECTED TO PARENT"}\n`;
-                output.innerHTML += `> GENERATING SOVEREIGN SEAL...\n\n`;
-                output.innerHTML += `[SUCCESS] SHA-256 HASH:\n${finalHash}\n\n`;
-                output.innerHTML += `[INFO] Block successfully linked. Record committed to vault.`;
-            }, 1200);
-        }
-    </script>
 </body>
 </html>
