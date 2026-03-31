@@ -37,46 +37,58 @@
             text-align: center;
             border-bottom: 1px solid #222;
         }
-        .app-header h1 { margin: 0; font-size: 1.4rem; color: #fff; }
-        .subtitle { font-size: 0.7rem; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; }
+        .app-header h1 { margin: 0; font-size: 1.4rem; color: #fff; letter-spacing: -1px; }
+        .subtitle { font-size: 0.7rem; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; font-weight: bold; }
 
         .step-box { padding: 25px 20px; border-bottom: 1px solid #222; }
-        
-        label { font-size: 0.7rem; color: #555; text-transform: uppercase; display: block; margin-bottom: 8px; }
+        label.input-label { font-size: 0.7rem; color: #555; text-transform: uppercase; display: block; margin-bottom: 8px; letter-spacing: 1px; }
         
         input[type="text"] {
-            width: 100%; padding: 15px; background: #080808; border: 1px solid #1a1a1a;
+            width: 100%; padding: 16px; background: #080808; border: 1px solid #1a1a1a;
             color: var(--accent); font-family: monospace; border-radius: 8px; box-sizing: border-box;
         }
 
-        .upload-btn {
+        /* Clean File Upload - No "Browse" text */
+        .upload-area {
+            position: relative;
             display: flex; flex-direction: column; align-items: center;
-            background: #0a0a0a; border: 2px dashed #333; padding: 30px;
-            border-radius: 12px; cursor: pointer; color: #555;
+            background: #0a0a0a; border: 2px dashed #333; padding: 40px 20px;
+            border-radius: 12px; cursor: pointer; color: #555; transition: 0.3s;
+        }
+        .upload-area:hover { border-color: var(--primary); background: #000; color: #fff; }
+        .upload-area input[type="file"] {
+            position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer;
         }
 
         .btn-action {
             background: var(--primary); color: #fff; border: none; width: 100%;
             padding: 20px; border-radius: 12px; font-weight: bold; text-transform: uppercase;
-            letter-spacing: 2px; cursor: pointer; margin-top: 15px;
+            letter-spacing: 2px; cursor: pointer; margin-top: 15px; transition: 0.3s;
         }
+        .btn-action:hover { background: #388E3C; box-shadow: 0 0 20px var(--primary); }
+        .btn-secondary { background: #1a1a1a; color: #666; font-size: 0.7rem; margin-top: 10px; }
 
         #photo-gallery { display: flex; gap: 10px; overflow-x: auto; margin-top: 15px; padding-bottom: 5px; }
-        .thumb { width: 60px; height: 60px; border-radius: 6px; background-size: cover; border: 1px solid #333; flex-shrink: 0; }
+        .thumb { width: 70px; height: 70px; border-radius: 8px; background-size: cover; border: 1px solid #333; flex-shrink: 0; }
 
-        /* QR Result Overlay */
+        /* QR Result */
         #qr-result {
             display: none; text-align: center; padding: 40px 20px;
             background: #000; border-top: 4px solid var(--primary);
         }
-        #qrcode { display: inline-block; margin: 20px 0; padding: 10px; background: #fff; border-radius: 8px; }
+        #qrcode { display: inline-block; margin: 20px 0; padding: 12px; background: #fff; border-radius: 12px; }
         
-        /* The Outbox / Sync Bar */
-        .sync-bar {
-            background: #080808; padding: 12px 20px; border-top: 1px solid #222;
-            display: flex; justify-content: space-between; font-size: 0.65rem; color: #444;
+        /* Vault History */
+        #vault-viewer { 
+            display: none; padding: 20px; background: #080808; border-top: 1px solid #222;
+            max-height: 300px; overflow-y: auto;
         }
-        .sync-count { color: var(--accent); font-weight: bold; }
+        .history-item { margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #1a1a1a; font-size: 0.75rem; }
+
+        .sync-bar {
+            background: #0a0a0a; padding: 15px 20px; border-top: 1px solid #222;
+            display: flex; justify-content: space-between; font-size: 0.65rem; color: #444; font-family: monospace;
+        }
     </style>
 </head>
 <body>
@@ -89,35 +101,41 @@
 
     <div id="main-form">
         <div class="step-box">
-            <label>Batch Identifier</label>
+            <label class="input-label">1. Batch Identifier</label>
             <input type="text" id="batchId" placeholder="e.g. GRANDE-MAR-30">
         </div>
 
         <div class="step-box">
-            <label>Crate Snapshots (<span id="count">0</span>)</label>
-            <label class="upload-btn" for="imageInput">
-                <span style="font-size: 1.5rem;">📸</span>
-                <span style="font-size: 0.7rem; margin-top:5px;">ADD CRATE PHOTO</span>
+            <label class="input-label">2. Crate Snapshots (<span id="count" style="color:var(--accent)">0</span>)</label>
+            <div class="upload-area">
+                <span style="font-size: 2rem;">📸</span>
+                <span style="font-size: 0.75rem; margin-top:10px; letter-spacing: 1px;">TAP TO CAPTURE BATCH</span>
                 <input type="file" id="imageInput" accept="image/*" onchange="addCrate(this)">
-            </label>
+            </div>
             <div id="photo-gallery"></div>
         </div>
 
         <div style="padding: 20px;">
             <button class="btn-action" onclick="finalizeSession()">Initialize Harvest Seal</button>
+            <button class="btn-action btn-secondary" onclick="toggleVault()">View Stored Hashes</button>
         </div>
     </div>
 
     <div id="qr-result">
-        <h2 style="color:var(--primary); margin:0;">SEAL GENERATED</h2>
+        <h2 style="color:var(--primary); margin:0; letter-spacing: 1px;">SEAL GENERATED</h2>
         <div id="qrcode"></div>
-        <div id="hash-text" style="font-family:monospace; font-size:9px; color:#333; margin-bottom:20px;"></div>
+        <div id="hash-text" style="font-family:monospace; font-size:10px; color:#444; margin-bottom:20px; word-break: break-all;"></div>
         <button class="btn-action" style="background:#222;" onclick="resetSession()">START NEW HARVEST</button>
+    </div>
+
+    <div id="vault-viewer">
+        <h2 style="font-size: 0.7rem; color: var(--primary); margin-bottom:15px; text-transform:uppercase;">Vault History</h2>
+        <div id="history-items"></div>
     </div>
 
     <div class="sync-bar">
         <div>GPS: <span id="gps-val" style="color:#666;">Locking...</span></div>
-        <div>VAULT OUTBOX: <span id="outbox-val" class="sync-count">0</span></div>
+        <div>OUTBOX: <span id="outbox-val" style="color:var(--accent)">0</span></div>
     </div>
 </div>
 
@@ -126,20 +144,20 @@
     let gpsCoords = "0,0";
     let vault = JSON.parse(localStorage.getItem('françe_vault')) || [];
 
-    // 1. Initial Setup
     updateOutboxUI();
+
     navigator.geolocation.getCurrentPosition(pos => {
         gpsCoords = `${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
         document.getElementById('gps-val').innerText = gpsCoords;
+    }, err => {
+        document.getElementById('gps-val').innerText = "GPS Error";
     });
 
-    // 2. Add Crate Logic
     function addCrate(input) {
         if (input.files && input.files[0]) {
             const file = input.files[0];
             currentCrates.push({ name: file.name, time: Date.now() });
             
-            // UI Update
             document.getElementById('count').innerText = currentCrates.length;
             const thumb = document.createElement('div');
             thumb.className = 'thumb';
@@ -148,35 +166,50 @@
         }
     }
 
-    // 3. Finalize & Save
     async function finalizeSession() {
         const batch = document.getElementById('batchId').value;
-        if(!batch || currentCrates.length === 0) return alert("Missing Data");
+        if(!batch || currentCrates.length === 0) return alert("Please provide Batch ID and at least one Photo.");
 
-        // Generate SHA-256
-        const raw = batch + gpsCoords + JSON.stringify(currentCrates);
+        const raw = batch + gpsCoords + JSON.stringify(currentCrates) + Date.now();
         const encoder = new TextEncoder();
         const data = encoder.encode(raw);
         const hashBuf = await crypto.subtle.digest('SHA-256', data);
         const hash = Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
 
-        // SAVE TO LOCAL VAULT (The "Outbox")
-        const record = { batch, hash, gps: gpsCoords, crates: currentCrates.length, ts: Date.now() };
-        vault.push(record);
+        // Store Record
+        const record = { batch, hash, gps: gpsCoords, count: currentCrates.length, ts: Date.now() };
+        vault.unshift(record); // Add newest to top
         localStorage.setItem('françe_vault', JSON.stringify(vault));
         updateOutboxUI();
 
-        // UI Swap
+        // View Swap
         document.getElementById('main-form').style.display = 'none';
+        document.getElementById('vault-viewer').style.display = 'none';
         document.getElementById('qr-result').style.display = 'block';
         document.getElementById('hash-text').innerText = hash;
         
         document.getElementById('qrcode').innerHTML = "";
-        new QRCode(document.getElementById("qrcode"), { text: hash, width: 180, height: 180 });
+        new QRCode(document.getElementById("qrcode"), { text: hash, width: 200, height: 200 });
+    }
+
+    function toggleVault() {
+        const viewer = document.getElementById('vault-viewer');
+        const items = document.getElementById('history-items');
+        
+        viewer.style.display = (viewer.style.display === 'none' || viewer.style.display === '') ? 'block' : 'none';
+        
+        items.innerHTML = "";
+        vault.forEach((rec) => {
+            items.innerHTML += `
+                <div class="history-item">
+                    <div style="color:#fff; font-weight:bold;">${rec.batch} (${rec.count} Crates)</div>
+                    <div style="color:var(--accent); margin: 4px 0;">HASH: ${rec.hash}</div>
+                    <div style="color:#444; font-size:0.6rem;">${new Date(rec.ts).toLocaleString()} | GPS: ${rec.gps}</div>
+                </div>`;
+        });
     }
 
     function resetSession() {
-        // Clear local variables but vault stays in localStorage
         currentCrates = [];
         document.getElementById('count').innerText = "0";
         document.getElementById('photo-gallery').innerHTML = "";
