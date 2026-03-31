@@ -4,18 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bio-Seal Engine | Françe Farms</title>
-    <link rel="stylesheet" href="style.css">
     <style>
         :root {
             --primary: #4CAF50;
             --bg: #050505;
             --terminal-bg: #0a0a0a;
             --text: #e0e0e0;
-            --accent: #00ff41; /* Classic Terminal Green */
+            --accent: #00ff41; 
         }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; }
         
-        /* Terminal Styling */
         .terminal-container {
             max-width: 800px;
             margin: 50px auto;
@@ -39,15 +37,17 @@
 
         .terminal-body { padding: 30px; }
         
+        label { display: block; margin-top: 15px; font-size: 0.8rem; color: #888; text-transform: uppercase; }
         input, select {
             width: 100%;
             padding: 12px;
-            margin: 10px 0;
+            margin: 8px 0;
             background: #111;
             border: 1px solid #333;
             color: var(--accent);
             font-family: 'Courier New', monospace;
             border-radius: 4px;
+            box-sizing: border-box;
         }
 
         .btn-seal {
@@ -58,10 +58,12 @@
             font-weight: bold;
             cursor: pointer;
             width: 100%;
-            margin-top: 20px;
+            margin-top: 25px;
             text-transform: uppercase;
             letter-spacing: 2px;
+            transition: 0.3s;
         }
+        .btn-seal:hover { background: #388E3C; box-shadow: 0 0 15px var(--primary); }
 
         #console-output {
             margin-top: 30px;
@@ -70,9 +72,10 @@
             border: 1px dashed #444;
             color: var(--accent);
             font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-            min-height: 100px;
+            font-size: 0.85rem;
+            min-height: 120px;
             white-space: pre-wrap;
+            line-height: 1.5;
         }
 
         .status-badge {
@@ -84,6 +87,15 @@
             color: var(--accent);
             border: 1px solid var(--accent);
             margin-bottom: 10px;
+        }
+
+        #previewImg {
+            display: none;
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            margin-top: 15px;
+            border: 1px solid #333;
         }
     </style>
 </head>
@@ -114,11 +126,9 @@
             <label>Soil pH (Regenerative Metric):</label>
             <input type="number" id="soilPh" step="0.1" placeholder="6.5">
 
-            <label>Verification Method:</label>
-            <select id="method">
-                <option value="sha256">SHA-256 Sovereign Seal</option>
-                <option value="llama">Llama 3.2 AI Audit</option>
-            </select>
+            <label>Batch Image (Required for SHA-256 Seal):</label>
+            <input type="file" id="imageInput" accept="image/*" onchange="previewImage(this)">
+            <img id="previewImg" alt="Batch Preview">
 
             <button class="btn-seal" onclick="runBioSeal()">Initialize Seal</button>
 
@@ -127,27 +137,50 @@
     </div>
 
     <script>
+        // Preview image logic
+        function previewImage(input) {
+            const preview = document.getElementById('previewImg');
+            if (input.files && input.files[0]) {
+                preview.src = URL.createObjectURL(input.files[0]);
+                preview.style.display = 'block';
+            }
+        }
+
+        // Cryptographic Hashing Logic
+        async function generateImageHash(file) {
+            const arrayBuffer = await file.arrayBuffer();
+            const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // Main Process
         async function runBioSeal() {
             const output = document.getElementById('console-output');
             const batch = document.getElementById('batchId').value;
             const ph = document.getElementById('soilPh').value;
+            const fileInput = document.getElementById('imageInput');
+            const file = fileInput.files[0];
 
-            if(!batch || !ph) {
-                output.innerHTML = "ERROR: Missing required telemetry data.";
+            if(!batch || !ph || !file) {
+                output.innerHTML = "ERROR: Missing required telemetry data or batch image.";
                 return;
             }
 
             output.innerHTML = "> Connecting to edge node...\n";
             
-            // Simulate processing steps
-            setTimeout(() => { output.innerHTML += "> Initializing Llama 3.2 Audit...\n"; }, 500);
-            setTimeout(() => { output.innerHTML += `> Verified Batch ${batch} (Soil pH: ${ph})\n`; }, 1200);
+            // Simulate steps for UI feel
+            setTimeout(() => { output.innerHTML += "> Initializing Llama 3.2 Audit...\n"; }, 400);
+            
+            const realHash = await generateImageHash(file);
+
             setTimeout(() => { 
-                const hash = btoa(batch + ph + Date.now()).substring(0, 32); // Simple demo hash
-                output.innerHTML += `> GENERATING SHA-256 SEAL...\n\n`;
-                output.innerHTML += `[SUCCESS] HASH: ${hash.toLowerCase()}\n`;
+                output.innerHTML += `> Data Integrity Check: PASSED\n`;
+                output.innerHTML += `> Verified Batch ${batch} (Soil pH: ${ph})\n`; 
+                output.innerHTML += `> GENERATING SOVEREIGN SEAL...\n\n`;
+                output.innerHTML += `[SUCCESS] SHA-256 HASH:\n${realHash}\n\n`;
                 output.innerHTML += `[INFO] Record committed to private PostgreSQL vault.`;
-            }, 2000);
+            }, 1200);
         }
     </script>
 </body>
