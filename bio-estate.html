@@ -2,32 +2,237 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Françe Farms | Easy Scanner</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Françe Farms | Sovereign Scanner</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        :root { --primary: #4CAF50; --bg: #f9f9f9; --card: #ffffff; --text: #333; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
-        
-        .app-container { max-width: 500px; margin: auto; background: var(--card); border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; }
-        .app-header { background: var(--primary); color: white; padding: 30px 20px; text-align: center; }
-        .app-header h1 { margin: 0; font-size: 1.5rem; }
-        
-        .step-box { padding: 25px; border-bottom: 1px solid #eee; }
-        .step-number { background: var(--primary); color: white; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.8rem; margin-right: 10px; }
-        h2 { display: inline; font-size: 1rem; color: #555; text-transform: uppercase; letter-spacing: 1px; }
+        :root {
+            --primary: #4CAF50;
+            --primary-light: #81C784;
+            --bg: #050505;
+            --card: #111111;
+            --text-main: #e0e0e0;
+            --text-dim: #777;
+            --accent: #00ff41; 
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 10% 10%, #1a2a1a 0%, transparent 40%),
+                              radial-gradient(circle at 90% 90%, #0a1a0a 0%, transparent 40%);
+            color: var(--text-main);
+            margin: 0;
+            padding: 15px;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: var(--card);
+            border: 1px solid #222;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            overflow: hidden;
+        }
+
+        .app-header {
+            background: rgba(17,17,17,0.8);
+            backdrop-filter: blur(10px);
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 1px solid #222;
+            position: relative;
+        }
+        .app-header h1 {
+            margin: 0;
+            font-size: 1.4rem;
+            letter-spacing: -1px;
+            color: #fff;
+        }
+        .app-header p.subtitle {
+            margin: 5px 0 0;
+            font-size: 0.75rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        .step-box {
+            padding: 25px 20px;
+            border-bottom: 1px solid #222;
+            transition: 0.3s;
+        }
+        .step-box.active {
+            background: rgba(76, 175, 80, 0.03);
+            border-left: 3px solid var(--primary);
+        }
+
+        .step-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .step-meta h2 {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+        .step-indicator {
+            background: #222;
+            color: var(--primary-light);
+            font-size: 0.7rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 18px;
+            margin-top: 5px;
+            background: #080808;
+            border: 1px solid #1a1a1a;
+            color: var(--accent);
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        input[type="text"]:focus {
+            border-color: var(--primary);
+            outline: none;
+            background: #000;
+        }
 
         input[type="file"] { display: none; }
-        .upload-btn { display: block; background: #f0f0f0; border: 2px dashed #ccc; padding: 40px 20px; text-align: center; border-radius: 12px; cursor: pointer; margin-top: 15px; color: #777; }
-        .upload-btn:hover { border-color: var(--primary); background: #e8f5e9; }
+        .upload-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #0a0a0a;
+            border: 2px dashed #333;
+            padding: 40px 20px;
+            text-align: center;
+            border-radius: 12px;
+            cursor: pointer;
+            color: var(--text-dim);
+            transition: 0.2s;
+            position: relative;
+        }
+        .upload-btn:hover {
+            border-color: var(--primary);
+            background: #000;
+            color: #fff;
+        }
+        .upload-btn span.icon { font-size: 2rem; margin-bottom: 10px; }
+        .upload-btn span.label-text { font-size: 0.8rem; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+
+        .btn-action {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            width: 100%;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+        .btn-action:hover {
+            background: #3e8e41;
+            box-shadow: 0 0 30px var(--primary);
+            transform: translateY(-2px);
+        }
+        .btn-action.secondary {
+            background: #222;
+            color: #999;
+            font-size: 0.8rem;
+            padding: 15px;
+        }
+        .btn-action.secondary:hover { background: #333; color: #fff; box-shadow: none; }
+
+        /* The Multi-Scan Gallery */
+        #photo-gallery-box { margin-top: 20px; display: none; }
+        .gallery-header { font-size: 0.7rem; color: #555; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        #photo-gallery {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .gallery-item {
+            flex: 0 0 80px;
+            height: 80px;
+            border-radius: 8px;
+            background-size: cover;
+            background-position: center;
+            border: 1px solid #333;
+            position: relative;
+        }
+        .gallery-item:after {
+            content: "";
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(0deg, rgba(0,0,0,0.5) 0%, transparent 50%);
+            border-radius: 8px;
+        }
+
+        /* The Resulting QR Code View */
+        #qr-result {
+            display: none;
+            text-align: center;
+            padding: 50px 30px;
+            background-color: #000;
+            background-image: radial-gradient(circle at 50% -10%, #1a2a1a 0%, transparent 50%);
+            border-top: 4px solid var(--primary);
+        }
+        #qr-result h2 { color: var(--primary); font-size: 1.2rem; margin: 0; }
+        #qrcode {
+            display: inline-block;
+            margin: 30px 0;
+            padding: 10px;
+            background: #fff;
+            border-radius: 12px;
+            border: 4px solid #fff;
+        }
+        #hash-display {
+            font-family: monospace;
+            font-size: 9px;
+            color: #444;
+            word-break: break-all;
+            max-width: 300px;
+            margin: 0 auto;
+        }
         
-        .action-btn { background: var(--primary); color: white; border: none; width: 100%; padding: 20px; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 20px; }
-        
-        #qr-result { display: none; text-align: center; padding: 30px; background: #fff; border-top: 5px solid var(--primary); }
-        #qrcode { display: inline-block; margin: 20px 0; }
-        
-        .status-msg { font-family: monospace; font-size: 0.75rem; color: #888; margin-top: 10px; text-align: center; }
-        #previewImg { width: 100%; border-radius: 12px; margin-top: 15px; display: none; }
+        #status-bar {
+            background: #0a0a0a;
+            padding: 15px 20px;
+            border-top: 1px solid #222;
+            font-family: monospace;
+            font-size: 0.7rem;
+            color: #555;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #gps-lock { display: flex; align-items: center; gap: 8px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #333; }
+        .dot.active { background: var(--accent); animation: pulse 2s infinite; }
+
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
     </style>
 </head>
 <body>
@@ -35,82 +240,145 @@
 <div class="app-container">
     <div class="app-header">
         <h1>Françe Farms</h1>
-        <p style="margin: 5px 0 0; font-size: 0.8rem; opacity: 0.8;">Sovereign Harvest Tracker</p>
+        <p class="subtitle">Easy Sovereign Scanner</p>
     </div>
 
     <div id="setup-view">
-        <div class="step-box">
-            <span class="step-number">1</span><h2>Identification</h2>
-            <input type="text" id="batchId" placeholder="Enter Crate/Batch Name" style="width:100%; padding:15px; margin-top:15px; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
+        <div class="step-box active">
+            <div class="step-meta">
+                <h2>1. FIELD SETUP</h2>
+                <div class="step-indicator">STEP 1 OF 3</div>
+            </div>
+            <label style="font-size:0.7rem; color:#666; text-transform:uppercase;">Master Batch ID</label>
+            <input type="text" id="batchId" placeholder="e.g. GRANDE-MAR-30">
         </div>
 
         <div class="step-box">
-            <span class="step-number">2</span><h2>Capture Photo</h2>
+            <div class="step-meta">
+                <h2>2. ADD CRATE SNAPSHOTS</h2>
+                <div class="step-indicator">STEP 2 OF 3</div>
+            </div>
+            
             <label class="upload-btn" for="imageInput">
-                <span id="upload-label">📸 TAP TO TAKE PIC</span>
-                <input type="file" id="imageInput" accept="image/*" onchange="handleFile(this)">
-                <img id="previewImg">
+                <span class="icon">📸</span>
+                <span class="label-text">Tap to Add Crate Photo</span>
+                <input type="file" id="imageInput" accept="image/*" multiple onchange="addCrate(this)">
             </label>
+
+            <div id="photo-gallery-box">
+                <div class="gallery-header">BATCH PREVIEW (<span id="crate-count">0</span>)</div>
+                <div id="photo-gallery">
+                    </div>
+            </div>
         </div>
 
-        <div style="padding: 25px;">
-            <button class="action-btn" onclick="generateSeal()">GENERATE HARVEST QR</button>
-            <div id="status" class="status-msg">GPS: Awaiting Lock...</div>
+        <div style="padding: 25px 20px;">
+            <div class="step-meta" style="margin-bottom:10px;">
+                <h2>3. GENERATE HARVEST SEAL</h2>
+                <div class="step-indicator">STEP 3 OF 3</div>
+            </div>
+            <p style="font-size: 0.7rem; color: #555; margin: 0 0 15px; line-height: 1.4;">This will create the Master QR code for all crates added above.</p>
+            <button class="btn-action" onclick="generateSessionSeal()">Initialize Harvest Seal</button>
         </div>
     </div>
 
     <div id="qr-result">
-        <h2 style="color: var(--primary);">✅ SEAL GENERATED</h2>
-        <p style="font-size: 0.8rem; color: #666;">Show this code at the next checkpoint</p>
+        <h2 style="color: var(--primary);">✅ HARVEST SEAL INITIALIZED</h2>
+        <p style="font-size: 0.8rem; color: #888; margin: 10px 0 0;">Show this code at the Processing Checkpoint</p>
         <div id="qrcode"></div>
-        <div id="hash-display" style="font-family:monospace; font-size: 10px; color: #ccc; word-break: break-all;"></div>
-        <button class="action-btn" style="background:#333;" onclick="location.reload()">START NEW SCAN</button>
+        <div id="hash-display"></div>
+        <button class="btn-action secondary" onclick="location.reload()">START NEW HARVEST SESSION</button>
+    </div>
+
+    <div id="status-bar">
+        <div>NODE: ARIMA_EDGE_01</div>
+        <div id="gps-lock">
+            <div id="gps-dot" class="dot active"></div>
+            <span id="gps-coords">GPS LOCKING...</span>
+        </div>
     </div>
 </div>
 
 <script>
-    let capturedGps = "Fetching...";
+    let capturedGps = "GPS_LOC_UNSET";
+    let crateCounter = 0;
+    let sessionData = []; // To hold photo data/metadata for hashing
 
     // Grab GPS as soon as page loads
     navigator.geolocation.getCurrentPosition(
         (pos) => {
             capturedGps = `${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
-            document.getElementById('status').innerText = `GPS Locked: ${capturedGps}`;
+            document.getElementById('gps-coords').innerText = capturedGps;
+            document.getElementById('gps-dot').style.backgroundColor = "#00ff41"; // Turn green
         },
-        () => { document.getElementById('status').innerText = "GPS Error: Please enable location"; }
+        () => { 
+            document.getElementById('gps-coords').innerText = "GPS Error"; 
+            document.getElementById('gps-dot').style.backgroundColor = "#ff5f56"; // Turn red
+        },
+        { enableHighAccuracy: true, timeout: 5000 }
     );
 
-    function handleFile(input) {
-        const preview = document.getElementById('previewImg');
-        const label = document.getElementById('upload-label');
-        if (input.files && input.files[0]) {
-            preview.src = URL.createObjectURL(input.files[0]);
-            preview.style.display = 'block';
-            label.style.display = 'none';
+    // Handler for Adding Multiple Crates
+    function addCrate(input) {
+        const galleryBox = document.getElementById('photo-gallery-box');
+        const gallery = document.getElementById('photo-gallery');
+        const countDisplay = document.getElementById('crate-count');
+
+        if (input.files && input.files.length > 0) {
+            galleryBox.style.display = 'block';
+            
+            // Loop through selected files
+            for (let i = 0; i < input.files.length; i++) {
+                const file = input.files[i];
+                crateCounter++;
+
+                // Add to internal session data (for later hashing)
+                sessionData.push({ name: file.name, size: file.size, time: Date.now() });
+
+                // Create Gallery Thumbnail
+                const imgThumb = document.createElement('div');
+                imgThumb.className = 'gallery-item';
+                imgThumb.style.backgroundImage = `url(${URL.createObjectURL(file)})`;
+                gallery.appendChild(imgThumb);
+            }
+
+            countDisplay.innerText = crateCounter;
+            // Scroll gallery to the end to show latest photo
+            gallery.scrollLeft = gallery.scrollWidth;
         }
     }
 
-    async function generateSeal() {
-        const batch = document.getElementById('batchId').value;
-        const file = document.getElementById('imageInput').files[0];
+    // SHA-256 Hashing Logic
+    async function generateHash(dataString) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(dataString);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
 
-        if(!batch || !file) {
-            alert("Please enter a Name and take a Photo!");
+    // MAIN SESSION GENERATION
+    async function generateSessionSeal() {
+        const batch = document.getElementById('batchId').value;
+
+        if(!batch || crateCounter === 0) {
+            alert("Error: Please enter a Batch ID and add at least one Crate Photo.");
             return;
         }
 
-        // Create the Hash (The Secret Math)
-        const encoder = new TextEncoder();
-        const data = encoder.encode(batch + capturedGps + Date.now());
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const finalHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        // Combine all session telemetry into one 'rawData' string
+        const timestamp = new Date().toISOString();
+        const sessionPhotosJson = JSON.stringify(sessionData); // Encrypts the photo list
+        const rawData = `${batch}|${capturedGps}|${timestamp}|${sessionPhotosJson}`;
 
-        // Switch Views
+        // Switch Views (Mobile optimized transition)
         document.getElementById('setup-view').style.display = 'none';
+        document.getElementById('status-bar').style.display = 'none';
         document.getElementById('qr-result').style.display = 'block';
 
-        // Generate the QR Code containing the Hash
+        const finalHash = await generateHash(rawData);
+
+        // Generate the QR Code containing the FINAL SHA-256 HASH
         document.getElementById('qrcode').innerHTML = "";
         new QRCode(document.getElementById("qrcode"), {
             text: finalHash,
@@ -120,6 +388,7 @@
             colorLight : "#ffffff",
         });
 
+        // Display Hash for verification (technical detail)
         document.getElementById('hash-display').innerText = "HASH: " + finalHash;
     }
 </script>
