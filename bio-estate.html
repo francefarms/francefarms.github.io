@@ -86,16 +86,14 @@
 </div>
 
 <script>
-    // --- SETTINGS ---
     const BACKEND_URL = "http://100.114.231.81:5000/api/log_produce"; 
 
     let activeParentHash = "GENESIS";
-    let gpsCoords = "10.6400, -61.2700"; // Arima, T&T default
+    let gpsCoords = "10.6400, -61.2700"; 
     let currentImageName = "no_image";
     let vault = JSON.parse(localStorage.getItem('françe_vault')) || [];
     let html5QrCode = null;
 
-    // Safety check for UI elements
     function updateOutboxUI() {
         const outbox = document.getElementById('outbox-val');
         if(outbox) outbox.innerText = vault.length;
@@ -117,25 +115,49 @@
         }
     }
 
+    // NEW: Helper to convert image file to Base64 string for the bridge
+    function getBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+    }
+
     function clearActiveLink() {
         activeParentHash = "GENESIS";
         document.getElementById('link-banner').style.display = 'none';
     }
 
-    async function syncToUbuntu(batchId, location, finalHash) {
+    // UPDATED: Now accepts imageData and sends it in the JSON body
+    async function syncToUbuntu(batchId, location, finalHash, imageData) {
         try {
             const response = await fetch(BACKEND_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ batch_id: batchId, origin: location, hash: finalHash })
+                body: JSON.stringify({ 
+                    batch_id: batchId, 
+                    origin: location, 
+                    hash: finalHash,
+                    image: imageData 
+                })
             });
             return response.ok;
         } catch (e) { return false; }
     }
 
+    // UPDATED: Now captures the image file and waits for conversion before syncing
     async function finalizeSession() {
         const batch = document.getElementById('batchId').value;
         if(!batch) return alert("Enter a Batch ID");
+
+        // Capture image from input
+        const imageFile = document.getElementById('imageInput').files[0];
+        let imageData = null;
+        if (imageFile) {
+            imageData = await getBase64(imageFile);
+        }
 
         const rawString = batch + activeParentHash + gpsCoords + currentImageName + Date.now();
         const encoder = new TextEncoder();
@@ -147,7 +169,7 @@
         localStorage.setItem('françe_vault', JSON.stringify(vault));
         updateOutboxUI();
 
-        const synced = await syncToUbuntu(batch, gpsCoords, hash);
+        const synced = await syncToUbuntu(batch, gpsCoords, hash, imageData);
 
         document.getElementById('main-form').style.display = 'none';
         document.getElementById('qr-result').style.display = 'block';
