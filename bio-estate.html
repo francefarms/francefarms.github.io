@@ -86,14 +86,20 @@
 </div>
 
 <script>
-    // --- SETTINGS (Tailscale/Global IP for GNOME Boxes Bridge) ---
+    // --- SETTINGS ---
     const BACKEND_URL = "http://100.114.231.81:5000/api/log_produce"; 
 
     let activeParentHash = "GENESIS";
-    let gpsCoords = "10.6400, -61.2700"; // Default to Arima, T&T
+    let gpsCoords = "10.6400, -61.2700"; // Arima, T&T default
     let currentImageName = "no_image";
     let vault = JSON.parse(localStorage.getItem('françe_vault')) || [];
     let html5QrCode = null;
+
+    // Safety check for UI elements
+    function updateOutboxUI() {
+        const outbox = document.getElementById('outbox-val');
+        if(outbox) outbox.innerText = vault.length;
+    }
 
     window.onload = () => { updateOutboxUI(); };
 
@@ -102,11 +108,6 @@
         const gpsEl = document.getElementById('gps-val');
         if(gpsEl) gpsEl.innerText = gpsCoords;
     }, null, { enableHighAccuracy: true });
-
-    function updateOutboxUI() {
-        const outbox = document.getElementById('outbox-val');
-        if(outbox) outbox.innerText = vault.length;
-    }
 
     function handleImageSelect() {
         const file = document.getElementById('imageInput').files[0];
@@ -174,6 +175,8 @@
             document.getElementById('link-name-val').innerText = text.substring(0, 10) + "...";
             html5QrCode.stop();
             document.getElementById('reader').style.display = 'none';
+        }).catch(() => {
+            alert("Camera access required for scanning.");
         });
     }
 </script>
