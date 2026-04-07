@@ -5,42 +5,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Françe Farms | Sovereign Data Infrastructure</title>
     
+    <script data-goatcounter="https://francefarms.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+
     <style>
-        :root { --primary: #4CAF50; --bg: #050505; --card-bg: #0a0a0a; --text: #e0e0e0; --accent: #00ff41; }
+        :root { 
+            --primary: #4CAF50; 
+            --bg: #050505; 
+            --card-bg: rgba(10, 10, 10, 0.85); 
+            --text: #e0e0e0; 
+            --accent: #00ff41; 
+        }
+
         body { 
             font-family: 'Inter', -apple-system, sans-serif; 
             margin: 0; 
-            background-color: var(--bg); 
             color: var(--text); 
             line-height: 1.6; 
-            background-image: radial-gradient(circle at 50% 100%, #1a2a1a 0%, transparent 50%); 
+            /* High-quality dark tropical leaf background */
+            background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.75)), 
+                        url('https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?q=80&w=2000&auto=format&fit=crop'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
         }
         
-        header { padding: 20px 40px; text-align: center; border-bottom: 1px solid #111; }
+        header { 
+            padding: 20px 40px; 
+            text-align: center; 
+            border-bottom: 1px solid rgba(255,255,255,0.05); 
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
         nav { display: flex; justify-content: center; gap: 25px; }
-        nav a { text-decoration: none; color: #555; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; font-weight: 600; }
-        nav a:hover { color: var(--accent); }
+        nav a { 
+            text-decoration: none; 
+            color: #777; 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            transition: 0.3s; 
+            font-weight: 600; 
+        }
+        nav a:hover { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
         
         main { max-width: 800px; margin: auto; padding: 20px; text-align: center; }
         
-        .infra-hero { padding: 40px 0; }
-        .infra-hero h1 { font-size: 3rem; margin: 10px 0; letter-spacing: -2px; color: #fff; line-height: 1; }
-        .infra-hero .tagline { color: var(--primary); text-transform: uppercase; letter-spacing: 5px; font-size: 0.7rem; margin: 0; font-weight: bold; }
+        .infra-hero { padding: 60px 0 40px 0; }
+        .infra-hero h1 { 
+            font-size: 3.5rem; 
+            margin: 10px 0; 
+            letter-spacing: -2px; 
+            color: #fff; 
+            line-height: 1; 
+            font-weight: 800;
+        }
+        .infra-hero .tagline { 
+            color: var(--primary); 
+            text-transform: uppercase; 
+            letter-spacing: 5px; 
+            font-size: 0.7rem; 
+            margin: 0; 
+            font-weight: bold; 
+        }
         
         /* Centered Video Layout */
         .video-container {
             margin: 40px auto;
-            max-width: 450px; /* Optimized for portrait video */
+            max-width: 450px; 
             background: var(--card-bg);
-            border: 1px solid #1a1a1a;
-            border-radius: 12px;
-            padding: 10px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border: 1px solid rgba(76, 175, 80, 0.2);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(12px);
         }
 
         .video-box { 
             background: #000; 
-            border-radius: 8px; 
+            border-radius: 12px; 
             overflow: hidden; 
             border: 1px solid #222; 
             aspect-ratio: 9/16;
@@ -49,39 +96,46 @@
 
         .btn-scanner { 
             display: inline-block; 
-            padding: 15px 40px; 
+            padding: 18px 45px; 
             background: var(--primary); 
             color: white; 
             text-decoration: none; 
             text-align: center;
             font-weight: bold; 
-            letter-spacing: 1px; 
-            border-radius: 6px; 
+            letter-spacing: 1.5px; 
+            border-radius: 50px; 
             font-size: 0.8rem;
-            margin: 20px 0;
-            transition: 0.3s;
+            margin: 30px 0;
+            transition: all 0.4s ease;
+            box-shadow: 0 0 20px var(--primary-glow);
         }
-        .btn-scanner:hover { background: var(--accent); color: #000; }
+        .btn-scanner:hover { 
+            background: var(--accent); 
+            color: #000; 
+            transform: scale(1.05);
+            box-shadow: 0 0 30px var(--accent);
+        }
 
         .ledger-container { 
-            margin-top: 40px; 
+            margin-top: 50px; 
             background: var(--card-bg); 
-            border: 1px solid #1a1a1a; 
-            border-radius: 12px; 
+            border: 1px solid rgba(255,255,255,0.05); 
+            border-radius: 16px; 
             overflow-x: auto;
+            backdrop-filter: blur(10px);
         }
-        table { width: 100%; border-collapse: collapse; font-size: 0.7rem; text-align: left; min-width: 500px; }
-        th { padding: 15px; color: var(--primary); border-bottom: 1px solid #111; text-transform: uppercase; letter-spacing: 1px; }
-        td { padding: 15px; border-bottom: 1px solid #111; color: #888; font-family: monospace; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.75rem; text-align: left; min-width: 500px; }
+        th { padding: 18px; color: var(--primary); border-bottom: 1px solid rgba(255,255,255,0.05); text-transform: uppercase; letter-spacing: 1px; }
+        td { padding: 18px; border-bottom: 1px solid rgba(255,255,255,0.03); color: #aaa; font-family: 'Fira Code', monospace; }
 
-        .status-dot { height: 8px; width: 8px; background-color: var(--accent); border-radius: 50%; display: inline-block; margin-right: 5px; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        .status-dot { height: 8px; width: 8px; background-color: var(--accent); border-radius: 50%; display: inline-block; margin-right: 8px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; box-shadow: 0 0 0px var(--accent); } 50% { opacity: 0.4; box-shadow: 0 0 10px var(--accent); } 100% { opacity: 1; box-shadow: 0 0 0px var(--accent); } }
 
-        footer { padding: 80px; color: #333; font-size: 0.6rem; text-align: center; letter-spacing: 1px; }
+        footer { padding: 100px 20px; color: #444; font-size: 0.65rem; text-align: center; letter-spacing: 2px; text-transform: uppercase; }
 
         @media (max-width: 600px) {
-            .infra-hero h1 { font-size: 2.2rem; }
-            .video-container { max-width: 100%; }
+            .infra-hero h1 { font-size: 2.5rem; }
+            .video-container { max-width: 90%; }
         }
     </style>
 </head>
@@ -99,27 +153,27 @@
         <section class="infra-hero">
             <p class="tagline">Françe Farms Operations</p>
             <h1>Sovereign Data Infrastructure</h1>
-            <p style="color: #666; max-width: 600px; margin: 15px auto; font-size: 0.9rem;">
+            <p style="color: #888; max-width: 600px; margin: 20px auto; font-size: 0.95rem;">
                 Decentralized agricultural provenance. Tracking the Julie Mango supply chain via geo-locked SHA-256 cryptographic seals.
             </p>
         </section>
 
         <div class="video-container">
-            <h3 style="font-size: 0.7rem; color: var(--accent); margin-top: 10px; text-align: center;">[ FIELD_VERIFICATION_LIVE ]</h3>
+            <h3 style="font-size: 0.7rem; color: var(--accent); margin-top: 10px; text-align: center; letter-spacing: 3px;">[ FIELD_VERIFICATION_LIVE ]</h3>
             <div class="video-box">
                 <video autoplay muted loop playsinline controlsList="nodownload">
                     <source src="Juicy Julie France Farms.mp4" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
             </div>
-            <p style="font-size: 0.6rem; color: #444; margin-top: 10px; text-transform: uppercase; text-align: center;">Origin: Fishing Pond Node - Sangre Grande</p>
+            <p style="font-size: 0.65rem; color: #666; margin-top: 15px; text-transform: uppercase; text-align: center;">Origin: Fishing Pond Node - Sangre Grande</p>
         </div>
 
         <a href="bio-estate.html" class="btn-scanner">ACCESS SCANNER NODE</a>
 
-        <div style="margin-top: 20px;">
-            <div style="font-size: 0.6rem; color: #555; text-transform: uppercase;">System Protocol</div>
-            <div style="font-size: 0.7rem; color: #fff;"><span class="status-dot"></span> 2026_SOVEREIGN_ACTIVE</div>
+        <div style="margin: 30px 0;">
+            <div style="font-size: 0.6rem; color: #555; text-transform: uppercase; letter-spacing: 2px;">System Protocol</div>
+            <div style="font-size: 0.8rem; color: #fff; font-weight: bold; margin-top: 5px;"><span class="status-dot"></span> 2026_SOVEREIGN_ACTIVE</div>
         </div>
 
         <div class="ledger-container">
@@ -137,7 +191,7 @@
                         <td>GRANDE_01</td>
                         <td>julie-harvest-2026</td>
                         <td>7d2a...f912e74c</td>
-                        <td style="color: var(--accent);">VERIFIED_PROVENANCE</td>
+                        <td style="color: var(--accent); font-weight: bold;">VERIFIED_PROVENANCE</td>
                     </tr>
                 </tbody>
             </table>
