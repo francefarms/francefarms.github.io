@@ -4,22 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Scanner | Françe Farms</title>
-    <script data-goatcounter="https://francefarms.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-    
     <style>
         :root { --primary: #4CAF50; --accent: #00ff41; --bg: #050505; --glass: rgba(10, 10, 10, 0.85); }
         
         body { 
             font-family: 'Inter', sans-serif; margin: 0; color: #fff;
-            background: linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.85)), 
+            background: linear-gradient(rgba(0,0,0,0.95), rgba(0,0,0,0.9)), 
                         url('https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?q=80&w=2000&auto=format&fit=crop'); 
             background-size: cover; background-attachment: fixed;
             display: flex; flex-direction: column; min-height: 100vh; align-items: center;
         }
 
         header { width: 100%; padding: 20px; text-align: center; backdrop-filter: blur(10px); }
-        nav a { color: #444; text-decoration: none; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; font-weight: bold; transition: 0.3s; }
-        nav a:hover { color: var(--accent); }
+        nav a { color: #444; text-decoration: none; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; font-weight: bold; }
 
         .app-container { max-width: 450px; width: 90%; margin: 20px auto; text-align: center; }
         
@@ -30,47 +27,46 @@
         }
 
         .app-title { font-size: 1.8rem; letter-spacing: -1px; margin-bottom: 5px; font-weight: 800; }
-        .status-bar { font-size: 0.6rem; color: var(--accent); letter-spacing: 2px; margin-bottom: 25px; opacity: 0.8; }
+        .status-bar { font-size: 0.6rem; color: var(--accent); letter-spacing: 2px; margin-bottom: 25px; }
 
+        /* Scanning Zone with Image Preview */
         .snap-zone {
             width: 100%; aspect-ratio: 1/1; border: 1px dashed rgba(0,255,65,0.3);
             border-radius: 16px; margin: 20px 0; position: relative;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: rgba(0,255,65,0.02); cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,255,65,0.02); cursor: pointer; overflow: hidden;
         }
         
+        #preview-img { width: 100%; height: 100%; object-fit: cover; display: none; }
+
         .laser-line { 
             position: absolute; top: 0; left: 0; width: 100%; height: 2px; 
             background: var(--accent); box-shadow: 0 0 15px var(--accent);
-            animation: scan 4s linear infinite; display: none;
+            animation: scan 4s linear infinite; display: none; z-index: 10;
         }
         @keyframes scan { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
 
         .identity-box { 
             background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); 
-            border-radius: 16px; padding: 20px; text-align: center; margin-top: 20px;
+            border-radius: 16px; padding: 20px; text-align: center;
         }
-        .identity-box h4 { font-size: 0.6rem; color: #555; text-transform: uppercase; margin: 0 0 15px 0; letter-spacing: 2px; }
+        .identity-box h4 { font-size: 0.6rem; color: #555; text-transform: uppercase; margin: 0 0 15px 0; }
 
         .label-it-box { 
-            background: rgba(0,0,0,0.3); border-radius: 10px; padding: 25px; 
-            font-weight: bold; font-size: 1.4rem; color: #333; border: 1px solid rgba(255,255,255,0.02);
-            transition: 0.5s;
+            background: rgba(255,255,255,0.05); border-radius: 10px; padding: 20px; 
+            font-weight: bold; font-size: 1.2rem; color: #ffffff; border: 1px solid rgba(255,255,255,0.1);
         }
 
         #hash-output {
-            margin-top: 15px; font-family: 'Fira Code', monospace; font-size: 0.55rem;
-            color: var(--accent); word-break: break-all; opacity: 0; transition: 0.5s;
+            margin-top: 15px; font-family: monospace; font-size: 0.55rem;
+            color: var(--accent); word-break: break-all; opacity: 0;
         }
 
         .btn-execute {
             width: 100%; background: var(--primary); color: white; border: none;
             padding: 18px; border-radius: 50px; font-weight: bold; margin-top: 25px;
-            cursor: pointer; transition: 0.4s; letter-spacing: 2px; text-transform: uppercase;
+            cursor: pointer; text-transform: uppercase;
         }
-        .btn-execute:hover { background: var(--accent); color: #000; box-shadow: 0 0 30px var(--accent); transform: translateY(-2px); }
-
-        footer { padding: 40px; font-size: 0.6rem; color: #333; text-align: center; letter-spacing: 2px; }
     </style>
 </head>
 <body>
@@ -82,40 +78,43 @@
     <div class="app-container">
         <div class="scanner-unit">
             <div class="app-title">IMAGE SCANNER</div>
-            <div class="status-bar" id="system-status">[ STATUS: STANDBY ]</div>
+            <div id="system-status" class="status-bar">[ STATUS: STANDBY ]</div>
             
-            <p style="font-size: 0.65rem; color: #444; margin-bottom: 5px; text-transform: uppercase;">tap to snap batch</p>
             <div class="snap-zone" onclick="document.getElementById('upload').click()">
-                <div class="laser-line" id="laser"></div>
+                <div id="laser" class="laser-line"></div>
+                <img id="preview-img" src="" alt="Preview">
                 <span id="upload-icon" style="font-size: 2rem; opacity: 0.2;">⛶</span>
-                <input type="file" id="upload" hidden onchange="handleUpload(this)">
+                <input type="file" id="upload" accept="image/*" hidden onchange="handlePreview(this)">
             </div>
 
             <div class="identity-box">
                 <h4>Identity and Provenance</h4>
                 <div class="label-it-box" id="label-text">Label it</div>
-                <div id="hash-output">GENERATING_HASH...</div>
+                <div id="hash-output">GEN_HASH</div>
             </div>
 
-            <button class="btn-execute" onclick="generateHash()">EXECUTE CRYPTO-TAGGING</button>
+            <button class="btn-execute" onclick="generateAndSendHash()">EXECUTE CRYPTO-TAGGING</button>
         </div>
     </div>
 
-    <footer>
-        SECURED BY FRANCĘ FARMS | SANGRE_GRANDE_NODE
-    </footer>
-
     <script>
-        function handleUpload(input) {
+        // 1. Show the photo immediately after snapping
+        function handlePreview(input) {
             if (input.files && input.files[0]) {
-                document.getElementById('system-status').innerText = "[ STATUS: DATA_LOADED ]";
-                document.getElementById('upload-icon').innerText = "✓";
-                document.getElementById('upload-icon').style.opacity = "1";
-                document.getElementById('upload-icon').style.color = "var(--primary)";
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('preview-img');
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                    document.getElementById('upload-icon').style.display = 'none';
+                    document.getElementById('system-status').innerText = "[ STATUS: DATA_READY ]";
+                }
+                reader.readAsDataURL(input.files[0]);
             }
         }
 
-        async function generateHash() {
+        // 2. Hash and Send to your Ubuntu Backend
+        async function generateAndSendHash() {
             const status = document.getElementById('system-status');
             const laser = document.getElementById('laser');
             const label = document.getElementById('label-text');
@@ -123,47 +122,43 @@
 
             status.innerText = "[ STATUS: SEALING_DATA... ]";
             laser.style.display = "block";
-            
-            setTimeout(async () => {
-                const randomData = Math.random().toString(36).substring(2) + Date.now();
-                const msgUint8 = new TextEncoder().encode(randomData);
-                const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-                // Update UI
+            // Generate SHA-256
+            const randomData = Math.random().toString(36).substring(2) + Date.now();
+            const msgUint8 = new TextEncoder().encode(randomData);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+            setTimeout(() => {
                 laser.style.display = "none";
-                status.innerText = "[ STATUS: PROVENANCE_VERIFIED ]";
-                label.style.color = "var(--accent)";
                 label.innerText = "BATCH_SEALED";
-                output.style.opacity = "1";
+                label.style.color = "#00ff41";
                 output.innerText = "SHA-256: " + hashHex;
+                output.style.opacity = "1";
 
-                // --- SEND TO SOVEREIGN VAULT ---
-                // Replace the IP below with your Ubuntu Public IP
-                const serverIP = 'YOUR_UBUNTU_PUBLIC_IP'; 
-                
-                fetch(`http://${serverIP}:5000/upload_hash`, {
+                // --- CHANGE THIS TO YOUR PUBLIC IP ---
+                const UBUNTU_IP = 'YOUR_PUBLIC_IP_HERE'; 
+
+                fetch(`http://${UBUNTU_IP}:5000/upload_hash`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        batch_name: 'Julie-Mango-Sangre-Grande',
+                        batch_name: 'Julie-Mango-Harvest',
                         hash: hashHex
                     })
                 })
-                .then(response => response.json())
+                .then(res => res.json())
                 .then(data => {
-                    console.log('Vault Response:', data);
-                    status.innerText = "[ STATUS: SECURED_IN_VAULT ]";
+                    status.innerText = "[ STATUS: VAULT_CONFIRMED ]";
+                    console.log('Success:', data);
                 })
                 .catch(err => {
-                    console.error('Vault Error:', err);
-                    status.innerText = "[ STATUS: LOCAL_ONLY_MODE ]";
+                    status.innerText = "[ STATUS: OFFLINE_MODE ]";
+                    console.error('Error:', err);
                 });
-
             }, 2000);
         }
     </script>
-
 </body>
 </html>
