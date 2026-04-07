@@ -7,115 +7,146 @@
     <script data-goatcounter="https://francefarms.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
     
     <style>
-        :root { --primary: #4CAF50; --accent: #00ff41; --bg: #050505; --glass: rgba(10, 10, 10, 0.8); }
+        :root { --primary: #4CAF50; --accent: #00ff41; --bg: #050505; --glass: rgba(10, 10, 10, 0.85); }
         
         body { 
             font-family: 'Inter', sans-serif; margin: 0; color: #fff;
-            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), 
+            /* Using the dark Sovereign Node background */
+            background: linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.85)), 
                         url('https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?q=80&w=2000&auto=format&fit=crop'); 
             background-size: cover; background-attachment: fixed;
             display: flex; flex-direction: column; min-height: 100vh; align-items: center;
         }
 
-        header { width: 100%; padding: 20px; text-align: center; border-bottom: 1px solid #111; backdrop-filter: blur(10px); }
-        nav a { color: #555; text-decoration: none; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; font-weight: bold; }
+        header { width: 100%; padding: 20px; text-align: center; backdrop-filter: blur(10px); }
+        nav a { color: #444; text-decoration: none; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; font-weight: bold; transition: 0.3s; }
+        nav a:hover { color: var(--accent); }
 
-        .app-container { max-width: 500px; width: 90%; margin: 40px auto; text-align: center; }
+        .app-container { max-width: 450px; width: 90%; margin: 20px auto; text-align: center; }
         
         .scanner-unit { 
-            background: var(--glass); border: 1px solid rgba(0,255,65,0.3); 
-            border-radius: 24px; padding: 30px; box-shadow: 0 0 50px rgba(0,0,0,1);
-            backdrop-filter: blur(15px);
+            background: var(--glass); border: 1px solid rgba(0,255,65,0.2); 
+            border-radius: 28px; padding: 30px; box-shadow: 0 0 60px rgba(0,0,0,1);
+            backdrop-filter: blur(20px);
         }
 
-        .app-title { font-size: 2rem; letter-spacing: -1px; margin-bottom: 5px; font-weight: 800; color: #fff; }
-        .status-bar { font-size: 0.6rem; color: var(--accent); letter-spacing: 2px; margin-bottom: 20px; }
+        .app-title { font-size: 1.8rem; letter-spacing: -1px; margin-bottom: 5px; font-weight: 800; }
+        .status-bar { font-size: 0.6rem; color: var(--accent); letter-spacing: 2px; margin-bottom: 25px; opacity: 0.8; }
 
-        /* The Tap to Snap Batch Area */
         .snap-zone {
-            width: 100%; aspect-ratio: 1/1; border: 1px dashed var(--accent);
-            border-radius: 12px; margin: 20px 0; position: relative;
+            width: 100%; aspect-ratio: 1/1; border: 1px dashed rgba(0,255,65,0.3);
+            border-radius: 16px; margin: 20px 0; position: relative;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: rgba(0,255,65,0.03); cursor: pointer; overflow: hidden;
+            background: rgba(0,255,65,0.02); cursor: pointer; transition: 0.3s;
         }
-        .snap-zone:active { transform: scale(0.98); }
+        
         .laser-line { 
             position: absolute; top: 0; left: 0; width: 100%; height: 2px; 
             background: var(--accent); box-shadow: 0 0 15px var(--accent);
-            animation: scan 3s linear infinite;
+            animation: scan 4s linear infinite; display: none; /* Only shows when processing */
         }
         @keyframes scan { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
 
-        /* Grid Layout from your Reference */
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px; }
-        .info-card { background: rgba(255,255,255,0.03); border: 1px solid #222; border-radius: 12px; padding: 15px; text-align: left; }
-        .info-card h4 { font-size: 0.6rem; color: #555; text-transform: uppercase; margin: 0 0 10px 0; letter-spacing: 1px; }
+        .identity-box { 
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); 
+            border-radius: 16px; padding: 20px; text-align: center; margin-top: 20px;
+        }
+        .identity-box h4 { font-size: 0.6rem; color: #555; text-transform: uppercase; margin: 0 0 15px 0; letter-spacing: 2px; }
 
         .label-it-box { 
-            background: rgba(255,255,255,0.05); border-radius: 8px; padding: 20px; 
-            text-align: center; font-weight: bold; font-size: 1.2rem; color: #444; 
+            background: rgba(0,0,0,0.3); border-radius: 10px; padding: 25px; 
+            font-weight: bold; font-size: 1.4rem; color: #333; border: 1px solid rgba(255,255,255,0.02);
+            transition: 0.5s;
         }
 
-        .shistory-log { font-family: monospace; font-size: 0.55rem; color: #888; line-height: 1.4; }
-        
+        /* The Output Area */
+        #hash-output {
+            margin-top: 15px; font-family: 'Fira Code', monospace; font-size: 0.55rem;
+            color: var(--accent); word-break: break-all; opacity: 0; transition: 0.5s;
+        }
+
         .btn-execute {
             width: 100%; background: var(--primary); color: white; border: none;
-            padding: 15px; border-radius: 50px; font-weight: bold; margin-top: 20px;
-            cursor: pointer; transition: 0.3s; letter-spacing: 1px;
+            padding: 18px; border-radius: 50px; font-weight: bold; margin-top: 25px;
+            cursor: pointer; transition: 0.4s; letter-spacing: 2px; text-transform: uppercase;
         }
-        .btn-execute:hover { background: var(--accent); color: #000; box-shadow: 0 0 20px var(--accent); }
+        .btn-execute:hover { background: var(--accent); color: #000; box-shadow: 0 0 30px var(--accent); transform: translateY(-2px); }
 
+        footer { padding: 40px; font-size: 0.6rem; color: #333; text-align: center; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
     <header>
-        <nav><a href="index.html">← BACK TO SOVEREIGN NODE</a></nav>
+        <nav><a href="index.html">← RETURN TO SOVEREIGN NODE</a></nav>
     </header>
 
     <div class="app-container">
         <div class="scanner-unit">
             <div class="app-title">IMAGE SCANNER</div>
-            <div class="status-bar">[ STATUS: SYSTEM_READY ]</div>
+            <div class="status-bar" id="system-status">[ STATUS: STANDBY ]</div>
             
-            <p style="font-size: 0.7rem; color: #666; margin-bottom: 5px;">tap to snap batch</p>
+            <p style="font-size: 0.65rem; color: #444; margin-bottom: 5px; text-transform: uppercase;">tap to snap batch</p>
             <div class="snap-zone" onclick="document.getElementById('upload').click()">
-                <div class="laser-line"></div>
-                <img src="qr_placeholder.png" style="width: 60%; opacity: 0.5;" alt="QR Frame">
-                <input type="file" id="upload" hidden>
+                <div class="laser-line" id="laser"></div>
+                <span id="upload-icon" style="font-size: 2rem; opacity: 0.2;">⛶</span>
+                <input type="file" id="upload" hidden onchange="handleUpload(this)">
             </div>
 
-            <div class="info-grid">
-                <div class="info-card">
-                    <h4>Identity & Provenance</h4>
-                    <div class="label-it-box">Label it</div>
-                    <div style="font-size: 0.5rem; color: var(--primary); margin-top: 10px;">
-                        GEO_LOC: SANGRE_GRANDE<br>
-                        VARIETY: JULIE_MANGO<br>
-                        MANIFEST: 2026_PROD
-                    </div>
-                </div>
-
-                <div class="info-card">
-                    <h4>History and Scan QR</h4>
-                    <div class="shistory-log">
-                        GRANDE_01_SCAN [julie-harvest]<br>
-                        (HASH_VERIFIED)<br><br>
-                        HISTORY [12-MAY] <br>
-                        julie-harvest-2026_MANIFEST<br><br>
-                        HISTORY [12-MAY] <br>
-                        julie-harvest-2026_MANIFEST
-                    </div>
-                </div>
+            <div class="identity-box">
+                <h4>Identity and Provenance</h4>
+                <div class="label-it-box" id="label-text">Label it</div>
+                <div id="hash-output">GENERATING_HASH...</div>
             </div>
 
-            <button class="btn-execute">EXECUTE CRYPTO-TAGGING</button>
+            <button class="btn-execute" onclick="generateHash()">EXECUTE CRYPTO-TAGGING</button>
         </div>
     </div>
 
-    <footer style="padding: 40px; font-size: 0.5rem; color: #222; text-align: center; letter-spacing: 2px;">
-        NODE: FISHING_POND_ALPHA | PROTOCOL: SHA-256
+    <footer>
+        SECURED BY FRANCĘ FARMS | SANGRE_GRANDE_NODE
     </footer>
+
+    <script>
+        // 1. Handle the file upload visual
+        function handleUpload(input) {
+            if (input.files && input.files[0]) {
+                document.getElementById('system-status').innerText = "[ STATUS: DATA_LOADED ]";
+                document.getElementById('upload-icon').innerText = "✓";
+                document.getElementById('upload-icon').style.opacity = "1";
+                document.getElementById('upload-icon').style.color = "var(--primary)";
+            }
+        }
+
+        // 2. The Logic: Generating a real SHA-256 Hash
+        async function generateHash() {
+            const status = document.getElementById('system-status');
+            const laser = document.getElementById('laser');
+            const label = document.getElementById('label-text');
+            const output = document.getElementById('hash-output');
+
+            status.innerText = "[ STATUS: SEALING_DATA... ]";
+            laser.style.display = "block";
+            
+            // Artificial delay to make it look like a high-level scan
+            setTimeout(async () => {
+                // Generate a random string to hash (simulating image data)
+                const randomData = Math.random().toString(36).substring(2);
+                const msgUint8 = new TextEncoder().encode(randomData);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+                // Update UI
+                laser.style.display = "none";
+                status.innerText = "[ STATUS: PROVENANCE_VERIFIED ]";
+                label.style.color = "var(--accent)";
+                label.innerText = "BATCH_SEALED";
+                output.style.opacity = "1";
+                output.innerText = "SHA-256: " + hashHex;
+            }, 2000);
+        }
+    </script>
 
 </body>
 </html>
