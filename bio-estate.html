@@ -4,32 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Scanner | Françe Farms</title>
+    <script data-goatcounter="https://francefarms.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+    
     <style>
-        :root { --primary: #4CAF50; --accent: #00ff41; --bg: #050505; --glass: rgba(10, 10, 10, 0.85); }
+        :root { --primary: #4CAF50; --accent: #00ff41; --bg: #050505; --glass: rgba(10, 10, 10, 0.9); }
         
         body { 
             font-family: 'Inter', sans-serif; margin: 0; color: #fff;
-            background: linear-gradient(rgba(0,0,0,0.95), rgba(0,0,0,0.9)), 
+            /* Sovereign Node Background */
+            background: linear-gradient(rgba(0,0,0,0.92), rgba(0,0,0,0.88)), 
                         url('https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?q=80&w=2000&auto=format&fit=crop'); 
             background-size: cover; background-attachment: fixed;
             display: flex; flex-direction: column; min-height: 100vh; align-items: center;
         }
 
         header { width: 100%; padding: 20px; text-align: center; backdrop-filter: blur(10px); }
-        nav a { color: #444; text-decoration: none; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; font-weight: bold; }
+        nav a { color: #555; text-decoration: none; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; font-weight: bold; transition: 0.3s; }
+        nav a:hover { color: var(--accent); }
 
         .app-container { max-width: 450px; width: 90%; margin: 20px auto; text-align: center; }
         
         .scanner-unit { 
             background: var(--glass); border: 1px solid rgba(0,255,65,0.2); 
             border-radius: 28px; padding: 30px; box-shadow: 0 0 60px rgba(0,0,0,1);
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px);
         }
 
         .app-title { font-size: 1.8rem; letter-spacing: -1px; margin-bottom: 5px; font-weight: 800; }
         .status-bar { font-size: 0.6rem; color: var(--accent); letter-spacing: 2px; margin-bottom: 25px; }
 
-        /* Scanning Zone with Image Preview */
+        /* Scanning Zone with Preview Capability */
         .snap-zone {
             width: 100%; aspect-ratio: 1/1; border: 1px dashed rgba(0,255,65,0.3);
             border-radius: 16px; margin: 20px 0; position: relative;
@@ -48,25 +52,29 @@
 
         .identity-box { 
             background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); 
-            border-radius: 16px; padding: 20px; text-align: center;
+            border-radius: 16px; padding: 20px; text-align: center; margin-top: 10px;
         }
-        .identity-box h4 { font-size: 0.6rem; color: #555; text-transform: uppercase; margin: 0 0 15px 0; }
+        .identity-box h4 { font-size: 0.6rem; color: #666; text-transform: uppercase; margin: 0 0 15px 0; letter-spacing: 1px; }
 
         .label-it-box { 
             background: rgba(255,255,255,0.05); border-radius: 10px; padding: 20px; 
-            font-weight: bold; font-size: 1.2rem; color: #ffffff; border: 1px solid rgba(255,255,255,0.1);
+            font-weight: bold; font-size: 1.3rem; color: #fff; border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.5s;
         }
 
         #hash-output {
-            margin-top: 15px; font-family: monospace; font-size: 0.55rem;
-            color: var(--accent); word-break: break-all; opacity: 0;
+            margin-top: 15px; font-family: 'Fira Code', monospace; font-size: 0.55rem;
+            color: var(--accent); word-break: break-all; opacity: 0; transition: 0.5s;
         }
 
         .btn-execute {
             width: 100%; background: var(--primary); color: white; border: none;
             padding: 18px; border-radius: 50px; font-weight: bold; margin-top: 25px;
-            cursor: pointer; text-transform: uppercase;
+            cursor: pointer; transition: 0.4s; letter-spacing: 2px; text-transform: uppercase;
         }
+        .btn-execute:hover { background: var(--accent); color: #000; box-shadow: 0 0 30px var(--accent); }
+
+        footer { padding: 40px; font-size: 0.55rem; color: #333; text-align: center; letter-spacing: 2px; }
     </style>
 </head>
 <body>
@@ -90,15 +98,19 @@
             <div class="identity-box">
                 <h4>Identity and Provenance</h4>
                 <div class="label-it-box" id="label-text">Label it</div>
-                <div id="hash-output">GEN_HASH</div>
+                <div id="hash-output">GENERATING_HASH...</div>
             </div>
 
             <button class="btn-execute" onclick="generateAndSendHash()">EXECUTE CRYPTO-TAGGING</button>
         </div>
     </div>
 
+    <footer>
+        SECURED BY FRANCĘ FARMS | SANGRE_GRANDE_NODE
+    </footer>
+
     <script>
-        // 1. Show the photo immediately after snapping
+        // 1. Image Preview Logic
         function handlePreview(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -107,13 +119,13 @@
                     img.src = e.target.result;
                     img.style.display = 'block';
                     document.getElementById('upload-icon').style.display = 'none';
-                    document.getElementById('system-status').innerText = "[ STATUS: DATA_READY ]";
+                    document.getElementById('system-status').innerText = "[ STATUS: DATA_ACQUIRED ]";
                 }
                 reader.readAsDataURL(input.files[0]);
             }
         }
 
-        // 2. Hash and Send to your Ubuntu Backend
+        // 2. Hash Generation and Database Handshake
         async function generateAndSendHash() {
             const status = document.getElementById('system-status');
             const laser = document.getElementById('laser');
@@ -123,7 +135,7 @@
             status.innerText = "[ STATUS: SEALING_DATA... ]";
             laser.style.display = "block";
 
-            // Generate SHA-256
+            // Real SHA-256 generation
             const randomData = Math.random().toString(36).substring(2) + Date.now();
             const msgUint8 = new TextEncoder().encode(randomData);
             const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
@@ -131,31 +143,33 @@
             const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
             setTimeout(() => {
+                // Update UI visually
                 laser.style.display = "none";
                 label.innerText = "BATCH_SEALED";
                 label.style.color = "#00ff41";
                 output.innerText = "SHA-256: " + hashHex;
                 output.style.opacity = "1";
 
-                // --- CHANGE THIS TO YOUR PUBLIC IP ---
-                const UBUNTU_IP = 'YOUR_PUBLIC_IP_HERE'; 
+                // --- DATABASE CONNECTION ---
+                // IMPORTANT: Since you have an IPv6, we use square brackets.
+                const UBUNTU_IP = '[2803:1500:1c00:fa55:5026:904b:1ee6:b995]'; 
 
                 fetch(`http://${UBUNTU_IP}:5000/upload_hash`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        batch_name: 'Julie-Mango-Harvest',
+                        batch_name: 'Julie-Mango-Harvest-2026',
                         hash: hashHex
                     })
                 })
                 .then(res => res.json())
                 .then(data => {
-                    status.innerText = "[ STATUS: VAULT_CONFIRMED ]";
-                    console.log('Success:', data);
+                    status.innerText = "[ STATUS: SECURED_IN_VAULT ]";
+                    console.log('Vault Success:', data);
                 })
                 .catch(err => {
                     status.innerText = "[ STATUS: OFFLINE_MODE ]";
-                    console.error('Error:', err);
+                    console.error('Connection Error:', err);
                 });
             }, 2000);
         }
