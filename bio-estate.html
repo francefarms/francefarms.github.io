@@ -11,7 +11,6 @@
         
         body { 
             font-family: 'Inter', sans-serif; margin: 0; color: #fff;
-            /* Using the dark Sovereign Node background */
             background: linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.85)), 
                         url('https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?q=80&w=2000&auto=format&fit=crop'); 
             background-size: cover; background-attachment: fixed;
@@ -43,7 +42,7 @@
         .laser-line { 
             position: absolute; top: 0; left: 0; width: 100%; height: 2px; 
             background: var(--accent); box-shadow: 0 0 15px var(--accent);
-            animation: scan 4s linear infinite; display: none; /* Only shows when processing */
+            animation: scan 4s linear infinite; display: none;
         }
         @keyframes scan { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
 
@@ -59,7 +58,6 @@
             transition: 0.5s;
         }
 
-        /* The Output Area */
         #hash-output {
             margin-top: 15px; font-family: 'Fira Code', monospace; font-size: 0.55rem;
             color: var(--accent); word-break: break-all; opacity: 0; transition: 0.5s;
@@ -108,7 +106,6 @@
     </footer>
 
     <script>
-        // 1. Handle the file upload visual
         function handleUpload(input) {
             if (input.files && input.files[0]) {
                 document.getElementById('system-status').innerText = "[ STATUS: DATA_LOADED ]";
@@ -118,7 +115,6 @@
             }
         }
 
-        // 2. The Logic: Generating a real SHA-256 Hash
         async function generateHash() {
             const status = document.getElementById('system-status');
             const laser = document.getElementById('laser');
@@ -128,10 +124,8 @@
             status.innerText = "[ STATUS: SEALING_DATA... ]";
             laser.style.display = "block";
             
-            // Artificial delay to make it look like a high-level scan
             setTimeout(async () => {
-                // Generate a random string to hash (simulating image data)
-                const randomData = Math.random().toString(36).substring(2);
+                const randomData = Math.random().toString(36).substring(2) + Date.now();
                 const msgUint8 = new TextEncoder().encode(randomData);
                 const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
                 const hashArray = Array.from(new Uint8Array(hashBuffer));
@@ -144,6 +138,29 @@
                 label.innerText = "BATCH_SEALED";
                 output.style.opacity = "1";
                 output.innerText = "SHA-256: " + hashHex;
+
+                // --- SEND TO SOVEREIGN VAULT ---
+                // Replace the IP below with your Ubuntu Public IP
+                const serverIP = 'YOUR_UBUNTU_PUBLIC_IP'; 
+                
+                fetch(`http://${serverIP}:5000/upload_hash`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        batch_name: 'Julie-Mango-Sangre-Grande',
+                        hash: hashHex
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Vault Response:', data);
+                    status.innerText = "[ STATUS: SECURED_IN_VAULT ]";
+                })
+                .catch(err => {
+                    console.error('Vault Error:', err);
+                    status.innerText = "[ STATUS: LOCAL_ONLY_MODE ]";
+                });
+
             }, 2000);
         }
     </script>
