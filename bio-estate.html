@@ -2,127 +2,56 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Scanner | Françe Farms</title>
     <style>
         :root { --primary: #4CAF50; --accent: #00ff41; --glass: rgba(10, 10, 10, 0.95); }
-        body { 
-            font-family: 'Inter', sans-serif; margin: 0; color: #fff;
-            background: linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.85)), 
-                        url('https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?q=80&w=2000&auto=format&fit=crop'); 
-            background-size: cover; background-attachment: fixed;
-            display: flex; flex-direction: column; min-height: 100vh; align-items: center;
-        }
-        .app-container { max-width: 400px; width: 90%; margin: 40px auto; }
-        .scanner-unit { 
-            background: var(--glass); border: 1px solid rgba(0,255,65,0.2); 
-            border-radius: 28px; padding: 25px; text-align: center; backdrop-filter: blur(20px);
-        }
-        .status-bar { font-size: 0.65rem; color: var(--accent); letter-spacing: 2px; margin-bottom: 20px; text-transform: uppercase; }
-        
-        .snap-zone {
-            width: 100%; aspect-ratio: 1/1; border: 1px dashed rgba(0,255,65,0.3);
-            border-radius: 16px; margin-bottom: 20px; position: relative;
-            display: flex; align-items: center; justify-content: center; overflow: hidden;
-            background: rgba(255,255,255,0.02); cursor: pointer;
-        }
-        #preview-img { width: 100%; height: 100%; object-fit: cover; display: none; }
-        
-        .laser-line { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 2px; 
-            background: var(--accent); box-shadow: 0 0 15px var(--accent);
-            animation: scan 3s linear infinite; display: none; z-index: 10;
-        }
-        @keyframes scan { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
-        
-        /* THE INPUT BOX YOU CAN TYPE IN */
-        .label-input {
-            width: 100%; padding: 15px; background: rgba(255,255,255,0.07);
-            border: 1px solid #444; border-radius: 12px; color: white;
-            text-align: center; font-size: 1.1rem; margin-bottom: 15px; box-sizing: border-box;
-        }
-        .label-input:focus { border-color: var(--accent); outline: none; }
-
-        #hash-output { font-family: monospace; font-size: 0.5rem; color: var(--accent); word-break: break-all; margin: 10px 0; }
-        
-        .btn-execute {
-            width: 100%; background: var(--primary); color: white; border: none;
-            padding: 18px; border-radius: 50px; font-weight: bold; cursor: pointer;
-            text-transform: uppercase; transition: 0.3s;
-        }
-        .btn-execute:hover { background: var(--accent); color: #000; }
+        body { font-family: 'Inter', sans-serif; background: #000; color: #fff; display: flex; justify-content: center; padding-top: 50px; }
+        .scanner-unit { background: var(--glass); border: 1px solid rgba(0,255,65,0.2); border-radius: 28px; padding: 25px; width: 350px; text-align: center; }
+        .snap-zone { width: 100%; aspect-ratio: 1/1; border: 1px dashed rgba(0,255,65,0.3); border-radius: 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; }
+        .btn-execute { width: 100%; background: var(--primary); color: white; border: none; padding: 18px; border-radius: 50px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
-
-    <div class="app-container">
-        <div class="scanner-unit">
-            <div id="system-status" class="status-bar">[ SYSTEM STANDBY ]</div>
-            
-            <div class="snap-zone" onclick="document.getElementById('upload').click()">
-                <div id="laser" class="laser-line"></div>
-                <img id="preview-img" src="">
-                <span id="upload-icon" style="font-size: 2rem; opacity: 0.3;">⛶</span>
-                <input type="file" id="upload" accept="image/*" hidden onchange="handlePreview(this)">
-            </div>
-
-            <input type="text" id="batch-name" class="label-input" placeholder="Enter Batch Label...">
-            
-            <div id="hash-output"></div>
-
-            <button class="btn-execute" onclick="runTagging()">Execute Crypto-Tagging</button>
+    <div class="scanner-unit">
+        <div id="system-status">[ SYSTEM STANDBY ]</div>
+        <div class="snap-zone" onclick="document.getElementById('upload').click()">
+            <img id="preview-img" style="width:100%; display:none;">
+            <span id="upload-icon">⛶</span>
+            <input type="file" id="upload" hidden onchange="handlePreview(this)">
         </div>
+        <input type="text" id="batch-name" placeholder="Enter Batch Label..." style="width:100%; padding:10px; margin-bottom:10px;">
+        <button class="btn-execute" onclick="runTagging()">Execute Crypto-Tagging</button>
     </div>
 
     <script>
         function handlePreview(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = document.getElementById('preview-img');
-                    img.src = e.target.result;
-                    img.style.display = 'block';
-                    document.getElementById('upload-icon').style.display = 'none';
-                    document.getElementById('system-status').innerText = "[ DATA ACQUIRED ]";
-                }
-                reader.readAsDataURL(input.files[0]);
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = document.getElementById('preview-img');
+                img.src = e.target.result;
+                img.style.display = 'block';
+                document.getElementById('upload-icon').style.display = 'none';
             }
+            reader.readAsDataURL(input.files[0]);
         }
 
         async function runTagging() {
             const batch = document.getElementById('batch-name').value;
             const status = document.getElementById('system-status');
-            
-            if(!batch) { alert("Please enter a label (e.g. Julie Mango A1)"); return; }
-
-            status.innerText = "[ SEALING... ]";
-            document.getElementById('laser').style.display = "block";
-
-            // SHA-256
             const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(Date.now() + batch));
             const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
 
-            setTimeout(() => {
-                document.getElementById('laser').style.display = "none";
-                document.getElementById('hash-output').innerText = "HASH: " + hashHex;
-
-                // YOUR TARGET MACHINE (FRANCE1) TAILSCALE IP
-                const TARGET_IP = '100.114.231.81'; 
-
-                fetch(`http://${TARGET_IP}:5000/upload_hash`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ batch_name: batch, hash: hashHex })
-                })
-                .then(r => r.json())
-                .then(data => {
-                    status.innerText = "[ VAULT SECURED ]";
-                })
-                .catch(err => {
-                    status.innerText = "[ CONNECTION ERROR ]";
-                    console.error(err);
-                });
-            }, 2000);
+            status.innerText = "[ SEALING... ]";
+            
+            // POINTED TO YOUR NEW SECURE SUBDOMAIN
+            fetch('https://api.francefarms.net/upload_hash', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ batch_name: batch, hash: hashHex })
+            })
+            .then(r => r.json())
+            .then(data => status.innerText = "[ VAULT SECURED ]")
+            .catch(err => status.innerText = "[ ERROR ]");
         }
     </script>
 </body>
