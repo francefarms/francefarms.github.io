@@ -523,7 +523,7 @@
         </div>
         <div class="field">
           <label>API Endpoint (your backend)</label>
-          <input type="text" id="api-url" value="http://localhost:3000/api/scans" placeholder="http://your-server/api/scans" />
+          <input type="text" id="api-url" value="http://127.0.0.1:3000/api/scans" placeholder="http://127.0.0.1:3000/api/scans" />
         </div>
       </div>
 
@@ -666,20 +666,15 @@
 
   // ── SHA-256 hashing — image bytes + geo + datetime ─────────────────
   async function hashFileWithGeoTime(file, lat, lng, isoTimestamp) {
-    // 1. Read image as ArrayBuffer
     const imgBuf = await file.arrayBuffer();
-
-    // 2. Build a seed string: lat|lng|timestamp (binds image to place+time)
     const seed = `${lat}|${lng}|${isoTimestamp}`;
     const encoder = new TextEncoder();
     const seedBuf = encoder.encode(seed);
 
-    // 3. Concatenate image bytes + seed bytes
     const combined = new Uint8Array(imgBuf.byteLength + seedBuf.byteLength);
     combined.set(new Uint8Array(imgBuf), 0);
     combined.set(seedBuf, imgBuf.byteLength);
 
-    // 4. SHA-256 the combined buffer
     const digest = await crypto.subtle.digest('SHA-256', combined.buffer);
     return Array.from(new Uint8Array(digest))
       .map(b => b.toString(16).padStart(2, '0'))
@@ -698,7 +693,6 @@
     document.getElementById('db-status').style.display = 'none';
     document.getElementById('hash-output').classList.add('hidden');
 
-    // Capture timestamp at moment of execution
     const captureTimestamp = new Date().toISOString();
     document.getElementById('capture-ts').value = captureTimestamp;
 
@@ -736,7 +730,6 @@
       log('Geo-lock seal generated.', 'ok');
       log(`Node: ${payload.node_id} | Batch: ${payload.batch}`);
 
-      // READ THE API ENDPOINT DIRECTLY FROM THE INPUT FIELD
       const apiUrl = document.getElementById('api-url').value.trim();
       log(`Transmitting to: ${apiUrl}`);
 
