@@ -1,206 +1,631 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Françe Farms | Sovereign Data Infrastructure</title>
-    
-    <script data-goatcounter="https://francefarms.goatcounter.com/count"
-            async src="//gc.zgo.at/count.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Françe Farms | Sovereign Data Infrastructure</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #080f08;
+      --bg2:       #0d180d;
+      --bg3:       #111f11;
+      --border:    #1e3a1e;
+      --green:     #00e54a;
+      --green-dim: #00a835;
+      --green-muted: #1a4a1a;
+      --text:      #c8e6c8;
+      --text-dim:  #6b9e6b;
+      --amber:     #f0a500;
+      --font-mono: 'Share Tech Mono', monospace;
+      --font-head: 'Bebas Neue', sans-serif;
+      --font-body: 'Rajdhani', sans-serif;
+    }
 
-    <style>
-        :root { 
-            --primary: #4CAF50; 
-            --bg: #050505; 
-            --card-bg: rgba(10, 10, 10, 0.85); 
-            --text: #e0e0e0; 
-            --accent: #00ff41; 
-        }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body { 
-            font-family: 'Inter', -apple-system, sans-serif; 
-            margin: 0; 
-            color: var(--text); 
-            line-height: 1.6; 
-            /* High-quality dark tropical leaf background */
-            background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.75)), 
-                        url('https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?q=80&w=2000&auto=format&fit=crop'); 
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }
-        
-        header { 
-            padding: 20px 40px; 
-            text-align: center; 
-            border-bottom: 1px solid rgba(255,255,255,0.05); 
-            backdrop-filter: blur(10px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 16px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-        nav { display: flex; justify-content: center; gap: 25px; }
-        nav a { 
-            text-decoration: none; 
-            color: #777; 
-            font-size: 0.75rem; 
-            text-transform: uppercase; 
-            letter-spacing: 2px; 
-            transition: 0.3s; 
-            font-weight: 600; 
-        }
-        nav a:hover { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
-        
-        main { max-width: 800px; margin: auto; padding: 20px; text-align: center; }
-        
-        .infra-hero { padding: 60px 0 40px 0; }
-        .infra-hero h1 { 
-            font-size: 3.5rem; 
-            margin: 10px 0; 
-            letter-spacing: -2px; 
-            color: #fff; 
-            line-height: 1; 
-            font-weight: 800;
-        }
-        .infra-hero .tagline { 
-            color: var(--primary); 
-            text-transform: uppercase; 
-            letter-spacing: 5px; 
-            font-size: 0.7rem; 
-            margin: 0; 
-            font-weight: bold; 
-        }
-        
-        /* Centered Video Layout */
-        .video-container {
-            margin: 40px auto;
-            max-width: 450px; 
-            background: var(--card-bg);
-            border: 1px solid rgba(76, 175, 80, 0.2);
-            border-radius: 20px;
-            padding: 15px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(12px);
-        }
+    /* === SCANLINE OVERLAY === */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,229,74,0.018) 2px,
+        rgba(0,229,74,0.018) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
 
-        .video-box { 
-            background: #000; 
-            border-radius: 12px; 
-            overflow: hidden; 
-            border: 1px solid #222; 
-            aspect-ratio: 9/16;
-        }
-        video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    /* === NOISE TEXTURE === */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      opacity: 0.4;
+      z-index: 9998;
+    }
 
-        .btn-scanner { 
-            display: inline-block; 
-            padding: 18px 45px; 
-            background: var(--primary); 
-            color: white; 
-            text-decoration: none; 
-            text-align: center;
-            font-weight: bold; 
-            letter-spacing: 1.5px; 
-            border-radius: 50px; 
-            font-size: 0.8rem;
-            margin: 30px 0;
-            transition: all 0.4s ease;
-            box-shadow: 0 0 20px var(--primary-glow);
-        }
-        .btn-scanner:hover { 
-            background: var(--accent); 
-            color: #000; 
-            transform: scale(1.05);
-            box-shadow: 0 0 30px var(--accent);
-        }
+    /* === NAV === */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(8,15,8,0.95);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+    }
 
-        .ledger-container { 
-            margin-top: 50px; 
-            background: var(--card-bg); 
-            border: 1px solid rgba(255,255,255,0.05); 
-            border-radius: 16px; 
-            overflow-x: auto;
-            backdrop-filter: blur(10px);
-        }
-        table { width: 100%; border-collapse: collapse; font-size: 0.75rem; text-align: left; min-width: 500px; }
-        th { padding: 18px; color: var(--primary); border-bottom: 1px solid rgba(255,255,255,0.05); text-transform: uppercase; letter-spacing: 1px; }
-        td { padding: 18px; border-bottom: 1px solid rgba(255,255,255,0.03); color: #aaa; font-family: 'Fira Code', monospace; }
+    .nav-brand {
+      font-family: var(--font-head);
+      font-size: 1.8rem;
+      letter-spacing: 0.12em;
+      color: var(--green);
+      text-shadow: 0 0 18px rgba(0,229,74,0.5);
+    }
 
-        .status-dot { height: 8px; width: 8px; background-color: var(--accent); border-radius: 50%; display: inline-block; margin-right: 8px; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; box-shadow: 0 0 0px var(--accent); } 50% { opacity: 0.4; box-shadow: 0 0 10px var(--accent); } 100% { opacity: 1; box-shadow: 0 0 0px var(--accent); } }
+    .nav-brand span { color: var(--text-dim); font-size: 0.9rem; font-family: var(--font-mono); margin-left: 0.5rem; vertical-align: middle; }
 
-        footer { padding: 100px 20px; color: #444; font-size: 0.65rem; text-align: center; letter-spacing: 2px; text-transform: uppercase; }
+    nav ul { list-style: none; display: flex; gap: 2.5rem; }
+    nav a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      transition: color 0.2s, text-shadow 0.2s;
+    }
+    nav a:hover { color: var(--green); text-shadow: 0 0 10px rgba(0,229,74,0.6); }
 
-        @media (max-width: 600px) {
-            .infra-hero h1 { font-size: 2.5rem; }
-            .video-container { max-width: 90%; }
-        }
-    </style>
+    /* === NAV DROPDOWN === */
+    .nav-dropdown { position: relative; }
+    .dropdown-toggle { cursor: pointer; user-select: none; }
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 0.8rem);
+      right: 0;
+      background: rgba(8,15,8,0.97);
+      border: 1px solid var(--border);
+      min-width: 180px;
+      z-index: 200;
+      backdrop-filter: blur(10px);
+    }
+    .dropdown-menu a {
+      display: block;
+      padding: 0.7rem 1rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      transition: background 0.15s, color 0.15s;
+    }
+    .dropdown-menu a:last-child { border-bottom: none; }
+    .dropdown-menu a:hover { background: rgba(0,229,74,0.08); color: var(--green); }
+    .nav-dropdown:hover .dropdown-menu { display: block; }
+
+    .nav-status {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--green);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .pulse {
+      width: 8px; height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--green);
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.4; transform: scale(0.75); }
+    }
+
+    /* === HERO === */
+    .hero {
+      padding: 5rem 3rem 4rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .hero-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      color: var(--green);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.2s forwards;
+    }
+
+    .hero h1 {
+      font-family: var(--font-head);
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      letter-spacing: 0.06em;
+      line-height: 1.0;
+      color: #fff;
+      text-shadow: 0 0 40px rgba(0,229,74,0.15);
+      opacity: 0;
+      animation: fadeUp 0.6s 0.4s forwards;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--green);
+      text-shadow: 0 0 30px rgba(0,229,74,0.5);
+    }
+
+    .hero-sub {
+      margin-top: 1.5rem;
+      color: var(--text-dim);
+      font-size: 1.05rem;
+      line-height: 1.6;
+      font-weight: 300;
+      max-width: 480px;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.6s forwards;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.8s forwards;
+    }
+
+    .btn-primary {
+      padding: 0.85rem 2rem;
+      background: var(--green);
+      color: #080f08;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+    }
+    .btn-primary:hover {
+      background: #00ff55;
+      box-shadow: 0 0 25px rgba(0,229,74,0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      padding: 0.85rem 2rem;
+      background: transparent;
+      color: var(--green);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1px solid var(--green);
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .btn-secondary:hover {
+      background: rgba(0,229,74,0.08);
+      box-shadow: 0 0 15px rgba(0,229,74,0.2);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* === HERO VIDEO PANEL === */
+    .hero-panel {
+      position: relative;
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      overflow: hidden;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.5s forwards;
+    }
+
+    .hero-panel::before {
+      content: '[ FIELD_VERIFICATION_LIVE ]';
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--green);
+      letter-spacing: 0.15em;
+      padding: 0.5rem 0.8rem;
+      display: block;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0,229,74,0.05);
+    }
+
+    .hero-panel video {
+      width: 100%;
+      display: block;
+      opacity: 0.85;
+    }
+
+    .panel-footer {
+      padding: 0.7rem 0.8rem;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid var(--border);
+    }
+
+    .panel-footer span.ok { color: var(--green); }
+
+    /* === STATS STRIP === */
+    .stats-strip {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg2);
+      display: flex;
+      justify-content: center;
+      gap: 0;
+    }
+
+    .stat-item {
+      padding: 1.8rem 3.5rem;
+      text-align: center;
+      border-right: 1px solid var(--border);
+      flex: 1;
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num {
+      font-family: var(--font-head);
+      font-size: 2.8rem;
+      color: var(--green);
+      line-height: 1;
+      text-shadow: 0 0 20px rgba(0,229,74,0.3);
+    }
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      margin-top: 0.4rem;
+    }
+
+    /* === DATA TABLE SECTION === */
+    .section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 4rem 3rem;
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--green);
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+
+    .section h2 {
+      font-family: var(--font-head);
+      font-size: 2.5rem;
+      letter-spacing: 0.08em;
+      color: #fff;
+      margin-bottom: 2rem;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+    }
+
+    .data-table th {
+      background: rgba(0,229,74,0.07);
+      color: var(--green);
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      padding: 0.9rem 1rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+
+    .data-table td {
+      padding: 0.9rem 1rem;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .data-table tr:hover td { background: rgba(0,229,74,0.04); }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      background: rgba(0,229,74,0.15);
+      color: var(--green);
+      border: 1px solid var(--green-muted);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+    }
+
+    .hash-val {
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+    }
+
+    /* === PROTOCOL CARDS === */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: 1.8rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+      border-color: var(--green-dim);
+      box-shadow: 0 0 20px rgba(0,229,74,0.08);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: var(--green);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .card:hover::before { opacity: 1; }
+
+    .card-icon {
+      font-size: 1.4rem;
+      margin-bottom: 0.8rem;
+      filter: grayscale(0.3);
+    }
+
+    .card h3 {
+      font-family: var(--font-head);
+      font-size: 1.3rem;
+      letter-spacing: 0.1em;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+
+    .card p {
+      font-size: 0.88rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    .card-tag {
+      margin-top: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      color: var(--green);
+      letter-spacing: 0.2em;
+    }
+
+    /* === FOOTER === */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      letter-spacing: 0.15em;
+    }
+
+    footer .green { color: var(--green); }
+
+    /* === TICKER === */
+    .ticker {
+      background: var(--green);
+      color: #080f08;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      padding: 0.4rem 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .ticker-inner {
+      display: inline-block;
+      animation: ticker 30s linear infinite;
+    }
+    @keyframes ticker {
+      from { transform: translateX(100vw); }
+      to   { transform: translateX(-100%); }
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 768px) {
+      .hero { grid-template-columns: 1fr; }
+      .cards { grid-template-columns: 1fr; }
+      .stats-strip { flex-wrap: wrap; }
+      nav ul { display: none; }
+      nav { padding: 1rem 1.5rem; }
+      .section, .hero { padding: 2.5rem 1.5rem; }
+      footer { flex-direction: column; gap: 1rem; text-align: center; }
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <nav>
-            <a href="index.html">Sovereign Node</a>
-            <a href="bio-estate.html">Image Scanner</a>
-            <a href="mailto:francefarms@outlook.com">Network Access</a>
-        </nav>
-    </header>
+<!-- Ticker -->
+<div class="ticker">
+  <span class="ticker-inner">
+    &nbsp;&nbsp;&nbsp;SHA-256 PROVENANCE ACTIVE &nbsp;◆&nbsp; JULIE MANGO HARVEST 2026 &nbsp;◆&nbsp; FISHING POND NODE &nbsp;◆&nbsp; GEO-LOCKED CRYPTOGRAPHIC SEALS &nbsp;◆&nbsp; GRANDE_01 :: VERIFIED_PROVENANCE &nbsp;◆&nbsp; DECENTRALIZED AGRICULTURAL TRACKING ONLINE &nbsp;◆&nbsp; FRANÇE FARMS :: SOVEREIGN DATA INFRASTRUCTURE &nbsp;◆&nbsp;
+  </span>
+</div>
 
-    <main>
-        <section class="infra-hero">
-            <p class="tagline">Françe Farms Operations</p>
-            <h1>Sovereign Data Infrastructure</h1>
-            <p style="color: #888; max-width: 600px; margin: 20px auto; font-size: 0.95rem;">
-                Decentralized agricultural provenance. Tracking the Julie Mango supply chain via geo-locked SHA-256 cryptographic seals.
-            </p>
-        </section>
+<!-- Nav -->
+<nav>
+  <div class="nav-brand">FRANÇE FARMS <span>v2.6.0</span></div>
+  <ul>
+    <li><a href="index.html">Sovereign Node</a></li>
+    <li><a href="bio-estate.html">Scanner</a></li>
+    <li class="nav-dropdown">
+      <a href="#" class="dropdown-toggle">Network Access ▾</a>
+      <div class="dropdown-menu">
+        <a href="mailto:francefarms@outlook.com">✉ Email</a>
+        <a href="https://www.tiktok.com/@france_farms" target="_blank" rel="noopener">♪ TikTok</a>
+        <a href="https://www.instagram.com/france_farms/" target="_blank" rel="noopener">◈ Instagram</a>
+        <a href="https://x.com/france_farms" target="_blank" rel="noopener">✕ X</a>
+      </div>
+    </li>
+  </ul>
+  <div class="nav-status">
+    <div class="pulse"></div>
+    NODE_ACTIVE
+  </div>
+</nav>
 
-        <div class="video-container">
-            <h3 style="font-size: 0.7rem; color: var(--accent); margin-top: 10px; text-align: center; letter-spacing: 3px;">[ FIELD_VERIFICATION_LIVE ]</h3>
-            <div class="video-box">
-                <video autoplay muted loop playsinline controlsList="nodownload">
-                    <source src="Juicy Julie France Farms.mp4" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-            </div>
-            <p style="font-size: 0.65rem; color: #666; margin-top: 15px; text-transform: uppercase; text-align: center;">Origin: Fishing Pond Node - Sangre Grande</p>
-        </div>
+<!-- Hero -->
+<section class="hero">
+  <div>
+    <div class="hero-label">// Françe Farms :: Field Operations</div>
+    <h1>SOVEREIGN<br><em>DATA</em><br>INFRASTRUCTURE</h1>
+    <p class="hero-sub">
+      Decentralized agricultural provenance. Tracking the product supply chain via geo-locked SHA-256 cryptographic seals — from field to market, every batch verified.
+    </p>
+    <div class="hero-actions">
+      <a href="bio-estate.html" class="btn-primary">ACCESS SCANNER NODE</a>
+      <a href="mailto:francefarms@outlook.com" class="btn-secondary">NETWORK ACCESS</a>
+    </div>
+  </div>
 
-        <a href="bio-estate.html" class="btn-scanner">ACCESS SCANNER NODE</a>
+  <div class="hero-panel">
+    <video autoplay muted loop playsinline>
+      <source src="Juicy Julie France Farms.mp4" type="video/mp4">
+    </video>
+    <div class="panel-footer">
+      <span>Origin: Fishing Pond Node</span>
+      <span class="ok">● LIVE</span>
+    </div>
+  </div>
+</section>
 
-        <div style="margin: 30px 0;">
-            <div style="font-size: 0.6rem; color: #555; text-transform: uppercase; letter-spacing: 2px;">System Protocol</div>
-            <div style="font-size: 0.8rem; color: #fff; font-weight: bold; margin-top: 5px;"><span class="status-dot"></span> 2026_SOVEREIGN_ACTIVE</div>
-        </div>
+<!-- Stats Strip -->
+<div class="stats-strip">
+  <div class="stat-item">
+    <div class="stat-num">SHA256</div>
+    <div class="stat-label">Hash Protocol</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">1</div>
+    <div class="stat-label">Active Nodes</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">2026</div>
+    <div class="stat-label">Harvest Season</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">TT</div>
+    <div class="stat-label">Origin Region</div>
+  </div>
+</div>
 
-        <div class="ledger-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Node_ID</th>
-                        <th>Batch_Manifest</th>
-                        <th>Geo_Hash_Seal</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="ledger-data">
-                    <tr>
-                        <td>GRANDE_01</td>
-                        <td>julie-harvest-2026</td>
-                        <td>7d2a...f912e74c</td>
-                        <td style="color: var(--accent); font-weight: bold;">VERIFIED_PROVENANCE</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </main>
+<!-- Data Table -->
+<section class="section">
+  <div class="section-label">// manifest_log</div>
+  <h2>BATCH MANIFEST</h2>
 
-    <footer>
-        © 2026 FRANCĘ FARMS | SECURING THE CARIBBEAN SUPPLY CHAIN | SANGRE_GRANDE_NODE
-    </footer>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Node_ID</th>
+        <th>Batch_Manifest</th>
+        <th>Geo_Hash_Seal</th>
+        <th>Timestamp</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>GRANDE_01</td>
+        <td>julie-harvest-2026</td>
+        <td><span class="hash-val">7d2a4f19...e74c</span></td>
+        <td>2026-05-03 08:14 AST</td>
+        <td><span class="badge">VERIFIED_PROVENANCE</span></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- Protocol Cards -->
+<section class="section" style="padding-top:0">
+  <div class="section-label">// system_protocol</div>
+  <h2>INFRASTRUCTURE STACK</h2>
+  <div class="cards">
+    <div class="card">
+      <div class="card-icon">🔐</div>
+      <h3>CRYPTOGRAPHIC SEAL</h3>
+      <p>Every batch image is SHA-256 hashed at the point of capture, creating an immutable provenance record tied to GPS coordinates.</p>
+      <div class="card-tag">// SHA-256 &nbsp; geo-lock &nbsp; immutable</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🗄️</div>
+      <h3>SOVEREIGN DATABASE</h3>
+      <p>Records are stored in a self-hosted PostgreSQL instance — no third-party cloud dependency. The farm controls the data.</p>
+      <div class="card-tag">// postgresql &nbsp; self-hosted &nbsp; ubuntu</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">📡</div>
+      <h3>NODE NETWORK</h3>
+      <p>Decentralized field nodes capture and transmit harvest data in real time, secured by cryptographic verification at every hop.</p>
+      <div class="card-tag">// decentralized &nbsp; field-node &nbsp; live</div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <span>© 2026 FRANÇE FARMS</span>
+  <span class="green">2026_SOVEREIGN_ACTIVE</span>
+  <span>SOVEREIGN AGRICULTURAL DATA INFRASTRUCTURE</span>
+</footer>
 
 </body>
 </html>
