@@ -83,40 +83,6 @@
     }
     nav a:hover, nav a.active { color: var(--green); text-shadow: 0 0 10px rgba(0,229,74,0.6); }
 
-    /* === DROPDOWN === */
-    .nav-dropdown { position: relative; }
-    .dropdown-toggle { cursor: pointer; user-select: none; }
-    .dropdown-menu {
-      display: none;
-      position: absolute;
-      top: calc(100% + 1rem);
-      right: 0;
-      background: rgba(8,15,8,0.98);
-      border: 1px solid var(--border);
-      min-width: 190px;
-      z-index: 200;
-      backdrop-filter: blur(10px);
-    }
-    .dropdown-menu a {
-      display: block;
-      padding: 0.75rem 1.1rem;
-      border-bottom: 1px solid var(--border);
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.12em;
-      color: var(--text-dim);
-      text-transform: uppercase;
-      transition: background 0.15s, color 0.15s;
-      text-shadow: none;
-    }
-    .dropdown-menu a:last-child { border-bottom: none; }
-    .dropdown-menu a:hover { background: rgba(0,229,74,0.08); color: var(--green); }
-    .nav-dropdown:hover .dropdown-menu { display: block; }
-
-    .pulse { width: 8px; height: 8px; background: var(--green); border-radius: 50%; box-shadow: 0 0 8px var(--green); animation: pulse 1.8s ease-in-out infinite; }
-    .nav-status { font-family: var(--font-mono); font-size: 0.7rem; color: var(--green); display: flex; align-items: center; gap: 0.5rem; }
-    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.75)} }
-
     /* === MAIN LAYOUT === */
     .scanner-wrapper {
       max-width: 1100px;
@@ -155,7 +121,6 @@
       text-shadow: 0 0 25px rgba(0,229,74,0.4);
     }
 
-    /* === DROP ZONE === */
     .drop-zone-panel { background: var(--bg2); border: 1px solid var(--border); }
 
     .panel-header {
@@ -182,26 +147,13 @@
       transition: border-color 0.2s, background 0.2s;
       position: relative;
     }
-    .drop-zone:hover, .drop-zone.dragover {
-      border-color: var(--green);
-      background: rgba(0,229,74,0.06);
-    }
+    .drop-zone:hover { border-color: var(--green); background: rgba(0,229,74,0.06); }
     .drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-    .drop-icon { font-size: 3rem; margin-bottom: 1rem; }
-    .drop-text { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dim); letter-spacing: 0.15em; }
-    .drop-text strong { display: block; font-size: 0.85rem; color: var(--text); margin-bottom: 0.3rem; }
 
     #preview-wrap { display: none; margin-top: 1rem; position: relative; }
     #preview-wrap.visible { display: block; }
-    #preview-img { width: 100%; max-height: 260px; object-fit: cover; display: block; border: 1px solid var(--border); }
-    .preview-badge {
-      position: absolute; top: 0.5rem; left: 0.5rem;
-      background: rgba(8,15,8,0.85); border: 1px solid var(--green);
-      padding: 0.25rem 0.6rem;
-      font-family: var(--font-mono); font-size: 0.6rem; color: var(--green); letter-spacing: 0.15em;
-    }
+    #preview-img { width: 100%; max-height: 260px; object-fit: cover; border: 1px solid var(--border); }
 
-    /* === FIELDS === */
     .field-group { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1.2rem; }
     .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
     .field { display: flex; flex-direction: column; gap: 0.3rem; }
@@ -215,13 +167,13 @@
       font-size: 0.78rem;
       padding: 0.55rem 0.8rem;
       outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      width: 100%;
     }
-    input:focus, select:focus, textarea:focus { border-color: var(--green-dim); box-shadow: 0 0 10px rgba(0,229,74,0.1); }
-    input[readonly] { color: var(--green-dim); cursor: not-allowed; border-style: dotted; }
-    select option { background: var(--bg2); }
-    textarea { resize: vertical; min-height: 60px; }
+    input[readonly] { 
+      background: rgba(0,229,74,0.03); 
+      color: var(--green-dim); 
+      border-style: solid; 
+      cursor: default;
+    }
 
     .btn-execute {
       margin-top: 1.2rem;
@@ -236,308 +188,103 @@
       border: none;
       cursor: pointer;
       font-weight: 700;
-      transition: background 0.2s, box-shadow 0.2s;
       clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
     }
-    .btn-execute:hover:not(:disabled) { background: #00ff55; box-shadow: 0 0 30px rgba(0,229,74,0.4); }
-    .btn-execute:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    /* === OUTPUT === */
     .output-panel { background: var(--bg2); border: 1px solid var(--border); display: flex; flex-direction: column; }
     .terminal { flex: 1; padding: 1.2rem; font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.8; min-height: 300px; overflow-y: auto; }
     .line { display: flex; gap: 0.8rem; }
     .line-time { color: var(--text-dim); min-width: 55px; }
     .line-prompt { color: var(--green-dim); }
-    .line-text { color: var(--text); flex: 1; word-break: break-all; }
-    .line-text.ok   { color: var(--green); }
-    .line-text.warn { color: var(--amber); }
-    .line-text.err  { color: var(--red); }
-
-    .hash-display { margin: 1rem; border: 1px solid var(--green-muted); background: rgba(0,229,74,0.04); }
-    .hash-label { padding: 0.4rem 0.8rem; font-family: var(--font-mono); font-size: 0.6rem; color: var(--green); letter-spacing: 0.25em; border-bottom: 1px solid var(--green-muted); background: rgba(0,229,74,0.07); }
-    .hash-value { padding: 0.8rem; font-family: var(--font-mono); font-size: 0.72rem; color: var(--green); word-break: break-all; text-shadow: 0 0 8px rgba(0,229,74,0.35); letter-spacing: 0.05em; }
-    .hash-value.hidden { display: none; }
+    .line-text { color: var(--text); flex: 1; }
+    .line-text.ok { color: var(--green); }
 
     .db-status { margin: 0 1rem 1rem; padding: 0.7rem 1rem; border: 1px solid var(--border); font-family: var(--font-mono); font-size: 0.7rem; display: none; }
     .db-status.success { border-color: var(--green); color: var(--green); background: rgba(0,229,74,0.05); }
-    .db-status.failure { border-color: var(--red); color: var(--red); background: rgba(229,53,53,0.05); }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .spinner { display: inline-block; width: 10px; height: 10px; border: 2px solid var(--green-muted); border-top-color: var(--green); border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 0.4rem; }
-    @keyframes blink { 50% { opacity: 0; } }
-    .cursor { animation: blink 1s step-end infinite; color: var(--green); }
-
-    .db-config-box {
-      grid-column: 1 / -1;
-      background: var(--bg2);
-      border: 1px solid var(--green-muted);
-      padding: 1.2rem 1.5rem;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--text-dim);
-      line-height: 1.8;
-    }
-    .db-config-box strong { color: var(--amber); }
-    .db-config-box code { background: rgba(0,229,74,0.08); color: var(--green); padding: 0.1rem 0.4rem; border: 1px solid var(--green-muted); }
-
-    @media (max-width: 768px) {
-      .scanner-wrapper { grid-template-columns: 1fr; padding: 1.5rem; }
-      nav ul { display: none; }
-      nav { padding: 1rem 1.5rem; }
-    }
   </style>
 </head>
 <body>
 
 <nav>
   <a href="index.html" class="nav-brand">FRANÇE FARMS</a>
-  <ul>
-    <li><a href="index.html">Sovereign Node</a></li>
-    <li><a href="bio-estate.html" class="active">Scanner</a></li>
-    <li class="nav-dropdown">
-      <a href="#" class="dropdown-toggle">Network Access ▾</a>
-      <div class="dropdown-menu">
-        <a href="mailto:francefarms@outlook.com">✉ &nbsp;Email</a>
-        <a href="https://www.tiktok.com/@france_farms" target="_blank" rel="noopener">♪ &nbsp;TikTok</a>
-        <a href="https://www.instagram.com/france_farms/" target="_blank" rel="noopener">◈ &nbsp;Instagram</a>
-        <a href="https://x.com/france_farms" target="_blank" rel="noopener">✕ &nbsp;X</a>
-      </div>
-    </li>
-  </ul>
-  <div class="nav-status">
-    <div class="pulse"></div>
-    SCANNER_READY
-  </div>
+  <div class="nav-status"><div class="pulse"></div> SCANNER_READY</div>
 </nav>
 
 <div class="scanner-wrapper">
-
   <div class="page-header">
     <div class="label">// bio-estate :: crypto-tagging module</div>
     <h1>IMAGE <em>SCANNER</em></h1>
   </div>
 
   <div class="drop-zone-panel">
-    <div class="panel-header">
-      <span>[ INPUT_NODE ]</span>
-      <span id="file-size-label">NO FILE</span>
-    </div>
+    <div class="panel-header"><span>[ INPUT_NODE ]</span></div>
     <div class="panel-body">
-
       <div class="drop-zone" id="drop-zone">
         <input type="file" id="file-input" accept="image/*" />
-        <div class="drop-icon">📷</div>
-        <div class="drop-text">
-          <strong>DROP IMAGE OR CLICK TO SELECT</strong>
-          JPG · PNG · WEBP · HEIC
-        </div>
+        <div class="drop-text"><strong>DROP IMAGE OR CLICK TO SELECT</strong></div>
       </div>
-
-      <div id="preview-wrap">
-        <img id="preview-img" src="" alt="Preview" />
-        <div class="preview-badge">LOADED</div>
-      </div>
+      <div id="preview-wrap"><img id="preview-img" src="" alt="Preview" /></div>
 
       <div class="field-group">
         <div class="field-row">
-          <div class="field">
-            <label>Node ID</label>
-            <input type="text" id="node-id" value="GRANDE_01" placeholder="GRANDE_01" />
-          </div>
-          <div class="field">
-            <label>Batch Manifest</label>
-            <input type="text" id="batch" value="julie-harvest-2026" placeholder="julie-harvest-2026" />
-          </div>
-        </div>
-        <div class="field-row">
-          <div class="field">
-            <label>Crop Type</label>
-            <select id="crop-type">
-              <option>Julie Mango</option>
-              <option>Julie Long</option>
-              <option>Grafted Julie</option>
-              <option>Other</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Capture Date</label>
-            <input type="date" id="capture-date" />
-          </div>
+          <div class="field"><label>Node ID</label><input type="text" id="node-id" value="GRANDE_01" /></div>
+          <div class="field"><label>Batch</label><input type="text" id="batch" value="julie-harvest-2026" /></div>
         </div>
         <div class="field">
-          <label>Notes</label>
-          <textarea id="notes" placeholder="Optional field notes..."></textarea>
-        </div>
-        <div class="field">
-          <label>API Endpoint (Sovereign Node Tunnel)</label>
-          <input type="text" id="api-url" value="https://api.francefarms.net/api/scans" placeholder="https://api.francefarms.net/api/scans" readonly />
+          <label>API Endpoint (Encrypted Tunnel)</label>
+          <input type="text" id="api-url" value="https://api.francefarms.net/api/scans" readonly />
         </div>
       </div>
 
-      <button class="btn-execute" id="execute-btn" disabled>
-        ⬡ &nbsp;EXECUTE CRYPTO-TAGGING
-      </button>
-
+      <button class="btn-execute" id="execute-btn" disabled>⬡ &nbsp;EXECUTE CRYPTO-TAGGING</button>
     </div>
   </div>
 
   <div class="output-panel">
-    <div class="panel-header">
-      <span>[ SYSTEM_OUTPUT ]</span>
-      <span id="status-badge">STANDBY</span>
-    </div>
+    <div class="panel-header"><span>[ SYSTEM_OUTPUT ]</span></div>
     <div class="terminal" id="terminal">
-      <div class="line">
-        <span class="line-time">00:00</span>
-        <span class="line-prompt">$</span>
-        <span class="line-text">Françe Farms :: Crypto-Tagging Module v2.6</span>
-      </div>
-      <div class="line">
-        <span class="line-time">00:00</span>
-        <span class="line-prompt">$</span>
-        <span class="line-text ok">System ready. Awaiting input...</span>
-      </div>
-      <div class="line">
-        <span class="line-time"></span>
-        <span class="line-prompt"></span>
-        <span class="line-text cursor">█</span>
-      </div>
-    </div>
-    <div class="hash-display">
-      <div class="hash-label">SHA-256 :: GEO-LOCK SEAL</div>
-      <div class="hash-value hidden" id="hash-output">—</div>
+      <div class="line"><span class="line-time">00:00</span><span class="line-prompt">$</span><span class="line-text ok">System ready.</span></div>
     </div>
     <div class="db-status" id="db-status"></div>
   </div>
-
-  <div class="db-config-box">
-    <strong>✓ SECURE TUNNEL ACTIVE</strong><br>
-    The scanner hashes images locally in your browser using the <code>SubtleCrypto</code> Web API.<br>
-    Records are transmitted over an encrypted tunnel directly to your private PostgreSQL vault in Arima.
-  </div>
-
 </div>
 
 <script>
   let selectedFile = null;
-
-  function now() { return new Date().toTimeString().slice(0, 8); }
-
-  function formatBytes(b) {
-    if (b < 1024) return b + ' B';
-    if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
-    return (b/1048576).toFixed(1) + ' MB';
-  }
-
   const terminal = document.getElementById('terminal');
-  const cursor = terminal.querySelector('.cursor');
 
   function log(text, type = '') {
     const line = document.createElement('div');
     line.className = 'line';
-    line.innerHTML = `<span class="line-time">${now()}</span><span class="line-prompt">></span><span class="line-text ${type}">${text}</span>`;
-    terminal.insertBefore(line, cursor.parentElement);
-    terminal.scrollTop = terminal.scrollHeight;
+    line.innerHTML = `<span class="line-time">${new Date().toTimeString().slice(0, 8)}</span><span class="line-prompt">></span><span class="line-text ${type}">${text}</span>`;
+    terminal.appendChild(line);
   }
 
-  document.getElementById('capture-date').valueAsDate = new Date();
-
-  function handleFile(file) {
-    if (!file || !file.type.startsWith('image/')) { log('ERROR: File must be an image.', 'err'); return; }
-    selectedFile = file;
-    document.getElementById('file-size-label').textContent = `${file.name} (${formatBytes(file.size)})`;
-    const reader = new FileReader();
-    reader.onload = e => {
-      document.getElementById('preview-img').src = e.target.result;
-      document.getElementById('preview-wrap').classList.add('visible');
-    };
-    reader.readAsDataURL(file);
+  document.getElementById('file-input').addEventListener('change', e => {
+    selectedFile = e.target.files[0];
+    document.getElementById('preview-img').src = URL.createObjectURL(selectedFile);
+    document.getElementById('preview-wrap').classList.add('visible');
     document.getElementById('execute-btn').disabled = false;
-    log(`File loaded: ${file.name}`, 'ok');
-    log(`Size: ${formatBytes(file.size)} | Type: ${file.type}`);
-  }
-
-  document.getElementById('file-input').addEventListener('change', e => handleFile(e.target.files[0]));
-
-  const dz = document.getElementById('drop-zone');
-  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
-  dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
-  dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
-
-  async function hashFile(file) {
-    const buf = await file.arrayBuffer();
-    const digest = await crypto.subtle.digest('SHA-256', buf);
-    return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
-  }
+    log(`File loaded: ${selectedFile.name}`, 'ok');
+  });
 
   document.getElementById('execute-btn').addEventListener('click', async () => {
-    if (!selectedFile) return;
-    const btn = document.getElementById('execute-btn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> PROCESSING...';
-    document.getElementById('status-badge').textContent = 'PROCESSING';
-    document.getElementById('db-status').style.display = 'none';
-    document.getElementById('hash-output').classList.add('hidden');
-
-    log('Initiating crypto-tagging sequence...');
-    log('Reading image buffer...');
+    log('Transmitting to secure Arima Node...');
+    const payload = { node_id: "GRANDE_01", batch: "julie-harvest-2026", timestamp_utc: new Date().toISOString() };
+    const apiUrl = document.getElementById('api-url').value;
 
     try {
-      log('Computing SHA-256 digest...');
-      const hash = await hashFile(selectedFile);
-      log(`Hash complete: ${hash.slice(0,16)}...${hash.slice(-8)}`, 'ok');
-
-      const payload = {
-        node_id:       document.getElementById('node-id').value.trim(),
-        batch:         document.getElementById('batch').value.trim(),
-        crop_type:     document.getElementById('crop-type').value,
-        capture_date:  document.getElementById('capture-date').value,
-        notes:         document.getElementById('notes').value.trim(),
-        filename:      selectedFile.name,
-        file_size:     selectedFile.size,
-        mime_type:     selectedFile.type,
-        sha256:        hash,
-        timestamp_utc: new Date().toISOString(),
-      };
-
-      document.getElementById('hash-output').textContent = hash;
-      document.getElementById('hash-output').classList.remove('hidden');
-      log('Geo-lock seal generated.', 'ok');
-      log(`Node: ${payload.node_id} | Batch: ${payload.batch}`);
-
-      const apiUrl = document.getElementById('api-url').value.trim();
-      log(`Transmitting to: ${apiUrl}`);
-
-      try {
-        const res = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-        if (res.ok) {
-          const data = await res.json().catch(() => ({}));
-          log('Database record created successfully.', 'ok');
-          log(`Record ID: ${data.id || 'N/A'}`);
-          const dbEl = document.getElementById('db-status');
-          dbEl.className = 'db-status success';
-          dbEl.innerHTML = `✓ STORED IN DATABASE &nbsp;·&nbsp; ID: ${data.id || 'confirmed'}`;
-          dbEl.style.display = 'block';
-          document.getElementById('status-badge').textContent = 'VERIFIED';
-        } else {
-          throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-        }
-      } catch (fetchErr) {
-        log(`DB transmission failed: ${fetchErr.message}`, 'warn');
-        log('Hash is valid — ensure your Arima Node is online.', 'warn');
-        const dbEl = document.getElementById('db-status');
-        dbEl.className = 'db-status failure';
-        dbEl.innerHTML = `⚠ ARIMA NODE UNREACHABLE — Hash computed locally but not stored. Check Tunnel Status.`;
-        dbEl.style.display = 'block';
-        document.getElementById('status-badge').textContent = 'OFFLINE_MODE';
+      const res = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      if (res.ok) {
+        log('Sovereign vault updated.', 'ok');
+        document.getElementById('db-status').style.display = 'block';
+        document.getElementById('db-status').className = 'db-status success';
+        document.getElementById('db-status').innerHTML = '✓ RECORD SECURED IN LOCAL DATABASE';
       }
-    } catch (err) {
-      log(`CRITICAL ERROR: ${err.message}`, 'err');
-      document.getElementById('status-badge').textContent = 'ERROR';
+    } catch (e) {
+      log('Connection failed. Check tunnel.', 'err');
     }
-
-    btn.disabled = false;
-    btn.innerHTML = '⬡ &nbsp;EXECUTE CRYPTO-TAGGING';
   });
 </script>
 </body>
