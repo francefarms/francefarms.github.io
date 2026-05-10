@@ -219,6 +219,7 @@
       width: 100%;
     }
     input:focus, select:focus, textarea:focus { border-color: var(--green-dim); box-shadow: 0 0 10px rgba(0,229,74,0.1); }
+    input[readonly] { color: var(--green-dim); cursor: not-allowed; border-style: dotted; }
     select option { background: var(--bg2); }
     textarea { resize: vertical; min-height: 60px; }
 
@@ -368,8 +369,8 @@
           <textarea id="notes" placeholder="Optional field notes..."></textarea>
         </div>
         <div class="field">
-          <label>API Endpoint (your backend)</label>
-          <input type="text" id="api-url" value="http://localhost:3000/api/scans" placeholder="http://your-server/api/scans" />
+          <label>API Endpoint (Sovereign Node Tunnel)</label>
+          <input type="text" id="api-url" value="https://api.francefarms.net/api/scans" placeholder="https://api.francefarms.net/api/scans" readonly />
         </div>
       </div>
 
@@ -410,9 +411,9 @@
   </div>
 
   <div class="db-config-box">
-    <strong>⚠ BACKEND CONFIGURATION REQUIRED</strong><br>
-    The scanner hashes images locally in your browser using the <code>SubtleCrypto</code> Web API — no data leaves your device until you submit.<br>
-    To save records to your PostgreSQL database, set the <strong>API Endpoint</strong> field above to your backend server. See <code>server-example.js</code> for a ready-to-use Node.js endpoint.
+    <strong>✓ SECURE TUNNEL ACTIVE</strong><br>
+    The scanner hashes images locally in your browser using the <code>SubtleCrypto</code> Web API.<br>
+    Records are transmitted over an encrypted tunnel directly to your private PostgreSQL vault in Arima.
   </div>
 
 </div>
@@ -523,12 +524,12 @@
         }
       } catch (fetchErr) {
         log(`DB transmission failed: ${fetchErr.message}`, 'warn');
-        log('Hash is valid — configure your API endpoint to store records.', 'warn');
+        log('Hash is valid — ensure your Arima Node is online.', 'warn');
         const dbEl = document.getElementById('db-status');
         dbEl.className = 'db-status failure';
-        dbEl.innerHTML = `⚠ DB ENDPOINT UNREACHABLE — Hash computed locally. Set your API URL above.`;
+        dbEl.innerHTML = `⚠ ARIMA NODE UNREACHABLE — Hash computed locally but not stored. Check Tunnel Status.`;
         dbEl.style.display = 'block';
-        document.getElementById('status-badge').textContent = 'HASH_OK / DB_ERR';
+        document.getElementById('status-badge').textContent = 'OFFLINE_MODE';
       }
     } catch (err) {
       log(`CRITICAL ERROR: ${err.message}`, 'err');
