@@ -1,65 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Scanner | Françe Farms</title>
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@500&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
   <style>
-    body { background: #080f08; color: #00e54a; font-family: 'Rajdhani', sans-serif; padding: 2rem; }
-    .panel { border: 1px solid #1e3a1e; background: #0d180d; padding: 2rem; max-width: 600px; margin: 0 auto; }
-    input, button { width: 100%; margin: 10px 0; padding: 10px; background: #000; border: 1px solid #00e54a; color: #00e54a; font-family: 'Share Tech Mono'; }
-    button { background: #00e54a; color: #000; cursor: pointer; font-weight: bold; }
-    .terminal { background: #000; padding: 15px; height: 200px; overflow-y: auto; font-size: 0.8rem; border: 1px solid #1e3a1e; }
-    #preview { width: 100%; max-height: 200px; object-fit: contain; margin: 10px 0; display: none; }
+    :root {
+      --bg:        #080f08;
+      --bg2:       #0d180d;
+      --bg3:       #111f11;
+      --border:    #1e3a1e;
+      --green:     #00e54a;
+      --green-dim: #00a835;
+      --green-muted: #1a4a1a;
+      --text:      #c8e6c8;
+      --text-dim:  #6b9e6b;
+      --font-mono: 'Share Tech Mono', monospace;
+      --font-head: 'Bebas Neue', sans-serif;
+      --font-body: 'Rajdhani', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Scanline Effect */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,229,74,0.015) 2px, rgba(0,229,74,0.015) 4px);
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(8,15,8,0.95);
+      backdrop-filter: blur(8px);
+    }
+
+    .nav-brand {
+      font-family: var(--font-head);
+      font-size: 1.8rem;
+      letter-spacing: 0.12em;
+      color: var(--green);
+      text-shadow: 0 0 15px rgba(0,229,74,0.5);
+      text-decoration: none;
+    }
+
+    .scanner-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    .page-header { grid-column: 1 / -1; margin-bottom: 1rem; }
+    .page-header h1 { font-family: var(--font-head); font-size: 3rem; color: #fff; }
+    .page-header h1 em { font-style: normal; color: var(--green); }
+
+    .panel { background: var(--bg2); border: 1px solid var(--border); position: relative; }
+    .panel-header {
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--green);
+      background: rgba(0,229,74,0.05);
+    }
+
+    .panel-body { padding: 1.5rem; }
+
+    /* Drop Zone UI */
+    .drop-zone {
+      border: 2px dashed var(--green-muted);
+      padding: 2.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.3s;
+      background: rgba(0,229,74,0.02);
+    }
+    .drop-zone:hover { border-color: var(--green); background: rgba(0,229,74,0.08); }
+    #preview-img { width: 100%; margin-top: 1rem; border: 1px solid var(--border); display: none; }
+
+    .field-group { margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+    label { font-family: var(--font-mono); font-size: 0.65rem; color: var(--green-dim); display: block; margin-bottom: 5px; }
+    input {
+      width: 100%;
+      background: #000;
+      border: 1px solid var(--border);
+      color: var(--green);
+      padding: 0.8rem;
+      font-family: var(--font-mono);
+    }
+
+    .btn-execute {
+      width: 100%;
+      padding: 1rem;
+      margin-top: 1.5rem;
+      background: var(--green);
+      color: #000;
+      font-family: var(--font-mono);
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      clip-path: polygon(0 0, 95% 0, 100% 20%, 100% 100%, 5% 100%, 0 80%);
+    }
+
+    .terminal {
+      background: #000;
+      height: 350px;
+      padding: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      color: var(--green-dim);
+    }
+    .log-entry { margin-bottom: 0.4rem; border-left: 2px solid var(--green-muted); padding-left: 10px; }
+    .log-success { color: var(--green); text-shadow: 0 0 5px var(--green); }
+    .log-error { color: #ff4444; }
+
+    @media (max-width: 768px) { .scanner-wrapper { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
 
-<div class="panel">
-  <h2>BIO-ESTATE SCANNER</h2>
-  <input type="file" id="fileInput" accept="image/*">
-  <img id="preview">
-  <input type="text" id="nodeId" value="GRANDE_01">
-  <input type="text" id="batch" value="harvest-2026">
-  <button id="uploadBtn">EXECUTE CRYPTO-TAGGING</button>
-  <div class="terminal" id="term">Awaiting input...</div>
+<nav>
+  <a href="#" class="nav-brand">FRANÇE FARMS</a>
+  <div style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--green);">SYSTEM_SECURE_V.3.0</div>
+</nav>
+
+<div class="scanner-wrapper">
+  <div class="page-header">
+    <h1>BIO-ESTATE <em>SCANNER</em></h1>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">[ HARVEST_INPUT ]</div>
+    <div class="panel-body">
+      <div class="drop-zone" id="drop-zone">
+        <input type="file" id="file-input" accept="image/*" style="display:none">
+        <p id="drop-text">DRAG & DROP OR CLICK TO BIND IMAGE</p>
+        <img id="preview-img" src="">
+      </div>
+
+      <div class="field-group">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div><label>NODE_ID</label><input type="text" id="node-id" value="GRANDE_01"></div>
+          <div><label>BATCH_REF</label><input type="text" id="batch" value="MAY_2026_JULIE"></div>
+        </div>
+        <div>
+          <label>ACTIVE_TUNNEL</label>
+          <input type="text" value="https://api.francefarms.net/api/scans" readonly style="opacity: 0.6; font-size: 0.7rem;">
+        </div>
+      </div>
+      <button class="btn-execute" id="execute-btn">EXECUTE CRYPTO-TAGGING</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">[ SYSTEM_LOGS ]</div>
+    <div class="terminal" id="terminal">
+      <div class="log-entry">> Initializing Sovereign Node...</div>
+      <div class="log-entry">> Waiting for local buffer data...</div>
+    </div>
+  </div>
 </div>
 
 <script>
-  const fileInput = document.getElementById('fileInput');
-  const uploadBtn = document.getElementById('uploadBtn');
-  const term = document.getElementById('term');
-  const preview = document.getElementById('preview');
+  const API_URL = "https://api.francefarms.net/api/scans";
+  const dropZone = document.getElementById('drop-zone');
+  const fileInput = document.getElementById('file-input');
+  const terminal = document.getElementById('terminal');
+  const previewImg = document.getElementById('preview-img');
 
+  function log(msg, type = '') {
+    const entry = document.createElement('div');
+    entry.className = `log-entry ${type === 'success' ? 'log-success' : type === 'error' ? 'log-error' : ''}`;
+    entry.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}`;
+    terminal.appendChild(entry);
+    terminal.scrollTop = terminal.scrollHeight;
+  }
+
+  // File Handling
+  dropZone.onclick = () => fileInput.click();
   fileInput.onchange = (e) => {
-    preview.src = URL.createObjectURL(e.target.files[0]);
-    preview.style.display = 'block';
-    term.innerHTML += "<br>> Image loaded.";
+    const file = e.target.files[0];
+    if (file) {
+      previewImg.src = URL.createObjectURL(file);
+      previewImg.style.display = 'block';
+      document.getElementById('drop-text').style.display = 'none';
+      log(`Image bound: ${file.name}`);
+    }
   };
 
-  uploadBtn.onclick = async () => {
-    const file = fileInput.files[0];
-    if (!file) return alert("Select image first");
+  async function generateHash(file) {
+    const buffer = await file.arrayBuffer();
+    const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+    return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
 
-    term.innerHTML += "<br>> Initializing transmission...";
-    
+  document.getElementById('execute-btn').onclick = async () => {
+    const file = fileInput.files[0];
+    if (!file) {
+      log("ERROR: No harvest data in buffer.", "error");
+      return;
+    }
+
+    log("Generating SHA-256 Integrity Hash...");
+    const hash = await generateHash(file);
+    log(`Hash: ${hash.substring(0, 24)}...`);
+
     const formData = new FormData();
     formData.append('image', file);
-    formData.append('node_id', document.getElementById('nodeId').value);
+    formData.append('node_id', document.getElementById('node-id').value);
     formData.append('batch', document.getElementById('batch').value);
-    formData.append('sha256', 'GEN_HASH_LOCAL'); // Simplified for testing
+    formData.append('sha256', hash);
+
+    log("Transmitting to Arima Node via Secure Tunnel...");
 
     try {
-      const response = await fetch('https://api.francefarms.net/api/scans', {
+      const response = await fetch(API_URL, {
         method: 'POST',
         body: formData
       });
-      const data = await response.json();
-      term.innerHTML += `<br>> SUCCESS: Record ${data.id} secured.`;
+
+      if (response.ok) {
+        const data = await response.json();
+        log(`VAULT ACKNOWLEDGED. Record ID: ${data.id}`, "success");
+      } else {
+        throw new Error(`Node rejected data (Status: ${response.status})`);
+      }
     } catch (err) {
-      term.innerHTML += `<br>> ERROR: ${err.message}`;
+      log(`CRITICAL_NETWORK_ERROR: ${err.message}`, "error");
+      log("HINT: Ensure server.js is active and responding to GET /", "error");
     }
   };
 </script>
+
 </body>
 </html>
