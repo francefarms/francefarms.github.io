@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Vault | Françe Farms</title>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;600&display=swap" rel="stylesheet">
     <style>
@@ -11,13 +10,12 @@
         nav { display: flex; gap: 20px; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
         nav a { color: #666; text-decoration: none; font-family: 'Share Tech Mono'; font-size: 0.8rem; }
         nav a:hover, nav a.active { color: var(--green); }
-        
-        h1 { font-family: 'Share Tech Mono'; color: #fff; text-transform: uppercase; letter-spacing: 3px; }
+        h1 { font-family: 'Share Tech Mono'; color: #fff; text-transform: uppercase; letter-spacing: 3px; font-style: italic; }
+        h1 em { color: var(--green); font-style: normal; }
         table { width: 100%; border-collapse: collapse; background: #0d180d; border: 1px solid var(--border); }
         th { background: rgba(0, 229, 74, 0.1); color: var(--green); font-family: 'Share Tech Mono'; text-align: left; padding: 12px; font-size: 0.75rem; }
         td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
         .hash { font-family: 'Share Tech Mono'; font-size: 0.7rem; color: #4a7a4a; }
-        .img-preview { width: 50px; height: 50px; object-fit: cover; border: 1px solid var(--green); }
     </style>
 </head>
 <body>
@@ -28,12 +26,11 @@
     <a href="vault.html" class="active">VAULT</a>
 </nav>
 
-<h1>The Arima <em>Vault</em></h1>
+<h1>THE <em>VAULT</em></h1>
 
 <table>
     <thead>
         <tr>
-            <th>PREVIEW</th>
             <th>DATE</th>
             <th>NODE</th>
             <th>BATCH</th>
@@ -41,7 +38,7 @@
         </tr>
     </thead>
     <tbody id="vault-body">
-        <tr><td colspan="5">Accessing encrypted ledger...</td></tr>
+        <tr><td colspan="4">Synchronizing with node...</td></tr>
     </tbody>
 </table>
 
@@ -50,18 +47,12 @@
         try {
             const response = await fetch('https://api.francefarms.net/api/vault');
             const data = await response.json();
-            
             const tbody = document.getElementById('vault-body');
             tbody.innerHTML = '';
-
             data.forEach(row => {
                 const date = new Date(row.created_at).toLocaleString();
-                // Note: Image path assumes your Arima node serves the uploads folder
-                const imgUrl = `https://api.francefarms.net/${row.image_path}`;
-                
                 tbody.innerHTML += `
                     <tr>
-                        <td><img src="${imgUrl}" class="img-preview" onerror="this.src='https://via.placeholder.com/50?text=NA'"></td>
                         <td>${date}</td>
                         <td style="color:var(--green)">${row.node_id}</td>
                         <td>${row.batch}</td>
@@ -70,11 +61,10 @@
                 `;
             });
         } catch (err) {
-            document.getElementById('vault-body').innerHTML = '<tr><td colspan="5" style="color:red">VAULT OFFLINE: Check Arima Node Status</td></tr>';
+            document.getElementById('vault-body').innerHTML = '<tr><td colspan="4" style="color:red">VAULT CONNECTION FAILED</td></tr>';
         }
     }
     loadVault();
 </script>
-
 </body>
 </html>
