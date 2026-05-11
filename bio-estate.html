@@ -14,46 +14,59 @@
       --green: #00e54a; --green-dim: #00a835; --green-muted: #1a4a1a;
       --text: #c8e6c8; --font-mono: 'Share Tech Mono', monospace;
       --font-head: 'Bebas Neue', sans-serif; --font-body: 'Rajdhani', sans-serif;
+      --error-red: #ff4444;
     }
 
     body { background: var(--bg); color: var(--text); font-family: var(--font-body); min-height: 100vh; margin: 0; }
+    
+    /* Scanline Effect */
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,229,74,0.015) 2px, rgba(0,229,74,0.015) 4px);
+      pointer-events: none; z-index: 9999;
+    }
 
-    /* Navigation Tabs */
     nav {
       display: flex; justify-content: space-between; align-items: center;
       padding: 1rem 2rem; border-bottom: 1px solid var(--border);
       background: rgba(8,15,8,0.95); backdrop-filter: blur(8px);
     }
-    .nav-brand { font-family: var(--font-head); font-size: 1.5rem; color: var(--green); text-decoration: none; }
+    .nav-brand { font-family: var(--font-head); font-size: 1.5rem; color: var(--green); text-decoration: none; letter-spacing: 2px; }
     .nav-links { display: flex; gap: 20px; }
-    .nav-links a { color: var(--text); text-decoration: none; font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 1px; }
-    .nav-links a.active { color: var(--green); border-bottom: 1px solid var(--green); }
+    .nav-links a { color: var(--text-dim); text-decoration: none; font-family: var(--font-mono); font-size: 0.75rem; transition: 0.3s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--green); text-shadow: 0 0 10px var(--green); }
 
     .scanner-wrapper { max-width: 1100px; margin: 0 auto; padding: 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
-    .page-header { grid-column: 1 / -1; }
-    .page-header h1 { font-family: var(--font-head); font-size: 2.5rem; color: #fff; }
-    .panel { background: var(--bg2); border: 1px solid var(--border); }
+    .page-header { grid-column: 1 / -1; margin-bottom: 10px; }
+    .page-header h1 { font-family: var(--font-head); font-size: 3rem; color: #fff; letter-spacing: 2px; }
+    .page-header h1 em { font-style: italic; color: var(--green); text-shadow: 0 0 15px rgba(0,229,74,0.4); }
+
+    .panel { background: var(--bg2); border: 1px solid var(--border); position: relative; }
     .panel-header { padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); font-family: var(--font-mono); font-size: 0.7rem; color: var(--green); background: rgba(0,229,74,0.05); }
     .panel-body { padding: 1.5rem; }
 
-    .drop-zone { border: 2px dashed var(--green-muted); padding: 2rem; text-align: center; cursor: pointer; background: rgba(0,229,74,0.02); }
+    .drop-zone { border: 2px dashed var(--green-muted); padding: 2rem; text-align: center; cursor: pointer; background: rgba(0,229,74,0.02); transition: 0.3s; }
+    .drop-zone:hover { border-color: var(--green); background: rgba(0,229,74,0.1); }
     #preview-img { width: 100%; margin-top: 1rem; display: none; border: 1px solid var(--border); }
     
-    input { width: 100%; background: #000; border: 1px solid var(--border); color: var(--green); padding: 0.8rem; font-family: var(--font-mono); margin-top: 5px; }
+    input { width: 100%; background: #000; border: 1px solid var(--border); color: var(--green); padding: 0.8rem; font-family: var(--font-mono); margin-top: 5px; outline: none; }
     label { font-family: var(--font-mono); font-size: 0.6rem; color: var(--green-dim); margin-top: 10px; display: block; }
 
     .btn-execute {
-      width: 100%; padding: 1rem; margin-top: 1.5rem; background: var(--green); color: #000;
+      width: 100%; padding: 1.2rem; margin-top: 1.5rem; background: var(--green); color: #000;
       font-family: var(--font-mono); font-weight: bold; border: none; cursor: pointer;
       clip-path: polygon(0 0, 95% 0, 100% 20%, 100% 100%, 5% 100%, 0 80%);
+      transition: 0.2s;
     }
+    .btn-execute:active { transform: scale(0.98); }
 
-    .terminal { background: #000; height: 300px; padding: 1rem; font-family: var(--font-mono); font-size: 0.75rem; overflow-y: auto; border: 1px solid var(--border); color: var(--green-dim); }
-    .log-entry { margin-bottom: 0.3rem; border-left: 2px solid var(--green-muted); padding-left: 8px; }
+    .terminal { background: #000; height: 320px; padding: 1rem; font-family: var(--font-mono); font-size: 0.75rem; overflow-y: auto; border: 1px solid var(--border); color: var(--green-dim); }
+    .log-entry { margin-bottom: 0.4rem; border-left: 2px solid var(--green-muted); padding-left: 10px; }
+    .log-success { color: var(--green); text-shadow: 0 0 8px var(--green); }
+    .log-error { color: var(--error-red); border-left-color: var(--error-red); }
 
-    /* QR Result Overlay */
-    #qr-result { margin-top: 20px; display: none; text-align: center; background: #fff; padding: 15px; border-radius: 4px; }
-    #qr-result p { color: #000; font-family: var(--font-mono); font-size: 0.7rem; margin-bottom: 10px; }
+    #qr-result { margin-top: 20px; display: none; text-align: center; background: #fff; padding: 20px; border-radius: 2px; }
+    #qr-result p { color: #000; font-family: var(--font-mono); font-weight: bold; font-size: 0.8rem; margin-bottom: 10px; }
     #qrcode { display: inline-block; }
 
     @media (max-width: 768px) { .scanner-wrapper { grid-template-columns: 1fr; } }
@@ -88,7 +101,7 @@
       <button class="btn-execute" id="execute-btn">EXECUTE CRYPTO-TAGGING</button>
       
       <div id="qr-result">
-        <p>SECURE HASH RECEIPT</p>
+        <p>GENUINE HARVEST RECEIPT</p>
         <div id="qrcode"></div>
       </div>
     </div>
@@ -136,7 +149,7 @@
 
   document.getElementById('execute-btn').onclick = async () => {
     const file = fileInput.files[0];
-    if (!file) return log("ERROR: No harvest data.", "error");
+    if (!file) return log("ERROR: No data in buffer.", "error");
 
     log("Generating SHA-256 Integrity Hash...");
     const hash = await generateHash(file);
@@ -155,15 +168,13 @@
         const data = await response.json();
         log(`VAULT ACKNOWLEDGED. Record: ${data.id}`, "success");
         
-        // GENERATE QR CODE
         document.getElementById('qr-result').style.display = 'block';
         document.getElementById('qrcode').innerHTML = ""; 
         new QRCode(document.getElementById("qrcode"), {
-          text: `FRANCE_FARMS_VERIFY:${hash}`,
-          width: 128, height: 128,
-          colorDark : "#000000", colorLight : "#ffffff"
+          text: `https://www.francefarms.net/verify.html?hash=${hash}`,
+          width: 140, height: 140
         });
-        log("Security QR Generated for scan receipt.");
+        log("Security QR Generated.");
 
       } else {
         throw new Error(`Node rejected data (Status: ${response.status})`);
