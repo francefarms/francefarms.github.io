@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
-/* ─── COLOR PALETTES (LIGHT & DARK) ─── */
+/* ─── LIGHT MODE (DEFAULT) ─── */
 :root {
   --green-deep:   #0f3d22;
   --green-main:   #1e6b3c;
@@ -26,31 +26,32 @@
   --radius:       12px;
   --shadow:       0 8px 40px rgba(15,61,34,0.13);
   --nav-bg:       rgba(253,248,240,0.95);
-  --border-color: rgba(30,107,60,0.1);
   --card-bg:      #ffffff;
+  --border-color: rgba(30,107,60,0.1);
 }
 
-/* Dark Mode Overrides */
-[data-theme="dark"] {
-  --green-deep:   #051a0e;
-  --green-main:   #2d8a52;
-  --green-mid:    #1e6b3c;
-  --green-light:  #68c98c;
-  --gold:         #e5ad14;
-  --gold-light:   #fcd876;
-  --cream:        #0d1611;
-  --cream-dark:   #14221a;
-  --text-dark:    #f0e9dc;
+/* ─── DARK MODE VARIABLES ─── */
+body.dark-theme {
+  --green-deep:   #082213;
+  --green-main:   #4aad6e; /* Swap bright green for visibility */
+  --green-mid:    #2d8a52;
+  --green-light:  #6bca8c;
+  --gold:         #f5c84a;
+  --gold-light:   #fbe39d;
+  --cream:        #121c15; /* Dark background */
+  --cream-dark:   #1a261f;
+  --text-dark:    #fdf8f0; /* Light text */
   --text-mid:     #b3cfba;
-  --text-light:   #8fae96;
-  --white:        #122217;
+  --text-light:   #8cae94;
+  --white:        #1a261f;
   --shadow:       0 8px 40px rgba(0,0,0,0.5);
-  --nav-bg:       rgba(13,22,17,0.95);
+  --nav-bg:       rgba(18,28,21,0.95);
+  --card-bg:      #1a261f;
   --border-color: rgba(74,173,110,0.2);
-  --card-bg:      #14221a;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
+
 html { scroll-behavior: smooth; }
 
 body {
@@ -58,7 +59,7 @@ body {
   background: var(--cream);
   color: var(--text-dark);
   overflow-x: hidden;
-  transition: background 0.3s, color 0.3s;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 /* ─── NAV ─── */
@@ -70,6 +71,7 @@ nav {
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 clamp(20px,5vw,60px);
   height: 68px;
+  transition: background 0.3s ease, border 0.3s ease;
 }
 
 .nav-logo {
@@ -83,18 +85,20 @@ nav {
 .nav-logo-text {
   font-family: 'Playfair Display', serif;
   font-size: 18px; font-weight: 700;
-  color: var(--green-light);
+  color: var(--text-dark);
   letter-spacing: -0.3px;
 }
 
 .nav-right-container {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
 }
 
 .nav-links {
-  display: flex; align-items: center; gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   list-style: none;
 }
 .nav-links a {
@@ -107,30 +111,34 @@ nav {
 }
 .nav-links a:hover, .nav-links a.active {
   background: var(--green-main);
-  color: #ffffff;
+  color: #fff;
 }
 .nav-cta {
   background: var(--green-main) !important;
-  color: #ffffff !important;
+  color: #fff !important;
   font-weight: 600 !important;
 }
 
-/* Dark Mode Switch Button */
+/* ─── DARK MODE TOGGLE SWITCH ─── */
 .theme-toggle-btn {
   background: none;
-  border: 1px solid var(--border-color);
-  color: var(--text-mid);
-  padding: 8px 12px;
-  border-radius: 8px;
+  border: none;
   cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(30,107,60,0.08);
+  transition: background 0.3s ease;
 }
-.theme-toggle-btn:hover {
-  background: rgba(30,107,60,0.1);
-  color: var(--green-light);
+body.dark-theme .theme-toggle-btn {
+  background: rgba(255,255,255,0.1);
 }
 
+/* Mobile nav toggle */
 .nav-hamburger {
   display: none;
   flex-direction: column; gap: 5px;
@@ -156,6 +164,7 @@ nav {
   max-width: 1200px;
   margin: 0 auto;
 }
+
 .hero-text { max-width: 520px; }
 
 .hero-eyebrow {
@@ -165,9 +174,12 @@ nav {
   border-radius: 100px;
   padding: 6px 14px;
   font-size: 12px; font-weight: 600;
-  color: var(--green-light);
+  color: var(--green-main);
   letter-spacing: 1px; text-transform: uppercase;
   margin-bottom: 20px;
+}
+body.dark-theme .hero-eyebrow {
+  background: rgba(74,173,110,0.15);
 }
 .eyebrow-dot {
   width: 6px; height: 6px; border-radius: 50%;
@@ -187,7 +199,7 @@ nav {
 }
 .hero-title em {
   font-style: italic;
-  color: var(--green-light);
+  color: var(--green-main);
 }
 
 .hero-body {
@@ -196,12 +208,13 @@ nav {
   color: var(--text-mid);
   margin-bottom: 32px;
 }
+
 .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
 
 .btn-primary {
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--green-main);
-  color: #ffffff;
+  color: #fff;
   padding: 14px 28px;
   border-radius: var(--radius);
   font-size: 15px; font-weight: 600;
@@ -210,21 +223,21 @@ nav {
   transition: all 0.2s;
   box-shadow: 0 4px 16px rgba(30,107,60,0.3);
 }
-.btn-primary:hover { background: var(--green-light); transform: translateY(-2px); }
+.btn-primary:hover { background: var(--green-deep); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(30,107,60,0.35); }
 
 .btn-secondary {
   display: inline-flex; align-items: center; gap: 8px;
   background: transparent;
-  color: var(--green-light);
+  color: var(--green-main);
   padding: 14px 28px;
   border-radius: var(--radius);
   font-size: 15px; font-weight: 600;
   text-decoration: none;
-  border: 2px solid var(--border-color);
+  border: 2px solid var(--green-main);
   cursor: pointer;
   transition: all 0.2s;
 }
-.btn-secondary:hover { border-color: var(--green-light); background: rgba(30,107,60,0.05); }
+.btn-secondary:hover { background: rgba(30,107,60,0.05); }
 
 .hero-stats {
   display: flex; gap: 28px; margin-top: 36px;
@@ -235,25 +248,35 @@ nav {
 .stat-num {
   font-family: 'Playfair Display', serif;
   font-size: 26px; font-weight: 700;
-  color: var(--green-light);
+  color: var(--green-main);
 }
 .stat-label { font-size: 12px; color: var(--text-light); font-weight: 500; }
 
-/* ─── VIDEO PANEL CSS CANVAS ─── */
-.hero-video-wrap { position: relative; }
+/* ─── VIDEO PANEL ─── */
+.hero-video-wrap {
+  position: relative;
+}
+
 .video-card {
-  background: #0f3d22;
+  background: #0f3d22; /* Keep dark context for video stage */
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 24px 64px rgba(15,61,34,0.25);
   position: relative;
 }
-#stage { width: 100%; aspect-ratio: 16/9; position: relative; overflow: hidden; }
+
+#stage {
+  width: 100%;
+  aspect-ratio: 16/9;
+  position: relative;
+  overflow: hidden;
+}
+
 .scene { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity 0.7s ease; }
 .scene.active { opacity: 1; pointer-events: all; }
 
 #s0 { background: linear-gradient(160deg, #155230 0%, #1e6b3c 50%, #2d8a52 100%); }
-#s1 { background: linear-gradient(rgba(15,61,34,0.3), rgba(15,61,34,0.5)), url('farm_background.jpg'); background-size: cover; background-position: center; }
+#s1 { background: #f5f0e8; }
 #s2 { background: #edf4ff; }
 #s3 { background: #fdf8ee; }
 #s4 { background: linear-gradient(160deg, #0d3d24 0%, #1e6b3c 60%, #2d8a52 100%); }
@@ -267,13 +290,14 @@ nav {
   backdrop-filter: blur(4px);
 }
 
-/* Scene elements styling */
+/* Scene elements */
 .title-scene { display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:20px; }
 .title-leaf { width:clamp(42px,7vw,70px);height:clamp(42px,7vw,70px);margin-bottom:12px;animation:floatLeaf 3s ease-in-out infinite; }
 @keyframes floatLeaf { 0%,100%{transform:translateY(0) rotate(-5deg);}50%{transform:translateY(-9px) rotate(5deg);} }
 .title-main { font-family:'Playfair Display',serif;font-size:clamp(20px,4vw,38px);font-weight:900;color:#fff;line-height:1.1; }
 .title-sub { font-size:clamp(9px,1.5vw,13px);color:rgba(255,255,255,0.7);margin-top:6px;letter-spacing:2px;text-transform:uppercase; }
 .title-badge { margin-top:12px;background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.35);border-radius:20px;padding:5px 16px;font-size:clamp(10px,1.5vw,13px);color:#fff;font-weight:700; }
+
 .sky-text { position:absolute;top:14px;left:0;right:0;text-align:center;font-size:clamp(10px,2vw,15px);font-weight:800;color:#5a3e1b;opacity:0.8;padding:0 12px; }
 .market-ground { position:absolute;bottom:50px;left:0;right:0;height:3px;background:#c8a86b;opacity:0.4; }
 .market-scene { display:flex;align-items:flex-end;justify-content:center;height:100%;padding-bottom:58px;gap:8px; }
@@ -289,5 +313,731 @@ nav {
 .buyer-leg { width:clamp(12px,2vw,18px);height:clamp(16px,2.5vw,22px);background:#1a4f8a;border-radius:0 0 4px 4px; }
 .question-bubble { background:#fff;border:2px solid #1e6b3c;border-radius:12px 12px 12px 0;padding:3px 8px;font-size:clamp(8px,1.2vw,11px);font-weight:700;color:#1e6b3c;position:absolute;top:-8px;right:-12px;white-space:nowrap;animation:popIn 0.4s ease; }
 @keyframes popIn{0%{transform:scale(0);opacity:0;}80%{transform:scale(1.1);}100%{transform:scale(1);opacity:1;}}
+
 .phone-scene{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px;padding-bottom:50px;}
-.phone-frame{width:clamp(48px,7vw,72px);height:clamp(82px,12vw,124px);background:#1a1a2e;border-radius:10px;border:2.5px solid #444;display
+.phone-frame{width:clamp(48px,7vw,72px);height:clamp(82px,12vw,124px);background:#1a1a2e;border-radius:10px;border:2.5px solid #444;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,0.2);}
+.phone-screen{width:calc(100% - 6px);height:calc(100% - 6px);background:#edf4ff;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;}
+.phone-camera-anim{width:38px;height:38px;border:2px solid #1e6b3c;border-radius:4px;position:relative;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.scan-line{position:absolute;left:0;right:0;height:2px;background:#1e6b3c;top:0;animation:scanDown 1.2s ease-in-out infinite;}
+@keyframes scanDown{0%{top:0;}50%{top:calc(100% - 2px);}100%{top:0;}}
+.phone-label{font-size:7px;font-weight:700;color:#1e6b3c;letter-spacing:0.5px;}
+.gps-badge{display:flex;align-items:center;gap:5px;background:#fff;border:1.5px solid #1e6b3c;border-radius:20px;padding:4px 12px;font-size:clamp(9px,1.3vw,12px);font-weight:700;color:#1e6b3c;animation:slideIn 0.5s ease;}
+.gps-dot{width:7px;height:7px;background:#e85d04;border-radius:50%;animation:pulse 1s ease-in-out infinite;}
+@keyframes slideIn{from{transform:translateY(8px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.hash-display{font-size:clamp(8px,1.1vw,10px);font-family:monospace;color:#155230;background:#e1f0e8;border-radius:5px;padding:3px 10px;}
+
+.qr-scene{display:flex;align-items:center;justify-content:center;height:100%;gap:clamp(8px,2.5vw,24px);flex-wrap:wrap;padding:12px 12px 60px;}
+.crate{width:clamp(60px,10vw,90px);height:clamp(32px,5.5vw,48px);background:#c8960c;border:2px solid #8a6600;border-radius:4px;display:flex;align-items:center;justify-content:center;position:relative;}
+.crate::before,.crate::after{content:'';position:absolute;top:50%;transform:translateY(-50%);width:2px;height:80%;background:#8a6600;}
+.crate::before{left:18px;}.crate::after{right:18px;}
+.qr-sticker{width:28px;height:28px;background:#fff;border:1px solid #555;border-radius:2px;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);gap:1px;padding:2px;position:absolute;right:-15px;top:50%;transform:translateY(-50%);box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+.qr-cell{background:#1a1a1a;border-radius:1px;}.qr-empty{background:#fff;}
+.check-badge{background:#1e6b3c;color:#fff;border-radius:16px;padding:5px 14px;font-size:clamp(9px,1.3vw,12px);font-weight:700;animation:popIn 0.4s ease;text-align:center;}
+.arrow-anim{font-size:clamp(16px,2.5vw,24px);animation:bounceRight 0.8s ease-in-out infinite;color:#1e6b3c;}
+@keyframes bounceRight{0%,100%{transform:translateX(0);}50%{transform:translateX(5px);}}
+
+.final-scene{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:20px;}
+.final-logo-box{width:clamp(60px,9vw,90px);height:clamp(60px,9vw,90px);background:rgba(255,255,255,0.12);border:2px solid rgba(255,255,255,0.3);border-radius:16px;display:flex;align-items:center;justify-content:center;animation:logoReveal 0.7s ease;margin-bottom:10px;}
+@keyframes logoReveal{from{transform:scale(0.6) rotate(-10deg);opacity:0;}to{transform:scale(1) rotate(0);opacity:1;}}
+.final-tagline{font-family:'Playfair Display',serif;font-size:clamp(18px,3.5vw,32px);font-weight:900;color:#fff;line-height:1.1;}
+.final-sub{font-size:clamp(11px,2vw,16px);color:rgba(255,255,255,0.8);margin-top:6px;font-weight:600;line-height:1.4;}
+.badge-row{margin-top:12px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;}
+.pill{background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.3);border-radius:16px;padding:4px 12px;font-size:clamp(8px,1.1vw,11px);color:#fff;font-weight:700;}
+.stars-wrap{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.star{position:absolute;background:rgba(255,255,255,0.5);border-radius:50%;animation:twinkle 2s ease-in-out infinite;}
+@keyframes twinkle{0%,100%{opacity:0.2;transform:scale(1);}50%{opacity:0.9;transform:scale(1.6);}}
+
+/* Video controls */
+.video-controls {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  background: #082213;
+}
+.play-btn {
+  background: var(--green-mid); color: #fff;
+  border: none; border-radius: 8px;
+  padding: 7px 16px; font-size: 13px; font-weight: 700;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  flex-shrink: 0; transition: background 0.2s;
+}
+.play-btn:hover { background: var(--green-light); }
+.progress-wrap {
+  flex: 1; height: 4px; background: rgba(255,255,255,0.15);
+  border-radius: 3px; cursor: pointer;
+}
+.progress-bar { height: 100%; width: 0%; background: var(--green-light); border-radius: 3px; transition: width 0.1s linear; }
+.time-label { font-size: 11px; color: rgba(255,255,255,0.5); font-family: monospace; min-width: 44px; }
+
+/* Trust badges */
+.trust-row {
+  display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap;
+  padding: 0 14px 14px;
+  justify-content: center;
+}
+.trust-chip {
+  display: flex; align-items: center; gap: 5px;
+  background: rgba(30,107,60,0.08);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 11px; font-weight: 600; color: var(--green-main);
+}
+
+/* ─── HOW IT WORKS strip ─── */
+.how-strip {
+  background: var(--cream-dark);
+  padding: clamp(48px,6vh,80px) clamp(24px,6vw,80px);
+  transition: background 0.3s ease;
+}
+.how-strip h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(26px,3.5vw,40px);
+  color: var(--text-dark); text-align: center; margin-bottom: 40px;
+}
+.steps-grid {
+  display: grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+  gap: 24px; max-width: 900px; margin: 0 auto;
+}
+.step-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px; padding: 28px 22px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  transition: background 0.3s ease;
+}
+.step-icon { font-size: 32px; margin-bottom: 12px; }
+.step-num {
+  display: inline-block;
+  width: 24px; height: 24px; line-height: 24px;
+  background: var(--green-mid); color: #fff;
+  border-radius: 50%; font-size: 11px; font-weight: 800;
+  margin-bottom: 8px;
+}
+.step-title { font-size: 15px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; }
+.step-body { font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+
+/* ─── SCANNER PAGE ─── */
+.scanner-hero {
+  background: linear-gradient(135deg, #0f3d22 0%, #1e6b3c 100%);
+  padding: clamp(60px,8vh,100px) clamp(24px,6vw,80px) clamp(48px,6vh,80px);
+  text-align: center;
+}
+.scanner-hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(32px,5vw,54px);
+  color: #fff; margin-bottom: 14px;
+}
+.scanner-hero p { font-size: clamp(14px,1.8vw,18px); color: rgba(255,255,255,0.75); max-width: 560px; margin: 0 auto; line-height: 1.7; }
+
+.scanner-content {
+  max-width: 900px; margin: 0 auto;
+  padding: clamp(40px,6vh,80px) clamp(24px,5vw,60px);
+  display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start;
+}
+
+.scanner-steps { display: flex; flex-direction: column; gap: 20px; }
+.scanner-step {
+  background: var(--card-bg); border-radius: 14px; padding: 20px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+  display: flex; gap: 16px; align-items: flex-start;
+  transition: transform 0.2s, background 0.3s ease;
+}
+.scanner-step:hover { transform: translateY(-2px); }
+.step-badge {
+  width: 40px; height: 40px; flex-shrink: 0;
+  background: var(--green-main); color: #fff;
+  border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.step-info h3 { font-size: 15px; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; }
+.step-info p { font-size: 13px; color: var(--text-light); line-height: 1.6; }
+
+.scanner-tech {
+  background: #0f3d22; /* Keep deep code panel aesthetics constant */
+  border-radius: 20px; padding: 32px;
+  color: #fff; position: sticky; top: 88px;
+}
+.scanner-tech h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px; margin-bottom: 20px; color: #fff;
+}
+.tech-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.tech-item:last-child { border-bottom: none; }
+.tech-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+.tech-label { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.9); margin-bottom: 2px; }
+.tech-desc { font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.5; }
+
+.hash-demo {
+  margin-top: 20px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 10px; padding: 14px;
+  font-family: monospace; font-size: 11px;
+  color: #4aad6e; line-height: 1.8;
+  border: 1px solid rgba(74,173,110,0.2);
+}
+
+/* ─── CONTACT PAGE ─── */
+.contact-hero {
+  background: var(--cream-dark);
+  padding: clamp(60px,8vh,100px) clamp(24px,6vw,80px) clamp(48px,6vh,80px);
+  text-align: center;
+  border-bottom: 1px solid var(--border-color);
+  transition: background 0.3s ease;
+}
+.contact-hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(32px,5vw,54px);
+  color: var(--text-dark); margin-bottom: 14px;
+}
+.contact-hero p { font-size: clamp(14px,1.8vw,17px); color: var(--text-mid); max-width: 500px; margin: 0 auto; line-height: 1.7; }
+
+.contact-content {
+  max-width: 860px; margin: 0 auto;
+  padding: clamp(40px,6vh,80px) clamp(24px,5vw,60px);
+  display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+}
+
+.contact-info { display: flex; flex-direction: column; gap: 20px; }
+.contact-card {
+  display: flex; gap: 16px; align-items: flex-start;
+  background: var(--card-bg); border-radius: 14px; padding: 22px;
+  box-shadow: var(--shadow); border: 1px solid var(--border-color);
+  transition: background 0.3s ease;
+}
+.contact-icon {
+  width: 44px; height: 44px; flex-shrink: 0;
+  background: rgba(30,107,60,0.08); border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  color: var(--green-main);
+}
+body.dark-theme .contact-icon { background: rgba(255,255,255,0.05); }
+.contact-card h3 { font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; }
+.contact-card p, .contact-card a {
+  font-size: 13px; color: var(--text-light); line-height: 1.6;
+  text-decoration: none;
+}
+.contact-card a:hover { color: var(--green-main); }
+
+.contact-form {
+  background: var(--card-bg);
+  border-radius: 20px; padding: 32px;
+  box-shadow: var(--shadow); border: 1px solid var(--border-color);
+  transition: background 0.3s ease;
+}
+.contact-form h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px; color: var(--text-dark); margin-bottom: 24px;
+}
+.form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.form-group label { font-size: 13px; font-weight: 600; color: var(--text-mid); }
+.form-group input, .form-group textarea, .form-group select {
+  padding: 11px 14px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; color: var(--text-dark);
+  background: var(--cream);
+  transition: border-color 0.2s, background 0.2s;
+  outline: none;
+}
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+  border-color: var(--green-main);
+  background: var(--card-bg);
+}
+.form-group textarea { resize: vertical; min-height: 100px; }
+.form-submit {
+  width: 100%; padding: 13px;
+  background: var(--green-main); color: #fff;
+  border: none; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+.form-submit:hover { background: var(--green-deep); }
+
+/* ─── FOOTER ─── */
+footer {
+  background: #082213;
+  padding: 32px clamp(24px,6vw,80px);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.footer-brand {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px; font-weight: 700; color: rgba(255,255,255,0.8);
+}
+.footer-copy { font-size: 12px; color: rgba(255,255,255,0.4); }
+.footer-links { display: flex; gap: 16px; }
+.footer-links a { font-size: 13px; color: rgba(255,255,255,0.5); text-decoration: none; }
+.footer-links a:hover { color: rgba(255,255,255,0.9); }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+  .hero { grid-template-columns: 1fr; gap: 32px; }
+  .hero-text { max-width: 100%; }
+  .scanner-content, .contact-content { grid-template-columns: 1fr; }
+  .scanner-tech { position: static; }
+  .nav-links { display: none; flex-direction: column; position: absolute; top: 68px; left: 0; right: 0; background: var(--cream); padding: 16px; border-bottom: 1px solid var(--border-color); gap: 4px; }
+  .nav-links.open { display: flex; }
+  .nav-hamburger { display: flex; }
+  .hero-stats { gap: 20px; }
+  footer { flex-direction: column; text-align: center; }
+  .nav-right-container { gap: 10px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#" onclick="showPage('home');return false;">
+    <img src="data:image/jpeg;base64,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lZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4eLj5OXm5+jp6vHy8/T19vf4+fr/xAAfAQADAQEBAQEBAQEBAAAAAAAAAQIDBAUGBwgJCgv/xAC1EQACAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/aAAwEAAhEDEQA/AODoooriPkQooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoorq/B/gHXvFZEmn2vl2ecG6nOyP8O7fgDTSvsVCEpu0VdnKVLb281zKI7aKSWQ9FjUsT+Ar6Q8L/AAY0DTUSTV2k1S56kOTHED7KDk/iT9K9F03TbHS7cQabZ29pD/chjCD9K1VJ9T0aeWTlrN2PlTTPht4u1EKYdEuY1Pe4Kw4/BiDXRW/Rih9f7XefDyvLEWnSyrvYSeZJIgPofm+X8AK0XBuXsrGLxFOCTct/mz2V/gX4hC5TUNJZvQvIP/ZSsvUfg74us03RW1reAdRbzjP/AI/tr1xPjD4WkLeS2oSAHGUtWIq7b/FPwnLt83UJbUsQB9otZUGfrtx+tN4fyMvreDltL8T5e1XStQ0m48jVLK5tJeoWeMoSPUZ6iqVfaFveaJ6msXkn0/VLRh86Bk2X8Rz+teZeN/gtY3iSXXhaT7Hc9fstyxMT+wPVf1H0rGVJvYxq5dJLmputD58oq5q+mXuj6hLY6nbSW11EcNG45Hv7ge44qnWR5zTTswooopCCWwXQp8K2GfW/0g==\n" alt="Françe Farms Logo">
+    <span class="nav-logo-text">Françe Farms</span>
+  </a>
+
+  <div class="nav-right-container">
+    <ul class="nav-links">
+      <li><a href="#" class="active" onclick="showPage('home');return false;">Home</a></li>
+      <li><a href="#" onclick="showPage('scanner');return false;">Scanner</a></li>
+      <li><a href="#" onclick="showPage('contact');return false;">Contact</a></li>
+    </ul>
+
+    <button class="theme-toggle-btn" id="themeToggle" aria-label="Toggle Dark Mode">☀️</button>
+
+    <div class="nav-hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+</nav>
+
+<div id="home" class="page active">
+  <section class="hero">
+    <div class="hero-text">
+      <div class="hero-eyebrow">
+        <span class="eyebrow-dot"></span> Sovereign Agricultural Auditing
+      </div>
+      <h1 class="hero-title">Secure your harvest. <em>Prove provenance.</em></h1>
+      <p class="hero-body">
+        Françe Farms brings absolute cryptographic security to agricultural logistics. Protect your value chains, prevent counter-party fraud, and lock real-time provenance metadata down directly at the farm gate.
+      </p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="showPage('scanner')">Launch Scanner Demo</button>
+        <button class="btn-secondary" onclick="showPage('contact')">Consult Infrastructure</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-num">SHA-256</span>
+          <span class="stat-label">Audit Engine</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">GPS-Locked</span>
+          <span class="stat-label">Telemetry verification</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">100%</span>
+          <span class="stat-label">Immutable Logs</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-video-wrap">
+      <div class="video-card">
+        <div id="stage">
+          <div class="scene active" id="s0">
+            <div class="title-scene">
+              <span class="title-leaf">🌿</span>
+              <h2 class="title-main">FRANÇE FARMS</h2>
+              <p class="title-sub">Data Integrity Suite</p>
+              <span class="title-badge">Press Play to Initialize</span>
+            </div>
+          </div>
+          <div class="scene" id="s1">
+            <p class="sky-text">Traditional Markets Suffer from Opaque Provenance</p>
+            <div class="market-ground"></div>
+            <div class="market-scene">
+              <div class="stall-roof"></div>
+              <div class="stall-body">
+                <span class="mango-icon">🥭</span><span class="mango-icon">🥭</span><span class="mango-icon">🥭</span>
+                <span class="stall-sign">Local Stall</span>
+              </div>
+              <div class="buyer-wrap">
+                <div class="question-bubble">Is this fresh?</div>
+                <div class="buyer-head"></div>
+                <div class="buyer-body"></div>
+                <div class="buyer-legs"><div class="buyer-leg"></div><div class="buyer-leg"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="scene" id="s2">
+            <p class="sky-text" style="color:#112244;">Step 1: Scan at Source & Bind Local Telemetry</p>
+            <div class="phone-scene">
+              <div class="phone-frame">
+                <div class="phone-screen">
+                  <div class="phone-camera-anim"><span class="scan-line"></span>📸</div>
+                  <span class="phone-label">PROCESSING...</span>
+                </div>
+              </div>
+              <div class="gps-badge"><span class="gps-dot"></span>GPS FIXED: 10.65° N</div>
+            </div>
+          </div>
+          <div class="scene" id="s3">
+            <p class="sky-text" style="color:#221100;">Step 2: Generate Invariant SHA-256 Checksum</p>
+            <div class="phone-scene">
+              <div class="qr-scene">
+                <div class="crate">📦<div class="qr-sticker"><div class="qr-cell"></div><div class="qr-empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-empty"></div><div class="qr-empty"></div><div class="qr-cell"></div><div class="qr-empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-empty"></div><div class="qr-cell"></div><div class="qr-empty"></div><div class="qr-cell"></div></div></div>
+                <span class="arrow-anim">➡️</span>
+                <div class="check-badge">Immutable Manifest Block Created</div>
+              </div>
+              <div class="hash-display">SHA-256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</div>
+            </div>
+          </div>
+          <div class="scene" id="s4">
+            <div class="stars-wrap"><div class="star" style="top:20%;left:15%;width:3px;height:3px;"></div><div class="star" style="top:40%;left:80%;width:2px;height:2px;"></div><div class="star" style="top:70%;left:25%;width:4px;height:4px;"></div></div>
+            <div class="final-scene">
+              <div class="final-logo-box">🛡️</div>
+              <h2 class="final-tagline">Absolute Trust Architecture</h2>
+              <p class="final-sub">Sovereign infrastructure built cleanly from the bare metal up.</p>
+              <div class="badge-row"><span class="pill">Nginx Core</span><span class="pill">Ubuntu Secured</span><span class="pill">Data Audit Active</span></div>
+            </div>
+          </div>
+          <div class="caption" id="caption">Françe Farms Data Integrity System: Tap Play to Run Infrastructure Timeline.</div>
+        </div>
+        <div class="video-controls">
+          <button class="play-btn" id="playBtn">PLAY SYSTEM</button>
+          <div class="progress-wrap" id="progressWrap"><div class="progress-bar" id="progressBar"></div></div>
+          <span class="time-label" id="timeLabel">00:00</span>
+        </div>
+      </div>
+      <div class="trust-row">
+        <div class="trust-chip">📂 Zero-Trust Ledger</div>
+        <div class="trust-chip">⚡ Automated Verification</div>
+        <div class="trust-chip">🐍 Custom Pipeline</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="how-strip">
+    <h2>The Provenance Engine</h2>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-icon">📍</div>
+        <span class="step-num">01</span>
+        <h3 class="step-title">Coordinate Locking</h3>
+        <p class="step-body">Telemetry bindings enforce that data profiles can only originate at verified geolocation limits.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-icon">🔐</div>
+        <span class="step-num">02</span>
+        <h3 class="step-title">SHA-256 Auditing</h3>
+        <p class="step-body">Batch metrics undergo rigorous cryptographic mutation, freezing properties to block mid-transit manipulation.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-icon">📉</div>
+        <span class="step-num">03</span>
+        <h3 class="step-title">Immutable Profiling</h3>
+        <p class="step-body">Clean data normalized through automated sorting modules matches incoming supply states seamlessly.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="scanner" class="page">
+  <div class="scanner-hero">
+    <h1>Data Engine Terminal</h1>
+    <p>Simulate tracking telemetry and calculating cryptographic blocks directly inside our environment framework.</p>
+  </div>
+  <div class="scanner-content">
+    <div class="scanner-steps">
+      <div class="scanner-step">
+        <div class="step-badge">1</div>
+        <div class="step-info">
+          <h3>Ingest Fresh Manifests</h3>
+          <p>Parse raw metrics records (Origin boundaries, timestamp variations, thermal ranges) cleanly into the parser arrays.</p>
+        </div>
+      </div>
+      <div class="scanner-step">
+        <div class="step-badge">2</div>
+        <div class="step-info">
+          <h3>Normalize Log Noise</h3>
+          <p>Automated sorting algorithms eliminate blank telemetry entries, structure corrupt strings, and uniform date profiles instantly.</p>
+        </div>
+      </div>
+      <div class="scanner-step">
+        <div class="step-badge">3</div>
+        <div class="step-info">
+          <h3>Commit Cryptographic Signature</h3>
+          <p>Generate absolute cryptographic checks. Any downstream tampering natively destroys validation alignments, raising flags.</p>
+        </div>
+      </div>
+    </div>
+    <div class="scanner-tech">
+      <h3>Sovereign Verification Specs</h3>
+      <div class="tech-item">
+        <span class="tech-icon">⚙️</span>
+        <div>
+          <div class="tech-label">Isolated Compute Stack</div>
+          <div class="tech-desc">Operating natively out of local Ubuntu architecture running fully controlled Nginx server configurations.</div>
+        </div>
+      </div>
+      <div class="tech-item">
+        <span class="tech-icon">🐍</span>
+        <div>
+          <div class="tech-label">Deterministic Pipeline</div>
+          <div class="tech-desc">Built completely around structured data models to manage batch transactions free of bloated dependency layers.</div>
+        </div>
+      </div>
+      <div class="hash-demo">
+$ python3 hash_audit.py --file manifest_log.csv
+[INFO] Reading 1,420 normal entries...
+[INFO] Data anomalies purged successfully.
+[STATUS] Master Manifest SHA-256 Calculated:
+=> 8f4e1327a1c93a987d6e4b9f2427ae41e
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="contact" class="page">
+  <div class="contact-hero">
+    <h1>Request Systems Integration</h1>
+    <p>Let's map your operational structures into a secure, cryptographic data architecture built cleanly from the floor up.</p>
+  </div>
+  <div class="contact-content">
+    <div class="contact-info">
+      <div class="contact-card">
+        <div class="contact-icon">🛡️</div>
+        <div>
+          <h3>Infrastructure Integrity</h3>
+          <p>We reject standard black-box enterprise applications, deploying dedicated frameworks that grant you full asset autonomy.</p>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-icon">📍</div>
+        <div>
+          <h3>Regional Operations Range</h3>
+          <p>Deploying specialized technical support blueprints across regional networks from our core hub in Trinidad and Tobago.</p>
+        </div>
+      </div>
+    </div>
+    <div class="contact-form">
+      <h3>Initialize Strategy Review</h3>
+      <form onsubmit="alert('Telemetry parameters registered. Project review scheduled.'); return false;">
+        <div class="form-group">
+          <label for="name">Operator Name</label>
+          <input type="text" id="name" required placeholder="David François">
+        </div>
+        <div class="form-group">
+          <label for="scope">Operational Profile</label>
+          <select id="scope">
+            <option>Data Infrastructure Security</option>
+            <option>Provenance Ledger Implementation</option>
+            <option>Custom Server & Nginx Layouts</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="msg">System Vulnerabilities / Project Scope</label>
+          <textarea id="msg" required placeholder="Outline existing system log architectures or structural security needs..."></textarea>
+        </div>
+        <button type="submit" class="form-submit">Register Core Node Parameters</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>
+    <div class="footer-brand">Françe Farms</div>
+    <div class="footer-copy">© 2026 Françe Farms. Independent Computing. All Rights Reserved.</div>
+  </div>
+  <div class="footer-links">
+    <a href="#" onclick="showPage('home');return false;">Systems Overview</a>
+    <a href="#" onclick="showPage('scanner');return false;">Telemetry Terminal</a>
+    <a href="#" onclick="showPage('contact');return false;">Node Registration</a>
+  </div>
+</footer>
+
+<script>
+  /* ─── MULTI-PAGE VIEW CONTROLLER ─── */
+  function showPage(pageId) {
+    // Hide all panels
+    document.querySelectorAll('.page').forEach(page => {
+      page.classList.remove('active');
+    });
+    // Strip link states
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.classList.remove('active');
+    });
+    
+    // Show selected panel
+    const targetPage = document.getElementById(pageId);
+    if(targetPage) {
+      targetPage.classList.add('active');
+      window.scrollTo(0, 0);
+    }
+    
+    // Set active nav link highlighting rule
+    const activeLinks = document.querySelectorAll(`nav a[onclick*="${pageId}"]`);
+    activeLinks.forEach(link => link.classList.add('active'));
+
+    // Tear down mobile view expansion state if open
+    document.querySelector('.nav-links').classList.remove('open');
+  }
+
+  /* ─── MOBILE BURGER MENU INTERACTION ─── */
+  document.querySelector('.nav-hamburger').addEventListener('click', () => {
+    document.querySelector('.nav-links').classList.toggle('open');
+  });
+
+
+  /* ─── SYSTEM DARK MODE CONTROLLER ─── */
+  const themeToggle = document.getElementById('themeToggle');
+  
+  // Check for saved user preference, otherwise default to light mode
+  const currentTheme = localStorage.getItem('theme');
+  if (currentTheme === 'dark') {
+    document.body.classList.add('dark-theme');
+    themeToggle.textContent = '🌙';
+  }
+
+  themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-theme');
+    
+    let theme = 'light';
+    if (document.body.classList.contains('dark-theme')) {
+      theme = 'dark';
+      themeToggle.textContent = '🌙';
+    } else {
+      themeToggle.textContent = '☀️';
+    }
+    // Persist selection across sessions
+    localStorage.setItem('theme', theme);
+  });
+
+
+  /* ─── REVERSE-ENGINEERED PROVENANCE ANIMATION CONTROLS ─── */
+  const scenes = [
+    { id: "s0", cap: "Françe Farms Data Integrity System: Tap Play to Run Infrastructure Timeline.", dur: 2.5 },
+    { id: "s1", cap: "SCENARIO: Supply streams can be spoofed or altered without permanent verification metrics.", dur: 4.5 },
+    { id: "s2", cap: "INGESTION: Micro-telemetry locking reads localized data states and captures true farm origins.", dur: 4.5 },
+    { id: "s3", cap: "COMPUTATION: Data maps pass through automated cleaning scripts and resolve to a SHA-256 block checksum.", dur: 5.0 },
+    { id: "s4", cap: "VALIDATION COMPLETE: Secure, standalone auditing keeping infrastructure independent and true.", dur: 4.0 }
+  ];
+
+  let currentSceneIdx = 0;
+  let timelineTimer = null;
+  let startTime = 0;
+  let totalDuration = scenes.reduce((sum, s) => sum + s.dur, 0);
+  let accumulatedTime = 0;
+  let isPlaying = false;
+
+  const playBtn = document.getElementById('playBtn');
+  const progressBar = document.getElementById('progressBar');
+  const caption = document.getElementById('caption');
+  const timeLabel = document.getElementById('timeLabel');
+  const progressWrap = document.getElementById('progressWrap');
+
+  function updateVisuals() {
+    scenes.forEach((scene, idx) => {
+      document.getElementById(scene.id).classList.toggle('active', idx === currentSceneIdx);
+    });
+    caption.textContent = scenes[currentSceneIdx].cap;
+  }
+
+  function tick() {
+    if (!isPlaying) return;
+    let elapsed = (Date.now() - startTime) / 1000;
+    let currentSceneElapsed = elapsed - accumulatedTime;
+    
+    let absoluteProgress = (elapsed / totalDuration) * 100;
+    progressBar.style.width = Math.min(absoluteProgress, 100) + "%";
+    
+    let displaySec = Math.floor(elapsed);
+    timeLabel.textContent = `00:${displaySec < 10 ? '0' : ''}${displaySec}`;
+
+    if (currentSceneElapsed >= scenes[currentSceneIdx].dur) {
+      accumulatedTime += scenes[currentSceneIdx].dur;
+      currentSceneIdx++;
+      
+      if (currentSceneIdx >= scenes.length) {
+        stopTimeline();
+        return;
+      }
+      updateVisuals();
+    }
+    timelineTimer = requestAnimationFrame(tick);
+  }
+
+  function startTimeline() {
+    isPlaying = true;
+    playBtn.textContent = "HALT DEMO";
+    startTime = Date.now() - (accumulatedTime * 1000);
+    timelineTimer = requestAnimationFrame(tick);
+  }
+
+  function stopTimeline() {
+    isPlaying = false;
+    playBtn.textContent = "RUN TIMELINE";
+    cancelAnimationFrame(timelineTimer);
+    if (currentSceneIdx >= scenes.length) {
+      currentSceneIdx = 0;
+      accumulatedTime = 0;
+      progressBar.style.width = "0%";
+      timeLabel.textContent = "00:00";
+      updateVisuals();
+    }
+  }
+
+  playBtn.addEventListener('click', () => {
+    if (isPlaying) stopTimeline();
+    else startTimeline();
+  });
+
+  progressWrap.addEventListener('click', (e) => {
+    const rect = progressWrap.getBoundingClientRect();
+    const clickRatio = (e.clientX - rect.left) / rect.width;
+    let targetTime = clickRatio * totalDuration;
+    
+    cancelAnimationFrame(timelineTimer);
+    
+    let sum = 0;
+    currentSceneIdx = 0;
+    accumulatedTime = 0;
+    
+    for(let i=0; i<scenes.length; i++) {
+      if (targetTime >= sum && targetTime < sum + scenes[i].dur) {
+        currentSceneIdx = i;
+        accumulatedTime = sum;
+        break;
+      }
+      sum += scenes[i].dur;
+    }
+    
+    if (targetTime >= totalDuration) {
+      currentSceneIdx = scenes.length - 1;
+      accumulatedTime = totalDuration - scenes[currentSceneIdx].dur;
+      targetTime = totalDuration - 0.1;
+    }
+
+    progressBar.style.width = (targetTime / totalDuration) * 100 + "%";
+    let displaySec = Math.floor(targetTime);
+    timeLabel.textContent = `00:${displaySec < 10 ? '0' : ''}${displaySec}`;
+    
+    updateVisuals();
+    if (isPlaying) {
+      startTime = Date.now() - (targetTime * 1000);
+      timelineTimer = requestAnimationFrame(tick);
+    }
+  });
+</script>
+
+</body>
+</html>
