@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Françe Farms — Bio-Estate Ledger</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght=0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
@@ -413,7 +413,7 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
         <div class="info-icon">🐦</div>
         <div class="info-details">
           <h4>X / Twitter Core</h4>
-          <a href="https://x.com/france_farms" target="_blank">@france_far_ms</a>
+          <a href="https://x.com/france_far_ms" target="_blank">@france_far_ms</a>
         </div>
       </div>
 
@@ -596,9 +596,31 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
     } else {
       consoleLog("[WARNING] QRCode library dependency missing from Document Header context.", "log-error");
     }
+
+    // ─── HTTP NETWORK COUPLING LAYER FOR API INGESTION ───
+    fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP network fault detected: Status ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      consoleLog(`[SUCCESS] VAULT STORAGE ACKNOWLEDGED. Record ID: ${data.id || 'OK'}`, "log-success");
+      consoleLog(`[SUCCESS] Verification Receipt Token Generated.`, "log-success");
+    })
+    .catch(err => {
+      consoleLog(`[ERROR] Transmission failed: ${err.message}`, "log-error");
+    });
   }
 
-  /* ─── PLAY SYSTEM TIMELINE ANIMATION ENGINE (FIXED) ─── */
+  /* ─── PLAY SYSTEM TIMELINE ANIMATION ENGINE ─── */
   const playBtn = document.getElementById('playBtn');
   const progressBar = document.getElementById('progressBar');
   const timeLabel = document.getElementById('timeLabel');
@@ -647,12 +669,10 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
 
   playBtn.addEventListener('click', () => {
     if (isPlaying) {
-      // Pause
       clearInterval(timelineInterval);
       playBtn.textContent = "PLAY SYSTEM";
       isPlaying = false;
     } else {
-      // Play / Resume / Restart
       if (elapsedSeconds >= totalDuration) {
         updateTimeline(0);
       }
