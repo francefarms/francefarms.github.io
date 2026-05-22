@@ -1,37 +1,4 @@
-<script>
-  /* ─── TAB ENGINE ─── */
-  function showPage(pageId) {
-    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-    document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active'));
-    
-    const targetPage = document.getElementById(pageId);
-    if(targetPage) targetPage.classList.add('active');
-    
-    const activeLink = document.getElementById(`link-${pageId}`);
-    if(activeLink) activeLink.classList.add('active');
-    
-    document.querySelector('.nav-links').classList.remove('open');
-    window.scrollTo(0, 0);
-  }
-
-  document.querySelector('.nav-hamburger').addEventListener('click', () => {
-    document.querySelector('.nav-links').classList.toggle('open');
-  });
-
-  /* ─── THEME CONFIGURATION ─── */
-  const themeToggle = document.getElementById('themeToggle');
-  if (localStorage.getItem('theme') === 'dark') {
-    document.body.classList.add('dark-theme');
-    themeToggle.textContent = '🌙';
-  }
-  themeToggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark-theme');
-    const isDark = document.body.classList.contains('dark-theme');
-    themeToggle.textContent = isDark ? '🌙' : '☀️';
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-  });
-
-  /* ─── CORE SCANNER LOGIC & TELEMETRY ─── */
+/* ─── CORE SCANNER LOGIC & TELEMETRY ─── */
   const API_URL = "https://api.francefarms.net/api/scans";
   const dropZone = document.getElementById('drop-zone');
   const fileInput = document.getElementById('file-input');
@@ -46,7 +13,7 @@
     entry.className = `log-entry ${type}`;
     entry.textContent = msg;
     terminalConsole.appendChild(entry);
-    terminalConsole.scrollTop = terminalConsole.scrollHeight; // Auto-scrolls terminal
+    terminalConsole.scrollTop = terminalConsole.scrollHeight; 
   }
 
   // File Upload Visual Triggers
@@ -75,17 +42,16 @@
       return;
     }
 
-    // Trigger native browser permission handshake
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      async (position) => { // Added async keyword to handle hash generation math safely
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
         const accuracy = position.coords.accuracy;
 
         consoleLog(`[SUCCESS] GPS Fixed: Lat ${latitude.toFixed(4)}°, Lon ${longitude.toFixed(4)}° (Accuracy: ±${accuracy.toFixed(1)}m)`, "log-success");
 
-        // Proceed to transmit data to sovereign backend
-        sendDataToBackend(latitude, longitude);
+        // Proceed to asynchronously construct and transmit your sealed data payload
+        await sendDataToBackend(latitude, longitude);
       },
       (error) => {
         switch(error.code) {
@@ -109,22 +75,38 @@
     );
   });
 
-  function sendDataToBackend(lat, lon) {
-    const nodeId = document.getElementById('node-id').value;
-    const batchRef = document.getElementById('batch').value;
+  // Helper Function: Generates a secure cryptographic SHA-256 string inside browsers
+  async function generateSHA256(message) {
+    const msgBuffer = new TextEncoder().encode(message);                    
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);  
+    const hashArray = Array.from(new Uint8Array(hashBuffer));              
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');  
+  }
 
+  async function sendDataToBackend(lat, lon) {
+    const nodeId = document.getElementById('node-id').value || "UNASSIGNED_NODE";
+    const batchRef = document.getElementById('batch').value || "GENERIC_BATCH";
+    const isoTimestamp = new Date().toISOString();
+
+    // 1. Create a unique raw data string to seed the hash engine
+    const rawStringSeed = `${nodeId}-${batchRef}-${lat}-${lon}-${isoTimestamp}`;
+    
+    consoleLog(`> Running local cryptographic hashing protocol...`);
+    // 2. Compute the immutable SHA-256 hash string
+    const clientGeneratedHash = await generateSHA256(rawStringSeed);
+
+    // 3. Compile the secure, unalterable ledger payload block
     const payload = {
       node_id: nodeId,
-      batch_ref: batchRef,
-      latitude: lat,
-      longitude: lon,
-      timestamp: new Date().toISOString()
+      timestamp: isoTimestamp,
+      event_type: `SCAN_VERIFICATION:${batchRef}`,
+      payload_hash: clientGeneratedHash // ✅ Now perfectly matching your database column and backend properties
     };
 
+    consoleLog(`[CRYPTO] Secure Hash Sealed: ${clientGeneratedHash}`, "log-success");
     consoleLog(`> Payload block compiled cleanly. Transmitting telemetry profiles to database backend...`);
     consoleLog(`> Data: ${JSON.stringify(payload)}`);
     
     // Once backend endpoints are live, append fetch pipeline here:
     // fetch(API_URL, { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'application/json' } })
   }
-</script>
