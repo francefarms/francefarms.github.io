@@ -1,3 +1,6 @@
+Here is the complete, consolidated `index.html` file with the fixed HTML5 `<!DOCTYPE html>` standard declaration at line 1, split font optimization links to bypass browser network corruption blocks, and integrated theme configurations.
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,9 +8,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Françe Farms — Bio-Estate Ledger</title>
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght=0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Playfair+Display:ital,wght=0,700;0,900;1,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
@@ -542,7 +547,7 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
   });
 
   /* ─── CORE SCANNER LOGIC & TELEMETRY ─── */
-  // NOTE: If your backend route configuration is singular, toggle this string to "/api/scan"
+  // NOTE: If your backend endpoint architecture routes via singular, toggle this string to "/api/scan"
   const API_URL = "https://api.francefarms.net/api/scans";
   
   const dropZone = document.getElementById('drop-zone');
@@ -674,3 +679,5 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
 </script>
 </body>
 </html>
+
+```
