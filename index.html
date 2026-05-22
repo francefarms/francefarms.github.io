@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +6,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Françe Farms — Bio-Estate Ledger</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght=0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght=0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Playfair+Display:ital,wght=0,700;0,900;1,700&display=swap" rel="stylesheet">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
@@ -573,7 +575,7 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
     }
   });
 
-  // Browser Crypto Engine Integration Model
+  // Native Web Crypto API ArrayBuffer Implementation Model
   async function computeSHA256(message) {
     const encoder = new TextEncoder();
     const data = encoder.encode(message);
@@ -610,29 +612,28 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
     const batchRef = document.getElementById('batch').value || "GENERIC_BATCH";
     const isoTimestamp = new Date().toISOString();
 
-    // 1. Build context data string to use as the cryptographic seed
+    // Context hashing seed setup
     const rawSeedString = `${nodeId}-${batchRef}-${lat}-${lon}-${isoTimestamp}`;
     consoleLog("> Generating SHA-256 batch invariant verification code...");
     
     try {
-      // 2. Execute asynchronous browser crypto calculation
       const computedHash = await computeSHA256(rawSeedString);
       consoleLog(`[CRYPTO] Signature Generated: ${computedHash}`, "log-success");
 
-      // 3. Construct matching database key schema payload block
+      // Database-aligned validation object literal
       const payload = {
         node_id: nodeId,
         timestamp: isoTimestamp,
         event_type: `AUDIT_LOG:${batchRef}`,
-        payload_hash: computedHash // Aligning perfectly with database schemas
+        payload_hash: computedHash
       };
 
       consoleLog("> Routing telemetry transaction to the edge engine...");
 
-      // 4. Render the confirmation QR Code receipt using the verified third-party script
+      // Render structural verification layout receipt
       const qrResultDiv = document.getElementById('qr-result');
       const qrContainer = document.getElementById('qrcode');
-      qrContainer.innerHTML = ""; // Clear old instance
+      qrContainer.innerHTML = ""; 
       qrResultDiv.style.display = "block";
       
       qrcodeInstance = new QRCode(qrContainer, {
@@ -646,7 +647,7 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
 
       consoleLog(`[SUCCESS] Receipt vector rendered. QR Code sealed to canvas.`, "log-success");
 
-      // 5. Fire Network Pipeline
+      // Network request runtime context block
       fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -667,3 +668,5 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
 </script>
 </body>
 </html>
+
+```
