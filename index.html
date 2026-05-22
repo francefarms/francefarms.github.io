@@ -1,10 +1,10 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Françe Farms — Bio-Estate Ledger</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght=0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Playfair+Display:ital,wght=0,700;0,900;1,700&display=swap" rel="stylesheet">
@@ -608,9 +608,16 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
   });
 
   async function transmitTelemetry(lat, lon) {
-    const nodeId = document.getElementById('node-id').value || "UNKNOWN_NODE";
-    const batchRef = document.getElementById('batch').value || "GENERIC_BATCH";
+    const nodeId = document.getElementById('node-id').value.trim();
+    const batchRef = document.getElementById('batch').value.trim();
     const isoTimestamp = new Date().toISOString();
+
+    // Guard Clause: Prevent execution if parameters are completely empty strings
+    if (!nodeId || !batchRef) {
+      consoleLog("[ERROR] Input parameters rejected: NODE_ID and BATCH_REF parameters cannot be blank.", "log-error");
+      alert("Operational Parameters Missing: Please input valid data strings into both fields before auditing.");
+      return;
+    }
 
     // Context hashing seed setup
     const rawSeedString = `${nodeId}-${batchRef}-${lat}-${lon}-${isoTimestamp}`;
@@ -653,12 +660,15 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP Status Code ${res.status}`);
+        return res.json();
+      })
       .then(data => {
         consoleLog(`[SERVER] 📥 Transaction acknowledged: ${data.message || 'Archived.'}`, "log-success");
       })
       .catch(err => {
-        consoleLog(`[LOCAL DEV NOTICE] Network connection simulation skipped: ${err.message}`);
+        consoleLog(`[NETWORK ERROR] Failed to stream parameters to API target: ${err.message}`, "log-error");
       });
 
     } catch (err) {
@@ -668,5 +678,3 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
 </script>
 </body>
 </html>
-
-```
