@@ -542,7 +542,9 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
   });
 
   /* ─── CORE SCANNER LOGIC & TELEMETRY ─── */
+  // NOTE: If your backend route configuration is singular, toggle this string to "/api/scan"
   const API_URL = "https://api.francefarms.net/api/scans";
+  
   const dropZone = document.getElementById('drop-zone');
   const fileInput = document.getElementById('file-input');
   const terminalConsole = document.getElementById('terminal-console');
@@ -575,7 +577,6 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
     }
   });
 
-  // Native Web Crypto API ArrayBuffer Implementation Model
   async function computeSHA256(message) {
     const encoder = new TextEncoder();
     const data = encoder.encode(message);
@@ -612,14 +613,12 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
     const batchRef = document.getElementById('batch').value.trim();
     const isoTimestamp = new Date().toISOString();
 
-    // Guard Clause: Prevent execution if parameters are completely empty strings
     if (!nodeId || !batchRef) {
       consoleLog("[ERROR] Input parameters rejected: NODE_ID and BATCH_REF parameters cannot be blank.", "log-error");
       alert("Operational Parameters Missing: Please input valid data strings into both fields before auditing.");
       return;
     }
 
-    // Context hashing seed setup
     const rawSeedString = `${nodeId}-${batchRef}-${lat}-${lon}-${isoTimestamp}`;
     consoleLog("> Generating SHA-256 batch invariant verification code...");
     
@@ -627,7 +626,6 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
       const computedHash = await computeSHA256(rawSeedString);
       consoleLog(`[CRYPTO] Signature Generated: ${computedHash}`, "log-success");
 
-      // Database-aligned validation object literal
       const payload = {
         node_id: nodeId,
         timestamp: isoTimestamp,
@@ -637,7 +635,6 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
 
       consoleLog("> Routing telemetry transaction to the edge engine...");
 
-      // Render structural verification layout receipt
       const qrResultDiv = document.getElementById('qr-result');
       const qrContainer = document.getElementById('qrcode');
       qrContainer.innerHTML = ""; 
@@ -654,7 +651,6 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
 
       consoleLog(`[SUCCESS] Receipt vector rendered. QR Code sealed to canvas.`, "log-success");
 
-      // Network request runtime context block
       fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
