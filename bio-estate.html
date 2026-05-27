@@ -1,125 +1,268 @@
-/* ─── CORE SCANNER LOGIC & TELEMETRY ─── */
-  // Pointing directly to your primary domain gateway on the verified working endpoint
-  const API_URL = "https://www.francefarms.net/upload_hash";
-  const dropZone = document.getElementById('drop-zone');
-  const fileInput = document.getElementById('file-input');
-  const terminalConsole = document.getElementById('terminal-console');
-  const previewImg = document.getElementById('preview-img');
-  const lensGlyph = document.getElementById('lens-glyph');
-  const executeBtn = document.getElementById('execute-btn');
-
-  // Custom Logger targeting your UI terminal component
-  function consoleLog(msg, type = '') {
-    const entry = document.createElement('div');
-    entry.className = `log-entry ${type}`;
-    entry.textContent = msg;
-    terminalConsole.appendChild(entry);
-    terminalConsole.scrollTop = terminalConsole.scrollHeight; 
-  }
-
-  // File Upload Visual Triggers
-  dropZone.addEventListener('click', () => fileInput.click());
-  fileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        previewImg.src = event.target.result;
-        previewImg.style.display = 'block';
-        lensGlyph.style.display = 'none';
-        document.getElementById('drop-text').style.display = 'none';
-        consoleLog(`> Image bound successfully: ${file.name}`);
-      };
-      reader.readAsDataURL(file);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Françe Farms - Bio-Estate Ledger Tracker</title>
+  <style>
+    :root {
+      --neon-green: #00ff66;
+      --dark-bg: #0a0f0d;
+      --panel-bg: #121b16;
+      --border-color: #1f3328;
+      --text-main: #e0e6e3;
     }
-  });
+    body {
+      background-color: var(--dark-bg);
+      color: var(--text-main);
+      font-family: 'Courier New', Courier, monospace;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: var(--panel-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 25px;
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.05);
+    }
+    h1, h3 {
+      color: var(--neon-green);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-top: 0;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--neon-green);
+      font-size: 0.9rem;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      background: var(--dark-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      color: var(--text-main);
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+    input[type="text"]:focus {
+      border-color: var(--neon-green);
+      outline: none;
+    }
+    .drop-zone {
+      border: 2px dashed var(--border-color);
+      border-radius: 6px;
+      padding: 30px;
+      text-align: center;
+      cursor: pointer;
+      background: var(--dark-bg);
+      transition: border-color 0.3s;
+    }
+    .drop-zone:hover {
+      border-color: var(--neon-green);
+    }
+    #preview-img {
+      max-width: 100%;
+      max-height: 250px;
+      margin-top: 15px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      display: none;
+    }
+    .btn {
+      background: transparent;
+      color: var(--neon-green);
+      border: 1px solid var(--neon-green);
+      padding: 14px 28px;
+      font-family: inherit;
+      font-weight: bold;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 4px;
+      width: 100%;
+      transition: background 0.3s, color 0.3s;
+    }
+    .btn:hover {
+      background: var(--neon-green);
+      color: var(--dark-bg);
+      box-shadow: 0 0 10px rgba(0, 255, 102, 0.3);
+    }
+    .console {
+      background: #050706;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 15px;
+      height: 180px;
+      overflow-y: auto;
+      margin-top: 25px;
+    }
+    .log-entry {
+      margin-bottom: 6px;
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+    .log-success { color: #00ff66; }
+    .log-error { color: #ff3333; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
 
-  // GPS Telemetry Execution Trigger
-  executeBtn.addEventListener('click', () => {
-    consoleLog("> Initializing Geolocation verification protocol...");
+  <div class="container">
+    <h1>Françe Farms</h1>
+    <h3>Bio-Estate Provenance Ledger Engine</h3>
+    <hr style="border-color: var(--border-color); margin-bottom: 25px;">
 
-    if (!navigator.geolocation) {
-      consoleLog("[ERROR] Geolocation is blocked or unsupported by this browser environment.", "log-error");
-      return;
+    <div class="form-group">
+      <label for="node-id">Sovereign Node ID Identification</label>
+      <input type="text" id="node-id" value="GRANDE_01">
+    </div>
+
+    <div class="form-group">
+      <label for="batch">Agricultural Batch Reference Tracking Index</label>
+      <input type="text" id="batch" value="COCOA-2026-B1">
+    </div>
+
+    <div class="form-group">
+      <label>Product Validation Asset Capture Image</label>
+      <div class="drop-zone" id="drop-zone">
+        <span id="lens-glyph" style="font-size: 2.5rem; display:block; margin-bottom:10px;">📷</span>
+        <span id="drop-text">Click or Drop Asset Certificate Image to Bind</span>
+        <input type="file" id="file-input" accept="image/*" class="hidden">
+        <img id="preview-img" alt="Asset Validation Frame Preview">
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-top: 30px;">
+      <button class="btn" id="execute-btn">Execute Crypto-Tagging Ledger Submission</button>
+    </div>
+
+    <div class="form-group hidden" id="hash-wrapper">
+      <label>Sealed Immutable Signature Hash Result (SHA-256)</label>
+      <div id="hash-output" style="padding:12px; background:#050706; border:1px solid var(--border-color); color:var(--neon-green); font-size:0.85rem; word-break:break-all; border-radius:4px;"></div>
+    </div>
+
+    <div class="console" id="terminal-console">
+      <div class="log-entry" style="color: #666;">[SYSTEM] Core security matrix modules online. Waiting for operator submission...</div>
+    </div>
+  </div>
+
+  <script>
+    /* ─── CORE SCANNER LOGIC & TELEMETRY ─── */
+    const API_URL = "https://www.francefarms.net/api/scans";
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const terminalConsole = document.getElementById('terminal-console');
+    const previewImg = document.getElementById('preview-img');
+    const lensGlyph = document.getElementById('lens-glyph');
+    const executeBtn = document.getElementById('execute-btn');
+
+    function consoleLog(msg, type = '') {
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      entry.textContent = msg;
+      terminalConsole.appendChild(entry);
+      terminalConsole.scrollTop = terminalConsole.scrollHeight; 
     }
 
-    navigator.geolocation.getCurrentPosition(
-      async (position) => { 
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-        const accuracy = position.coords.accuracy;
-
-        consoleLog(`[SUCCESS] GPS Fixed: Lat ${latitude.toFixed(4)}°, Lon ${longitude.toFixed(4)}° (Accuracy: ±${accuracy.toFixed(1)}m)`, "log-success");
-
-        await sendDataToBackend(latitude, longitude);
-      },
-      (error) => {
-        switch(error.code) {
-          case error.PERMISSION_DENIED:
-            consoleLog("[ERROR] Access Denied: Operator rejected location permissions.", "log-error");
-            alert("Françe Farms requires device location access to authenticate batch provenance.");
-            break;
-          case error.POSITION_UNAVAILABLE:
-            consoleLog("[ERROR] Telemetry Failed: Satellite linkage unavailable.", "log-error");
-            break;
-          case error.TIMEOUT:
-            consoleLog("[ERROR] Telemetry Failed: Core location handshake timed out.", "log-error");
-            break;
-        }
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 12000,
-        maximumAge: 0
+    dropZone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          previewImg.src = event.target.result;
+          previewImg.style.display = 'block';
+          lensGlyph.style.display = 'none';
+          document.getElementById('drop-text').style.display = 'none';
+          consoleLog(`> Image bound successfully: ${file.name}`);
+        };
+        reader.readAsDataURL(file);
       }
-    );
-  });
+    });
 
-  async function generateSHA256(message) {
-    const msgBuffer = new TextEncoder().encode(message);                     
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);  
-    const hashArray = Array.from(new Uint8Array(hashBuffer));              
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');  
-  }
+    executeBtn.addEventListener('click', () => {
+      consoleLog("> Initializing Geolocation verification protocol...");
 
-  async function sendDataToBackend(lat, lon) {
-    const nodeId = document.getElementById('node-id').value || "UNASSIGNED_NODE";
-    const batchRef = document.getElementById('batch').value || "GENERIC_BATCH";
-    const isoTimestamp = new Date().toISOString();
+      if (!navigator.geolocation) {
+        consoleLog("[ERROR] Geolocation unsupported by this browser environment.", "log-error");
+        return;
+      }
 
-    const rawStringSeed = `${nodeId}-${batchRef}-${lat}-${lon}-${isoTimestamp}`;
-    
-    consoleLog(`> Running local cryptographic hashing protocol...`);
-    const clientGeneratedHash = await generateSHA256(rawStringSeed);
-
-    const payload = {
-      node_id: nodeId,
-      timestamp: isoTimestamp,
-      event_type: `SCAN_VERIFICATION:${batchRef}`,
-      payload_hash: clientGeneratedHash
-    };
-
-    consoleLog(`[CRYPTO] Secure Hash Sealed: ${clientGeneratedHash}`, "log-success");
-    consoleLog(`> Payload block compiled. Transmitting to backend...`);
-    
-    try {
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json'
+      navigator.geolocation.getCurrentPosition(
+        async (position) => { 
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+          await sendDataToBackend(latitude, longitude);
         },
-        body: JSON.stringify(payload)
-      });
+        (error) => {
+          consoleLog("[ERROR] Telemetry Failed: Location handshake rejected or timed out.", "log-error");
+        },
+        { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+      );
+    });
 
-      if (res.ok) {
-        const data = await res.json().catch(() => ({}));
-        consoleLog(`[DATABASE] Record committed successfully!`, "log-success");
-      } else {
-        const errData = await res.text();
-        consoleLog(`[SERVER ERROR] Status ${res.status}: ${errData}`, "log-error");
-      }
-    } catch (err) {
-      consoleLog(`[NETWORK ERROR] Could not establish connection to API Gateway interface.`, "log-error");
-      console.error(err);
+    async function generateSHA256(message) {
+      const msgBuffer = new TextEncoder().encode(message);                     
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);  
+      const hashArray = Array.from(new Uint8Array(hashBuffer));              
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');  
     }
-  }
+
+    async function sendDataToBackend(lat, lon) {
+      const nodeId = document.getElementById('node-id').value || "UNASSIGNED_NODE";
+      const batchRef = document.getElementById('batch').value || "GENERIC_BATCH";
+      const isoTimestamp = new Date().toISOString();
+
+      const rawStringSeed = `${nodeId}-${batchRef}-${lat}-${lon}-${isoTimestamp}`;
+      consoleLog(`> Running local cryptographic hashing protocol...`);
+      const clientGeneratedHash = await generateSHA256(rawStringSeed);
+
+      document.getElementById('hash-wrapper').classList.remove('hidden');
+      document.getElementById('hash-output').textContent = clientGeneratedHash;
+      consoleLog(`[CRYPTO] Secure Hash Sealed: ${clientGeneratedHash}`, "log-success");
+      
+      // Build standard Multipart FormData to match server.js requirements
+      const formData = new FormData();
+      formData.append('node_id', nodeId);
+      formData.append('batch', batchRef);
+      formData.append('sha256', clientGeneratedHash);
+      
+      if (fileInput.files[0]) {
+          formData.append('image', fileInput.files[0]);
+          consoleLog(`> Packing dynamic image payload asset array...`);
+      }
+
+      try {
+        consoleLog(`> Transmitting telemetry directly to infrastructure gateway...`);
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (res.ok) {
+          const data = await res.json().catch(() => ({}));
+          consoleLog(`[VAULT SUCCESS] Record committed to database! ID: ${data.id || 'Verified'}`, "log-success");
+        } else {
+          const errData = await res.text();
+          consoleLog(`[SERVER REJECTION] Status Code ${res.status}: ${errData}`, "log-error");
+        }
+      } catch (err) {
+        consoleLog(`[NETWORK ERROR] Communication with backend proxy gateway failed.`, "log-error");
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>
