@@ -48,11 +48,10 @@
 
   let currentStep = 0;
   let timelineInterval = null;
-  const stepsCount = scenes.length; // 5 scenes total (s0 to s4)
-  const durationPerStep = 4000; // 4 seconds per scene segment
+  const stepsCount = scenes.length; 
+  const durationPerStep = 4000; 
 
   function updateTimelineUI(step, elapsedInStep = 0) {
-    // Activate current scene, hide others
     scenes.forEach((scene, idx) => {
       if (idx === step) {
         scene.classList.add('active');
@@ -61,16 +60,13 @@
       }
     });
 
-    // Update Text Content
     captionEl.textContent = captions[step];
 
-    // Compute absolute total percentage
     const totalDuration = stepsCount * durationPerStep;
     const currentElapsed = (step * durationPerStep) + elapsedInStep;
     const percentage = (currentElapsed / totalDuration) * 100;
     progressBar.style.width = `${percentage}%`;
 
-    // Time Label Display Formatting
     const totalSeconds = Math.floor(currentElapsed / 1000);
     const mins = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
     const secs = String(totalSeconds % 60).padStart(2, '0');
@@ -82,7 +78,7 @@
     const stepDuration = 4000;
 
     function animate(timestamp) {
-      if (!timelineInterval) return; // Paused or stopped
+      if (!timelineInterval) return; 
       if (!startTimestamp) startTimestamp = timestamp;
 
       let elapsed = timestamp - startTimestamp;
@@ -90,7 +86,6 @@
       if (elapsed >= stepDuration) {
         currentStep++;
         if (currentStep >= stepsCount) {
-          // Loop completed resetting to structural index 0
           currentStep = 0;
           playBtn.textContent = 'PLAY SYSTEM';
           timelineInterval = null;
@@ -110,18 +105,16 @@
 
   playBtn.addEventListener('click', () => {
     if (timelineInterval) {
-      // Pause Execution state
       cancelAnimationFrame(timelineInterval);
       timelineInterval = null;
       playBtn.textContent = 'RESUME';
     } else {
-      // Execute/Resume state
       playBtn.textContent = 'PAUSE';
       runTimeline();
     }
   });
 
-  /* ─── BIO-ESTATE SCANNER ENGINE TERMINAL LOGIC ─── */
+  /* ─── LOCAL SOVEREIGN SCANNER ENGINE LOGIC ─── */
   const dropZone = document.getElementById('drop-zone');
   const fileInput = document.getElementById('file-input');
   const previewImg = document.getElementById('preview-img');
@@ -148,12 +141,11 @@
     consoleEl.scrollTop = consoleEl.scrollHeight;
   }
 
-  // Trigger file selection window
+  // File picker binding
   dropZone.addEventListener('click', () => fileInput.click());
-
   fileInput.addEventListener('change', (e) => handleFileIngestion(e.target.files[0]));
 
-  // Drag and Drop Interfacing Hooks
+  // Drag & Drop event bindings
   dropZone.addEventListener('dragover', (e) => {
     e.preventDefault();
     dropZone.style.background = "rgba(30,107,60,0.1)";
@@ -173,11 +165,11 @@
 
   function handleFileIngestion(file) {
     if (!file || !file.type.startsWith('image/')) {
-      appendTerminalLog("Ingestion Failure: Object parameter must be a valid image vector.", "error");
+      appendTerminalLog("Ingestion Failure: Object parameter must be a valid image file.", "error");
       return;
     }
     activeIngestedFile = file;
-    appendTerminalLog(`Buffered file context successfully: ${file.name} (${Math.round(file.size / 1024)} KB)`);
+    appendTerminalLog(`Buffered file locally: ${file.name} (${Math.round(file.size / 1024)} KB)`);
 
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -189,11 +181,18 @@
     reader.readAsDataURL(file);
   }
 
-  // Mimics cryptographic hashing operations on form criteria parameters
+  // Browser-native cryptographic hashing implementation
+  async function computeFileSHA256(file) {
+    const arrayBuffer = await file.arrayBuffer();
+    const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
   executeBtn.addEventListener('click', async () => {
     if (!activeIngestedFile) {
       appendTerminalLog("Execution Blocked: Local hardware telemetry image buffer is empty.", "error");
-      alert("Please bind an image asset first via drag-and-drop or select block click.");
+      alert("Please upload or drag an image into the scanner boundary first.");
       return;
     }
 
@@ -204,44 +203,54 @@
     qrResultBlock.style.display = 'none';
     qrCodeContainer.innerHTML = '';
 
-    appendTerminalLog(`Contacting localized core block... Node: ${nodeId}`);
+    appendTerminalLog(`Initializing client-side cryptographic engine pipeline...`);
     
-    // Step 1: Simulated Hash Compute Delay
-    await new Promise(resolve => setTimeout(resolve, 800));
-    appendTerminalLog("Calculating dynamic checksum... Isolating invariant canvas elements.");
-    
-    // Generate mock SHA-256 string footprint representation
-    const pseudoHash = Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('');
-    appendTerminalLog(`SHA-256 Footprint Generated: ${pseudoHash.substring(0, 16)}...`, "success");
+    try {
+      // Step 1: Real browser-side processing
+      await new Promise(resolve => setTimeout(resolve, 600));
+      appendTerminalLog(`Computing actual SHA-256 block hash for file: ${activeIngestedFile.name}...`);
+      
+      const realFileHash = await computeFileSHA256(activeIngestedFile);
+      appendTerminalLog(`SHA-256 Footprint Secured: ${realFileHash.substring(0, 24)}...`, "success");
 
-    // Step 2: Telemetry Binding Delay
-    await new Promise(resolve => setTimeout(resolve, 600));
-    const mockLat = (10.65 + (Math.random() - 0.5) * 0.1).toFixed(4);
-    const mockLon = (-61.22 + (Math.random() - 0.5) * 0.1).toFixed(4);
-    appendTerminalLog(`Binding location coordinates: Lat ${mockLat}° N, Lon ${mockLon}° W`);
+      // Step 2: Telemetry Injection Simulation
+      await new Promise(resolve => setTimeout(resolve, 500));
+      // Standard local coordination parameters
+      const mockLat = 10.6500;
+      const mockLon = -61.2200;
+      appendTerminalLog(`Binding physical node telemetry markers: Lat ${mockLat}° N, Lon ${mockLon}° W`);
 
-    // Step 3: QR Dynamic Payload Output Structure mapping
-    await new Promise(resolve => setTimeout(resolve, 500));
-    const payload = JSON.stringify({
-      node: nodeId,
-      batch: batchRef,
-      timestamp: new Date().toISOString(),
-      hash: pseudoHash,
-      coordinates: { lat: mockLat, lon: mockLon }
-    }, null, 2);
+      // Step 3: Local Manifest Packaging
+      await new Promise(resolve => setTimeout(resolve, 400));
+      const manifestPayload = JSON.stringify({
+        node_id: nodeId,
+        batch_ref: batchRef,
+        file_meta: {
+          name: activeIngestedFile.name,
+          size_bytes: activeIngestedFile.size
+        },
+        timestamp_utc: new Date().toISOString(),
+        immutable_sha256: realFileHash,
+        telemetry: { lat: mockLat, lon: mockLon }
+      }, null, 2);
 
-    // Build the dynamic QR asset element inside receipt node block
-    new QRCode(qrCodeContainer, {
-      text: payload,
-      width: 140,
-      height: 140,
-      colorDark: "#0f3d22",
-      colorLight: "#ffffff",
-      correctLevel: QRCode.CorrectLevel.H
-    });
+      // Step 4: Render interactive receipt node QR code
+      new QRCode(qrCodeContainer, {
+        text: manifestPayload,
+        width: 160,
+        height: 160,
+        colorDark: "#0f3d22",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
 
-    qrResultBlock.style.display = 'block';
-    appendTerminalLog("Transaction Manifest Sealed. Invariant ledger item deployed successfully.", "success");
-    executeBtn.disabled = false;
+      qrResultBlock.style.display = 'block';
+      appendTerminalLog("Sovereign verification manifest sealed to frontend layers.", "success");
+      
+    } catch (err) {
+      appendTerminalLog(`Internal pipeline execution fault: ${err.message}`, "error");
+    } finally {
+      executeBtn.disabled = false;
+    }
   });
 </script>
