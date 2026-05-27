@@ -467,6 +467,10 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
 </footer>
 
 <script>
+  /* ─── NETWORKING TOPOLOGY DEFINITION ─── */
+  // Targeting direct, peer-to-peer Tailscale highway to bypass nested NAT VM walls
+  const API_URL = "http://100.114.231.81:3000/api/scans";
+
   /* ─── NAVIGATION ROUTER TAB ENGINE ─── */
   function showPage(pageId) {
     document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
@@ -510,43 +514,30 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
 
   let currentStep = 0;
   let timelineInterval = null;
-  const totalDuration = 20;
+  const totalDuration = 20; 
+  let currentProgress = 0;
 
   function updateTimeline() {
-    const progressPercent = (currentStep / totalDuration) * 100;
-    progressBar.style.width = `${progressPercent}%`;
+    currentProgress += (100 / totalDuration);
+    if (currentProgress > 100) currentProgress = 100;
+    progressBar.style.width = `${currentProgress}%`;
     
-    const displaySecs = currentStep % 60;
-    const displayMins = Math.floor(currentStep / 60);
-    timeLabel.textContent = `${displayMins.toString().padStart(2, '0')}:${displaySecs.toString().padStart(2, '0')}`;
+    let seconds = Math.floor((currentProgress / 100) * totalDuration);
+    timeLabel.textContent = `00:${seconds < 10 ? '0' : ''}${seconds}`;
 
-    if (currentStep === 0) {
-      switchScene(0, captions[0]);
-    } else if (currentStep === 4) {
-      switchScene(1, captions[1]);
-    } else if (currentStep === 9) {
-      switchScene(2, captions[2]);
-    } else if (currentStep === 14) {
-      switchScene(3, captions[3]);
-    } else if (currentStep === 19) {
-      switchScene(4, captions[4]);
+    let step = Math.floor((currentProgress / 101) * 5);
+    if (step !== currentStep && step < 5) {
+      document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+      document.getElementById(`s${step}`).classList.add('active');
+      document.getElementById('caption').textContent = captions[step];
+      currentStep = step;
     }
 
-    if (currentStep >= totalDuration) {
+    if (currentProgress >= 100) {
       clearInterval(timelineInterval);
+      playBtn.textContent = "REPLAY RUN";
       timelineInterval = null;
-      playBtn.textContent = "REPLAY SYSTEM";
-      currentStep = 0;
-    } else {
-      currentStep++;
     }
-  }
-
-  function switchScene(index, text) {
-    document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
-    const targetScene = document.getElementById(`s${index}`);
-    if (targetScene) targetScene.classList.add('active');
-    document.getElementById('caption').textContent = text;
   }
 
   playBtn.addEventListener('click', () => {
@@ -555,166 +546,163 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
       timelineInterval = null;
       playBtn.textContent = "RESUME";
     } else {
+      if (currentProgress >= 100) {
+        currentProgress = 0;
+        currentStep = 0;
+        document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+        document.getElementById('s0').classList.add('active');
+        document.getElementById('caption').textContent = captions[0];
+      }
       playBtn.textContent = "PAUSE";
-      if (currentStep === 0) progressBar.style.width = '0%';
       timelineInterval = setInterval(updateTimeline, 1000);
     }
   });
 
-  /* ─── DYNAMIC INGESTION SCANNER WORKFLOW ─── */
-  const API_URL = "/api/scans";
-  const dropZone = document.getElementById('drop-zone');
-  const fileInput = document.getElementById('file-input');
-  const terminalConsole = document.getElementById('terminal-console');
-  const previewImg = document.getElementById('preview-img');
-  const lensGlyph = document.getElementById('lens-glyph');
-  const executeBtn = document.getElementById('execute-btn');
-  let qrcodeInstance = null;
-  let isTransmitting = false; // System lock flag to kill double execution loops
-
-  function consoleLog(msg, type = '') {
+  /* ─── TERMINAL CONSOLE LOGGING MIDDLEWARE ─── */
+  const consoleLog = document.getElementById('terminal-console');
+  function logger(message, type = 'info') {
     const entry = document.createElement('div');
-    entry.className = `log-entry ${type}`;
-    entry.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
-    terminalConsole.appendChild(entry);
-    terminalConsole.scrollTop = terminalConsole.scrollHeight;
+    entry.classList.add('log-entry');
+    if (type === 'success') entry.classList.add('log-success');
+    if (type === 'error') entry.classList.add('log-error');
+    
+    const timestamp = new Date().toLocaleTimeString();
+    entry.textContent = `[${timestamp}] ${message}`;
+    consoleLog.appendChild(entry);
+    consoleLog.scrollTop = consoleLog.scrollHeight;
   }
 
-  // File choice delegation handler 
-  dropZone.addEventListener('click', (e) => {
-    if (e.target !== fileInput) {
-      fileInput.click();
-    }
+  /* ─── FILE DRAG & DROP BINDING INTERFACE ─── */
+  const dropZone = document.getElementById('drop-zone');
+  const fileInput = document.getElementById('file-input');
+  const previewImg = document.getElementById('preview-img');
+  const lensGlyph = document.getElementById('lens-glyph');
+  const dropText = document.getElementById('drop-text');
+  let boundFile = null;
+
+  dropZone.addEventListener('click', () => fileInput.click());
+  
+  dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.style.background = "rgba(30,107,60,0.1)";
   });
 
-  // Handle Drag & Drop Events
-  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.style.background = 'rgba(30,107,60,0.1)'; });
-  dropZone.addEventListener('dragleave', () => { dropZone.style.background = 'rgba(30,107,60,0.03)'; });
+  dropZone.addEventListener('dragleave', () => {
+    dropZone.style.background = "rgba(30,107,60,0.03)";
+  });
+
   dropZone.addEventListener('drop', (e) => {
     e.preventDefault();
-    dropZone.style.background = 'rgba(30,107,60,0.03)';
+    dropZone.style.background = "rgba(30,107,60,0.03)";
     if (e.dataTransfer.files.length > 0) {
-      fileInput.files = e.dataTransfer.files;
-      handleFileIngestion(e.dataTransfer.files[0]);
+      handleFileMapping(e.dataTransfer.files[0]);
     }
   });
 
   fileInput.addEventListener('change', (e) => {
-    if (e.target.files.length > 0) handleFileIngestion(e.target.files[0]);
+    if (e.target.files.length > 0) {
+      handleFileMapping(e.target.files[0]);
+    }
   });
 
-  function handleFileIngestion(file) {
+  function handleFileMapping(file) {
+    if (!file.type.startsWith('image/')) {
+      logger("Rejection: Invalid binary schema. Asset must be an image.", "error");
+      return;
+    }
+    boundFile = file;
     const reader = new FileReader();
-    reader.onload = (event) => {
-      previewImg.src = event.target.result;
-      previewImg.style.display = 'block';
-      lensGlyph.style.display = 'none';
-      document.getElementById('drop-text').style.display = 'none';
-      consoleLog(`[SYSTEM] Physical asset bound to memory array: ${file.name}`);
+    reader.onload = (e) => {
+      previewImg.src = e.target.result;
+      previewImg.style.display = "block";
+      lensGlyph.style.display = "none";
+      dropText.style.display = "none";
+      logger(`Asset pipeline bind successful: ${file.name} (${Math.round(file.size/1024)} KB)`);
     };
     reader.readAsDataURL(file);
   }
 
-  executeBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (isTransmitting) {
-      consoleLog("[WARN] Ingestion pipeline is currently active. Throttling execution request.");
-      return;
-    }
-
-    consoleLog("> Checking edge hardware coordinate references...");
-    if (!navigator.geolocation) {
-      consoleLog("[ERROR] Geolocation arrays unmapped by client viewport.", "log-error");
-      executeTransmission(0, 0);
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        executeTransmission(position.coords.latitude, position.coords.longitude);
-      },
-      () => {
-        consoleLog("[WARN] Geolocation locked or blocked. Defaulting coordinates.", "log-error");
-        executeTransmission(10.65, -61.22); // Default farm boundary fallback parameters
-      },
-      { enableHighAccuracy: true, timeout: 6000 }
-    );
-  });
-
-  async function generateCryptoSignature(message) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(message);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  /* ─── CRYPTOGRAPHIC LOCAL INVARIANT HASH ENGINE ─── */
+  async function computeSHA256(file) {
+    const arrayBuffer = await file.arrayBuffer();
+    const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   }
 
-  async function executeTransmission(lat, lon) {
-    isTransmitting = true;
-    executeBtn.disabled = true;
+  /* ─── NETWORK TRANSACTION TRANSACTION LEADER ─── */
+  const executeBtn = document.getElementById('execute-btn');
+  const qrResultBlock = document.getElementById('qr-result');
+  const qrContainer = document.getElementById('qrcode');
 
+  executeBtn.addEventListener('click', async () => {
+    if (!boundFile) {
+      logger("Execution Blocked: No image payload bound to ingestion lens.", "error");
+      alert("Please upload or drop an image asset first.");
+      return;
+    }
+
+    executeBtn.disabled = true;
+    qrResultBlock.style.display = "none";
+    qrContainer.innerHTML = "";
+    
     const nodeId = document.getElementById('node-id').value;
     const batchRef = document.getElementById('batch').value;
-    const timestamp = new Date().toISOString();
-
-    // Construct standard cryptographic manifest message sequence
-    const dataSeedString = `${nodeId}-${batchRef}-${lat}-${lon}-${timestamp}`;
-    const generatedHash = await generateCryptoSignature(dataSeedString);
-
-    consoleLog(`[CRYPTO] Signature Generated: ${generatedHash}`, "log-success");
-
-    // Reset components before execution
-    document.getElementById('qr-result').style.display = 'none';
-    document.getElementById('qrcode').innerHTML = '';
-
-    // Map properties explicitly to match your Express body parser structural conditions
-    const payload = new FormData();
-    payload.append('node_id', nodeId);
-    payload.append('batch', batchRef);
-    payload.append('sha256', generatedHash);
-
-    if (fileInput.files[0]) {
-      payload.append('image', fileInput.files[0]);
-      consoleLog("> Asset detected. Packing multipart/form-data schema...");
-    } else {
-      consoleLog("[WARN] Executing transmission without raw image stream attachment.");
-    }
 
     try {
-      consoleLog(`> Broadcasting telemetry stream to gateway route: ${API_URL}`);
+      logger("Initializing local WebCrypto hashing loop...");
+      const fileChecksum = await computeSHA256(boundFile);
+      logger(`SHA-256 invariant signature established: ${fileChecksum}`);
+
+      logger(`Forming packet stream. Target node: ${API_URL}`);
+      const formData = new FormData();
+      formData.append('image', boundFile);
+      formData.append('node_id', nodeId);
+      formData.append('batch_ref', batchRef);
+      formData.append('sha256', fileChecksum);
+
+      logger("Streaming network payload over encrypted Tailscale tunnel...");
       const response = await fetch(API_URL, {
         method: 'POST',
-        body: payload
+        body: formData
       });
 
-      if (response.ok) {
-        const jsonResponse = await response.json().catch(() => ({}));
-        consoleLog(`[SUCCESS] Receipt vector rendered. QR Code sealed to canvas.`, "log-success");
-        
-        // Render QR Code manifest block
-        document.getElementById('qr-result').style.display = 'block';
-        qrcodeInstance = new QRCode(document.getElementById("qrcode"), {
-          text: `FRANCEFARMS:${generatedHash}`,
-          width: 140,
-          height: 140,
-          colorDark: "#082213",
-          colorLight: "#ffffff"
-        });
-      } else {
-        const structuralErrorText = await response.text();
-        consoleLog(`[NETWORK FAULT] Multipart File stream failure: HTTP ${response.status}`, "log-error");
-        consoleLog(`[SERVER RESPONSE] ${structuralErrorText || 'Check Nginx reverse proxy configurations.'}`, "log-error");
+      if (!response.ok) {
+        throw new Error(`HTTP Error response dropped from node: Status ${response.status}`);
       }
-    } catch (networkException) {
-      consoleLog(`[FATAL ERROR] Proxy connection to port 3000 refused. Check if PM2 application is online.`, "log-error");
-      console.error(networkException);
+
+      const responseData = await response.json();
+      logger("Data segment acknowledged by arima-node. Block sealed.", "success");
+      logger(`Returned Ledger Sequence ID: ${responseData.id || 'N/A'}`, "success");
+
+      // Generate receipt payload mapping for verification check
+      const receiptPayload = JSON.stringify({
+        origin: "FRANCE_FARMS_SOVEREIGN_LEDGER",
+        node: nodeId,
+        batch: batchRef,
+        signature: fileChecksum,
+        tx_timestamp: new Date().toISOString()
+      });
+
+      new QRCode(qrContainer, {
+        text: receiptPayload,
+        width: 140,
+        height: 140,
+        colorDark : "#0f3d22",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+      });
+
+      qrResultBlock.style.display = "block";
+      logger("Tamper-proof physical QR manifest rendered onto interface.", "success");
+
+    } catch (error) {
+      logger(`Pipeline breakdown: ${error.message}`, "error");
+      console.error(error);
     } finally {
-      isTransmitting = false;
       executeBtn.disabled = false;
     }
-  }
+  });
 </script>
 </body>
 </html>
