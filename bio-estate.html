@@ -1,6 +1,6 @@
 /* ─── CORE SCANNER LOGIC & TELEMETRY ─── */
   // Pointing directly to your primary domain gateway on the verified working endpoint
-  const API_URL = "https://www.francefarms.net/api/telemetry";
+  const API_URL = "https://www.francefarms.net/upload_hash";
   const dropZone = document.getElementById('drop-zone');
   const fileInput = document.getElementById('file-input');
   const terminalConsole = document.getElementById('terminal-console');
@@ -51,7 +51,6 @@
 
         consoleLog(`[SUCCESS] GPS Fixed: Lat ${latitude.toFixed(4)}°, Lon ${longitude.toFixed(4)}° (Accuracy: ±${accuracy.toFixed(1)}m)`, "log-success");
 
-        // Proceed to asynchronously construct and transmit your sealed data payload
         await sendDataToBackend(latitude, longitude);
       },
       (error) => {
@@ -76,7 +75,6 @@
     );
   });
 
-  // Helper Function: Generates a secure cryptographic SHA-256 string inside browsers
   async function generateSHA256(message) {
     const msgBuffer = new TextEncoder().encode(message);                     
     const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);  
@@ -89,14 +87,11 @@
     const batchRef = document.getElementById('batch').value || "GENERIC_BATCH";
     const isoTimestamp = new Date().toISOString();
 
-    // 1. Create a unique raw data string to seed the hash engine
     const rawStringSeed = `${nodeId}-${batchRef}-${lat}-${lon}-${isoTimestamp}`;
     
     consoleLog(`> Running local cryptographic hashing protocol...`);
-    // 2. Compute the immutable SHA-256 hash string
     const clientGeneratedHash = await generateSHA256(rawStringSeed);
 
-    // 3. Compile the secure, unalterable ledger payload block
     const payload = {
       node_id: nodeId,
       timestamp: isoTimestamp,
@@ -105,10 +100,9 @@
     };
 
     consoleLog(`[CRYPTO] Secure Hash Sealed: ${clientGeneratedHash}`, "log-success");
-    consoleLog(`> Payload block compiled cleanly. Transmitting telemetry profiles to database backend...`);
+    consoleLog(`> Payload block compiled. Transmitting to backend...`);
     
     try {
-      // 4. Live fetch transmission engine pipeline
       const res = await fetch(API_URL, {
         method: 'POST',
         headers: { 
