@@ -470,13 +470,10 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
   function showPage(pageId) {
     document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
     document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active'));
-    
     const targetPage = document.getElementById(pageId);
     if(targetPage) targetPage.classList.add('active');
-    
     const activeLink = document.getElementById(`link-${pageId}`);
     if(activeLink) activeLink.classList.add('active');
-    
     document.querySelector('.nav-links').classList.remove('open');
     window.scrollTo(0, 0);
   }
@@ -512,25 +509,21 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
 
   let currentStep = 0;
   let timelineInterval = null;
-  const totalDuration = 20; 
+  const totalDuration = 20;
 
   function updateTimeline() {
     const progressPercent = (currentStep / totalDuration) * 100;
     progressBar.style.width = `${progressPercent}%`;
-    
     const displaySeconds = currentStep % 60;
     const displayMinutes = Math.floor(currentStep / 60);
     timeLabel.textContent = `${String(displayMinutes).padStart(2, '0')}:${String(displaySeconds).padStart(2, '0')}`;
-
     if (currentStep % 4 === 0) {
       const slideIndex = Math.min(Math.floor(currentStep / 4), 4);
       document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
-      
       const nextScene = document.getElementById(`s${slideIndex}`);
       if (nextScene) nextScene.classList.add('active');
       document.getElementById('caption').textContent = captions[slideIndex];
     }
-
     if (currentStep >= totalDuration) {
       clearInterval(timelineInterval);
       playBtn.textContent = "REPLAY TIMELINE";
@@ -557,7 +550,8 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
   });
 
   /* ─── DYNAMIC TRANSFERS & AUTOMATED CONTENT TYPE NEGOTIATION ─── */
-  const API_URL = "/api/telemetry"; 
+  // ✅ FIXED: Updated to point to correct backend route
+  const API_URL = "https://www.francefarms.net/upload_hash";
   let qrcodeInstance = null;
 
   function consoleLog(message, className = "") {
@@ -570,7 +564,6 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
     consoleNode.scrollTop = consoleNode.scrollHeight;
   }
 
-  // File System Variables
   const dropZone = document.getElementById('drop-zone');
   const fileInput = document.getElementById('file-input');
   const previewImg = document.getElementById('preview-img');
@@ -641,17 +634,16 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
     }
 
     const rawSeedString = `${nodeId}-${batchRef}-${lat}-${lon}-${isoTimestamp}`;
-    
+
     try {
       const computedHash = await computeSHA256(rawSeedString);
       consoleLog(`[CRYPTO] Signature Generated: ${computedHash}`, "log-success");
 
-      // Generate verification receipt UI components locally
       const qrResultDiv = document.getElementById('qr-result');
       const qrContainer = document.getElementById('qrcode');
-      qrContainer.innerHTML = ""; 
+      qrContainer.innerHTML = "";
       qrResultDiv.style.display = "block";
-      
+
       qrcodeInstance = new QRCode(qrContainer, {
         text: `FRANCE-FARMS-VERIFIED:${computedHash}`,
         width: 140,
@@ -663,14 +655,9 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
 
       consoleLog(`[SUCCESS] Receipt vector rendered. QR Code sealed to canvas.`, "log-success");
 
-      /* ─── STRUCTURAL ENVELOPE CONFIGURATION ───
-         This logic checks if an image asset is attached. If no image is present,
-         it defaults to raw JSON to ensure fields write fully to PostgreSQL without 
-         getting dropped or left blank by a standard middleware handler.
-      */
       if (fileInput.files.length === 0) {
         consoleLog("> No image bound. Initializing structured JSON payload routing...");
-        
+
         const jsonPayload = {
           node_id: nodeId,
           batch_ref: batchRef,
@@ -693,7 +680,7 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
 
       } else {
         consoleLog(`> Asset detected. Packing multipart/form-data schema...`);
-        
+
         const formData = new FormData();
         formData.append('node_id', nodeId);
         formData.append('batch_ref', batchRef);
@@ -707,7 +694,7 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
 
         fetch(API_URL, {
           method: 'POST',
-          body: formData 
+          body: formData
         })
         .then(res => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json(); })
         .then(data => consoleLog(`[SERVER] 📥 Multipart Envelope confirmed: ${data.message || 'Archived.'}`, "log-success"))
