@@ -191,6 +191,7 @@ body.dark-theme .hero-eyebrow { background: rgba(74,173,110,0.15); }
 .field-group input:focus { border-color: var(--green-main); }
 .action-btn { width: 100%; padding: 14px; background: var(--green-main); border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; outline: none; }
 .action-btn:hover { background: var(--green-deep); }
+.action-btn:disabled { background: var(--text-light); cursor: not-allowed; }
 .terminal { margin-top: 24px; background: #060a07; border: 1px solid var(--border-color); border-radius: 10px; height: 160px; padding: 14px; font-family: monospace; font-size: 12px; overflow-y: auto; color: #8cae94; text-align: left; }
 .log-entry { margin-bottom: 0.4rem; border-left: 2px solid rgba(74,173,110,0.3); padding-left: 10px; }
 .log-success { color: #4aad6e; font-weight: bold; border-left-color: #4aad6e; }
@@ -569,6 +570,7 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
   const lensGlyph = document.getElementById('lens-glyph');
   const executeBtn = document.getElementById('execute-btn');
   let qrcodeInstance = null;
+  let isTransmitting = false; // System lock flag to kill double execution loops
 
   function consoleLog(msg, type = '') {
     const entry = document.createElement('div');
@@ -578,7 +580,12 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
     terminalConsole.scrollTop = terminalConsole.scrollHeight;
   }
 
-  dropZone.addEventListener('click', () => fileInput.click());
+  // File choice delegation handler 
+  dropZone.addEventListener('click', (e) => {
+    if (e.target !== fileInput) {
+      fileInput.click();
+    }
+  });
 
   // Handle Drag & Drop Events
   dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.style.background = 'rgba(30,107,60,0.1)'; });
@@ -608,20 +615,29 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
     reader.readAsDataURL(file);
   }
 
-  executeBtn.addEventListener('click', () => {
+  executeBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isTransmitting) {
+      consoleLog("[WARN] Ingestion pipeline is currently active. Throttling execution request.");
+      return;
+    }
+
     consoleLog("> Checking edge hardware coordinate references...");
     if (!navigator.geolocation) {
       consoleLog("[ERROR] Geolocation arrays unmapped by client viewport.", "log-error");
       executeTransmission(0, 0);
       return;
     }
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
         executeTransmission(position.coords.latitude, position.coords.longitude);
       },
       () => {
         consoleLog("[WARN] Geolocation locked or blocked. Defaulting coordinates.", "log-error");
-        executeTransmission(10.65, -61.22); // Default fallback coordinate array
+        executeTransmission(10.65, -61.22); // Default farm boundary fallback parameters
       },
       { enableHighAccuracy: true, timeout: 6000 }
     );
@@ -636,6 +652,9 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
   }
 
   async function executeTransmission(lat, lon) {
+    isTransmitting = true;
+    executeBtn.disabled = true;
+
     const nodeId = document.getElementById('node-id').value;
     const batchRef = document.getElementById('batch').value;
     const timestamp = new Date().toISOString();
@@ -646,11 +665,11 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
 
     consoleLog(`[CRYPTO] Signature Generated: ${generatedHash}`, "log-success");
 
-    // Clear and hide prior QR renders before transmission cycle
+    // Reset components before execution
     document.getElementById('qr-result').style.display = 'none';
     document.getElementById('qrcode').innerHTML = '';
 
-    // Build Form-Data Mapping directly to Express Server parameters
+    // Map properties explicitly to match your Express body parser structural conditions
     const payload = new FormData();
     payload.append('node_id', nodeId);
     payload.append('batch', batchRef);
@@ -686,15 +705,16 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
       } else {
         const structuralErrorText = await response.text();
         consoleLog(`[NETWORK FAULT] Multipart File stream failure: HTTP ${response.status}`, "log-error");
-        console.error(structuralErrorText);
+        consoleLog(`[SERVER RESPONSE] ${structuralErrorText || 'Check Nginx reverse proxy configurations.'}`, "log-error");
       }
     } catch (networkException) {
       consoleLog(`[FATAL ERROR] Proxy connection to port 3000 refused. Check if PM2 application is online.`, "log-error");
       console.error(networkException);
+    } finally {
+      isTransmitting = false;
+      executeBtn.disabled = false;
     }
   }
 </script>
 </body>
 </html>
-
-```
