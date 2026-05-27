@@ -1,3 +1,11 @@
+Here is your complete, fully corrected, copy-paste ready code for `bio-estate.html`.
+
+This version features your premium styling and interactive timeline engine completely intact, while correcting the broken endpoint configuration. The JavaScript backend submission function has been engineered to perfectly match what your `server.js` dynamic Express app on port 3000 expects:
+
+* The submission target URL has been corrected to use the real backend pipeline **`/api/scans`** instead of the static `/upload_hash`.
+* The payload parameters have been precisely aligned to map your input data names directly to your Express `req.body` keys: **`node_id`**, **`batch`**, and **`sha256`**, with your file streaming cleanly under the **`image`** key.
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -88,4 +96,613 @@ nav {
 .nav-links a { text-decoration: none; font-size: 14px; font-weight: 500; color: var(--text-mid); padding: 8px 16px; border-radius: 8px; transition: all 0.2s; }
 .nav-links a:hover, .nav-links a.active { background: var(--green-main); color: #fff; }
 .theme-toggle-btn { background: none; border: none; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: rgba(30,107,60,0.08); transition: background 0.3s ease; }
-body.dark-theme
+body.dark-theme .theme-toggle-btn { background: rgba(255,255,255,0.1); }
+.nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+.nav-hamburger span { display: block; width: 24px; height: 2px; background: var(--green-main); border-radius: 2px; transition: all 0.3s; }
+
+/* ─── ROUTING INTERFACES ─── */
+.page { display: none; padding-top: 68px; min-height: 100vh; }
+.page.active { display: block; }
+
+/* ─── HOME MODULE ─── */
+.hero { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; padding: clamp(48px,8vh,100px) clamp(24px,6vw,80px); max-width: 1200px; margin: 0 auto; }
+.hero-text { max-width: 520px; }
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; background: rgba(30,107,60,0.08); border: 1px solid var(--border-color); border-radius: 100px; padding: 6px 14px; font-size: 12px; font-weight: 600; color: var(--green-main); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px; }
+body.dark-theme .hero-eyebrow { background: rgba(74,173,110,0.15); }
+.eyebrow-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green-light); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.6;transform:scale(1.4);} }
+.hero-title { font-family: 'Playfair Display', serif; font-size: clamp(36px, 5vw, 62px); font-weight: 900; line-height: 1.05; color: var(--text-dark); letter-spacing: -1px; margin-bottom: 20px; }
+.hero-title em { font-style: italic; color: var(--green-main); }
+.hero-body { font-size: clamp(15px, 1.6vw, 17px); line-height: 1.7; color: var(--text-mid); margin-bottom: 32px; }
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn-primary { display: inline-flex; align-items: center; gap: 8px; background: var(--green-main); color: #fff; padding: 14px 28px; border-radius: var(--radius); font-size: 15px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 16px rgba(30,107,60,0.3); }
+.btn-primary:hover { background: var(--green-deep); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(30,107,60,0.35); }
+.btn-secondary { display: inline-flex; align-items: center; gap: 8px; background: transparent; color: var(--green-main); padding: 14px 28px; border-radius: var(--radius); font-size: 15px; font-weight: 600; text-decoration: none; border: 2px solid var(--green-main); cursor: pointer; transition: all 0.2s; }
+.btn-secondary:hover { background: rgba(30,107,60,0.05); }
+.hero-stats { display: flex; gap: 28px; margin-top: 36px; padding-top: 28px; border-top: 1px solid var(--border-color); }
+.stat-item { display: flex; flex-direction: column; gap: 2px; }
+.stat-num { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: var(--green-main); }
+.stat-label { font-size: 12px; color: var(--text-light); font-weight: 500; }
+
+/* ─── SYSTEM TIMELINE PLAYER ANIMATION ENGINE ─── */
+.hero-video-wrap { position: relative; }
+.video-card { background: #0f3d22; border-radius: 20px; overflow: hidden; box-shadow: 0 24px 64px rgba(15,61,34,0.25); position: relative; }
+#stage { width: 100%; aspect-ratio: 16/9; position: relative; overflow: hidden; }
+.scene { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity 0.7s ease; }
+.scene.active { opacity: 1; pointer-events: all; }
+#s0 { background: linear-gradient(160deg, #155230 0%, #1e6b3c 60%, #2d8a52 100%); }
+#s1 { background: #f5f0e8; }
+#s2 { background: #edf4ff; }
+#s3 { background: #fdf8ee; }
+#s4 { background: linear-gradient(160deg, #0d3d24 0%, #1e6b3c 60%, #2d8a52 100%); }
+.caption { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(10,35,20,0.88); color: #fff; font-size: clamp(11px,1.5vw,14px); font-weight: 600; padding: 10px 16px; text-align: center; line-height: 1.4; min-height: 42px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.title-scene { display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:20px; }
+.title-leaf { font-size:clamp(42px,7vw,70px); margin-bottom:12px; animation:floatLeaf 3s ease-in-out infinite; }
+@keyframes floatLeaf { 0%,100%{transform:translateY(0) rotate(-5deg);}50%{transform:translateY(-9px) rotate(5deg);} }
+.title-main { font-family:'Playfair Display',serif;font-size:clamp(20px,4vw,38px);font-weight:900;color:#fff;line-height:1.1; }
+.title-sub { font-size:clamp(9px,1.5vw,13px);color:rgba(255,255,255,0.7);margin-top:6px;letter-spacing:2px;text-transform:uppercase; }
+.title-badge { margin-top:12px;background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.35);border-radius:20px;padding:5px 16px;font-size:clamp(10px,1.5vw,13px);color:#fff;font-weight:700; }
+.sky-text { position:absolute;top:14px;left:0;right:0;text-align:center;font-size:clamp(10px,2vw,15px);font-weight:800;color:#5a3e1b;opacity:0.8;padding:0 12px; }
+.market-ground { position:absolute;bottom:50px;left:0;right:0;height:3px;background:#c8a86b;opacity:0.4; }
+.market-scene { display:flex;align-items:flex-end;justify-content:center;height:100%;padding-bottom:58px;gap:8px; }
+.stall-roof { width:clamp(80px,13vw,120px);height:clamp(24px,3.5vw,36px);background:#e85d04;border-radius:4px 4px 0 0;position:relative; }
+.stall-body { width:clamp(80px,13vw,120px);height:clamp(50px,7vw,72px);background:#f4e5c3;border:2px solid #c8a86b;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:3px;padding:5px; }
+.mango-icon { font-size:clamp(14px,2.2vw,20px); }
+.stall-sign { background:#1e6b3c;color:#fff;font-size:clamp(7px,1vw,10px);font-weight:700;padding:2px 8px;border-radius:4px;margin-top:2px; }
+.buyer-wrap { position:relative;margin-left:clamp(10px,2vw,28px);margin-bottom:4px; }
+.buyer-head { width:clamp(24px,4vw,38px);height:clamp(24px,4vw,38px);background:#f5c87a;border-radius:50%;border:2.5px solid #d4a055; }
+.buyer-body { width:clamp(32px,5vw,46px);height:clamp(36px,5.5vw,52px);background:#3a86d4;border-radius:6px 6px 0 0; }
+.buyer-legs { display:flex;gap:3px; }
+.buyer-leg { width:clamp(12px,2vw,18px);height:clamp(16px,2.5vw,22px);background:#1a4f8a;border-radius:0 0 4px 4px; }
+.question-bubble { background:#fff;border:2px solid #1e6b3c;border-radius:12px 12px 12px 0;padding:3px 8px;font-size:clamp(8px,1.2vw,11px);font-weight:700;color:#1e6b3c;position:absolute;top:-8px;right:-12px; }
+.phone-scene{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px;padding-bottom:50px;}
+.phone-frame{width:clamp(48px,7vw,72px);height:clamp(82px,12vw,124px);background:#1a1a2e;border-radius:10px;border:2.5px solid #444;display:flex;align-items:center;justify-content:center;}
+.phone-screen{width:calc(100% - 6px);height:calc(100% - 6px);background:#edf4ff;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;}
+.phone-camera-anim{width:38px;height:38px;border:2px solid #1e6b3c;border-radius:4px;position:relative;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.scan-line{position:absolute;left:0;right:0;height:2px;background:#1e6b3c;top:0;animation:scanDown 1.2s ease-in-out infinite;}
+@keyframes scanDown{0%{top:0;}50%{top:calc(100% - 2px);}100%{top:0;}}
+.gps-badge{display:flex;align-items:center;gap:5px;background:#fff;border:1.5px solid #1e6b3c;border-radius:20px;padding:4px 12px;font-size:clamp(9px,1.3vw,12px);font-weight:700;color:#1e6b3c;}
+.gps-dot{width:7px;height:7px;background:#e85d04;border-radius:50%;animation:pulse 1s ease-in-out infinite;}
+.qr-scene{display:flex;align-items:center;justify-content:center;height:100%;gap:clamp(8px,2.5vw,24px);flex-wrap:wrap;padding:12px 12px 60px;}
+.crate{width:clamp(60px,10vw,90px);height:clamp(32px,5.5vw,48px);background:#c8960c;border:2px solid #8a6600;border-radius:4px;display:flex;align-items:center;justify-content:center;position:relative;}
+.qr-sticker{width:28px;height:28px;background:#fff;border:1px solid #555;border-radius:2px;display:grid;grid-template-columns:repeat(5,1fr);gap:1px;padding:2px;position:absolute;right:-15px;top:50%;transform:translateY(-50%);}
+.qr-cell{background:#1a1a1a;border-radius:1px;}.qr-empty{background:#fff;}
+.check-badge{background:#1e6b3c;color:#fff;border-radius:16px;padding:5px 14px;font-size:clamp(9px,1.3vw,12px);font-weight:700;}
+.arrow-anim{font-size:clamp(16px,2.5vw,24px);animation:bounceRight 0.8s ease-in-out infinite;color:#1e6b3c;}
+@keyframes bounceRight{0%,100%{transform:translateX(0);}50%{transform:translateX(5px);}}
+.final-scene{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:20px;}
+.final-logo-box{width:clamp(60px,9vw,90px);height:clamp(60px,9vw,90px);background:rgba(255,255,255,0.12);border:2px solid rgba(255,255,255,0.3);border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;font-size:32px;}
+.final-tagline{font-family:'Playfair Display',serif;font-size:clamp(18px,3.5vw,32px);font-weight:900;color:#fff;line-height:1.1;}
+.final-sub{font-size:clamp(11px,2vw,16px);color:rgba(255,255,255,0.8);margin-top:6px;font-weight:600;}
+.video-controls { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #082213; }
+.play-btn { background: var(--green-mid); color: #fff; border: none; border-radius: 8px; padding: 7px 16px; font-size: 13px; font-weight: 700; cursor: pointer; outline: none;}
+.progress-wrap { flex: 1; height: 4px; background: rgba(255,255,255,0.15); border-radius: 3px; cursor: pointer; }
+.progress-bar { height: 100%; width: 0%; background: var(--green-light); border-radius: 3px; }
+.time-label { font-size: 11px; color: rgba(255,255,255,0.5); font-family: monospace; min-width: 44px; }
+
+/* ─── SCANNER UI TERMINAL INTERFACE ─── */
+.scanner-page-layout { max-width: 580px; margin: 40px auto; padding: 0 20px; }
+.terminal-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 32px; box-shadow: var(--shadow); }
+.term-header { text-align: center; margin-bottom: 24px; }
+.term-header h2 { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--text-dark); letter-spacing: -0.5px; margin-bottom: 4px; }
+.term-header h2 em { color: var(--green-main); font-style: italic; }
+.term-header p { font-size: 13px; color: var(--text-mid); }
+.drop-zone { background: rgba(30,107,60,0.03); border: 2px dashed var(--green-main); border-radius: 12px; min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; margin-bottom: 24px; cursor: pointer; padding: 20px; }
+.drop-zone:hover { background: rgba(30,107,60,0.07); }
+.lens-glyph { font-size: 36px; margin-bottom: 8px; }
+#drop-text { font-size: 12px; font-weight: 600; color: var(--text-mid); letter-spacing: 1px; text-transform: uppercase; text-align: center; }
+#preview-img { width: 100%; max-height: 220px; object-fit: contain; border-radius: 6px; display: none; z-index: 5; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+.field-group { display: flex; flex-direction: column; gap: 6px; }
+.field-group label { display: block; font-size: 11px; font-weight: 700; color: var(--text-mid); text-transform: uppercase; letter-spacing: 0.5px; }
+.field-group input { width: 100%; padding: 12px 16px; background: var(--cream); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-dark); font-family: monospace; font-size: 14px; outline: none; }
+.field-group input:focus { border-color: var(--green-main); }
+.action-btn { width: 100%; padding: 14px; background: var(--green-main); border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; outline: none; }
+.action-btn:hover { background: var(--green-deep); }
+.terminal { margin-top: 24px; background: #060a07; border: 1px solid var(--border-color); border-radius: 10px; height: 160px; padding: 14px; font-family: monospace; font-size: 12px; overflow-y: auto; color: #8cae94; text-align: left; }
+.log-entry { margin-bottom: 0.4rem; border-left: 2px solid rgba(74,173,110,0.3); padding-left: 10px; }
+.log-success { color: #4aad6e; font-weight: bold; border-left-color: #4aad6e; }
+.log-error { color: var(--error-red); border-left-color: var(--error-red); }
+
+/* Dynamic Receipt Node Styles */
+#qr-result { margin-top: 24px; display: none; text-align: center; background: #ffffff; padding: 24px; border-radius: 12px; border: 1px solid var(--border-color); }
+#qr-result p { color: #0c140f; font-weight: 700; font-size: 13px; margin-bottom: 14px; font-family: 'DM Sans', sans-serif; }
+#qrcode { display: inline-block; padding: 8px; background: #fff; border: 1px solid #eaeaea; }
+
+/* ─── NETWORKING CONTACT PANELS ─── */
+.contact-hero { background: var(--cream-dark); padding: clamp(60px,8vh,100px) clamp(24px,6vw,80px) clamp(48px,6vh,80px); text-align: center; transition: background 0.3s ease; }
+.contact-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(32px,5vw,54px); color: var(--text-dark); margin-bottom: 14px; }
+.contact-hero p { font-size: clamp(14px,1.8vw,17px); color: var(--text-mid); max-width: 500px; margin: 0 auto; line-height: 1.7; }
+.contact-content { max-width: 960px; margin: 0 auto; padding: 40px 24px; display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; align-items: start; }
+.contact-info-panel { display: flex; flex-direction: column; gap: 20px; }
+.info-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 24px; display: flex; gap: 16px; align-items: center; box-shadow: var(--shadow); transition: background 0.3s ease; }
+.info-icon { font-size: 24px; background: rgba(30,107,60,0.08); width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--green-main); flex-shrink: 0; }
+body.dark-theme .info-icon { background: rgba(255,255,255,0.05); }
+.info-details h4 { font-size: 13px; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.5px; margin-bottom: 2px; }
+.info-details a { font-size: 16px; font-weight: 600; color: var(--text-dark); text-decoration: none; }
+.info-details a:hover { color: var(--green-main); }
+.contact-form { background: var(--card-bg); border-radius: 20px; padding: 32px; box-shadow: var(--shadow); border: 1px solid var(--border-color); transition: background 0.3s ease; }
+.contact-form h3 { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--text-dark); margin-bottom: 24px; }
+.form-group { margin-bottom: 16px; display: flex; flex-direction: column; gap: 6px; }
+.form-group label { font-size: 11px; font-weight: 700; color: var(--text-mid); text-transform: uppercase; }
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: var(--cream); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-dark); font-family: inherit; font-size: 14px; outline: none; }
+.form-group textarea { resize: vertical; height: 100px; }
+.form-submit { width: 100%; padding: 13px; background: var(--green-main); color: #fff; border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; }
+.form-submit:hover { background: var(--green-deep); }
+
+/* ─── FOOTER MODULE ─── */
+footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+.footer-brand { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: rgba(255,255,255,0.8); }
+.footer-copy { font-size: 12px; color: rgba(255,255,255,0.4); }
+.footer-links { display: flex; gap: 16px; }
+.footer-links a { font-size: 13px; color: rgba(255,255,255,0.5); text-decoration: none; }
+
+@media (max-width: 768px) {
+  .hero { grid-template-columns: 1fr; gap: 32px; }
+  .contact-content { grid-template-columns: 1fr; }
+  .nav-links { display: none; flex-direction: column; position: absolute; top: 68px; left: 0; right: 0; background: var(--cream); padding: 16px; border-bottom: 1px solid var(--border-color); gap: 4px; }
+  .nav-links.open { display: flex; }
+  .nav-hamburger { display: flex; }
+  footer { flex-direction: column; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#" onclick="showPage('home');return false;">
+    <svg class="logo-leaf" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17 2C13 2 10 5 8 8C6.5 7.5 5 7.5 3.5 8.5C1.5 9.8 1 12.5 2 15C3 17.5 5.5 19 8 18.5C10.5 18 12.5 15.5 13 13C15 11 19 8 20 5C21 2 19 2 17 2Z"/>
+      <path d="M2 22C6 18 10 14 13 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <span class="nav-logo-text">Françe Farms</span>
+  </a>
+
+  <div class="nav-right-container">
+    <ul class="nav-links">
+      <li><a href="#" class="active" id="link-home" onclick="showPage('home');return false;">Home</a></li>
+      <li><a href="#" id="link-scanner" onclick="showPage('scanner');return false;">Scanner</a></li>
+      <li><a href="#" id="link-contact" onclick="showPage('contact');return false;">Contact</a></li>
+    </ul>
+    <button class="theme-toggle-btn" id="themeToggle">☀️</button>
+    <div class="nav-hamburger"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<div id="home" class="page active">
+  <section class="hero">
+    <div class="hero-text">
+      <div class="hero-eyebrow"><span class="eyebrow-dot"></span> Sovereign Agricultural Auditing</div>
+      <h1 class="hero-title">Secure your harvest. <em>Prove provenance.</em></h1>
+      <p class="hero-body">
+        Françe Farms brings absolute cryptographic security to agricultural logistics. Protect value chains, prevent counter-party fraud, and lock telemetry metadata profiles straight to the farm gate.
+      </p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="showPage('scanner')">Launch Scanner Engine</button>
+        <button class="btn-secondary" onclick="showPage('contact')">Consult Infrastructure</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item"><span class="stat-num">SHA-256</span><span class="stat-label">Audit Engine</span></div>
+        <div class="stat-item"><span class="stat-num">GPS-Locked</span><span class="stat-label">Telemetry Verification</span></div>
+        <div class="stat-item"><span class="stat-num">100%</span><span class="stat-label">Immutable Logs</span></div>
+      </div>
+    </div>
+
+    <div class="hero-video-wrap">
+      <div class="video-card">
+        <div id="stage">
+          <div class="scene active" id="s0">
+            <div class="title-scene">
+              <span class="title-leaf">🌿</span>
+              <h2 class="title-main">FRANÇE FARMS</h2>
+              <p class="title-sub">Data Integrity Suite</p>
+              <span class="title-badge">Press Play to Initialize</span>
+            </div>
+          </div>
+          <div class="scene" id="s1">
+            <p class="sky-text">Traditional Markets Suffer from Opaque Provenance</p>
+            <div class="market-ground"></div>
+            <div class="market-scene">
+              <div class="stall-roof"></div>
+              <div class="stall-body">
+                <span class="mango-icon">🥭</span><span class="mango-icon">🥭</span><span class="mango-icon">🥭</span>
+                <span class="stall-sign">Local Stall</span>
+              </div>
+              <div class="buyer-wrap">
+                <div class="question-bubble">Is this fresh?</div>
+                <div class="buyer-head"></div><div class="buyer-body"></div>
+                <div class="buyer-legs"><div class="buyer-leg"></div><div class="buyer-leg"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="scene" id="s2">
+            <p class="sky-text" style="color:#112244;">Step 1: Scan at Source & Bind Local Telemetry</p>
+            <div class="phone-scene">
+              <div class="phone-frame">
+                <div class="phone-screen">
+                  <div class="phone-camera-anim"><span class="scan-line"></span>📸</div>
+                  <span class="phone-label" style="font-size:8px; font-weight:bold; margin-top:4px;">PROCESSING...</span>
+                </div>
+              </div>
+              <div class="gps-badge"><span class="gps-dot"></span>GPS FIXED: 10.65° N</div>
+            </div>
+          </div>
+          <div class="scene" id="s3">
+            <p class="sky-text" style="color:#221100;">Step 2: Generate Invariant SHA-256 Checksum</p>
+            <div class="phone-scene">
+              <div class="qr-scene">
+                <div class="crate">📦<div class="qr-sticker"><div class="qr-cell"></div><div class="qr-empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-empty"></div></div></div>
+                <span class="arrow-anim">➡️</span>
+                <div class="check-badge">Immutable Manifest Created</div>
+              </div>
+            </div>
+          </div>
+          <div class="scene" id="s4">
+            <div class="final-scene">
+              <div class="final-logo-box">🛡️</div>
+              <h2 class="final-tagline">Absolute Trust Architecture</h2>
+              <p class="final-sub">Sovereign agricultural infrastructure built from the bare metal up.</p>
+            </div>
+          </div>
+          <div class="caption" id="caption">Françe Farms Data Integrity System: Tap Play to Run Infrastructure Timeline.</div>
+        </div>
+        <div class="video-controls">
+          <button class="play-btn" id="playBtn">PLAY SYSTEM</button>
+          <div class="progress-wrap" id="progressWrap"><div class="progress-bar" id="progressBar"></div></div>
+          <span class="time-label" id="timeLabel">00:00</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="scanner" class="page">
+  <div class="scanner-page-layout">
+    <div class="terminal-box">
+      <div class="term-header">
+        <h2>Bio-Estate <em>Scanner</em></h2>
+        <p>Cryptographic Batch Auditing & Sovereign Traceability Protocol</p>
+      </div>
+
+      <div class="drop-zone" id="drop-zone">
+        <input type="file" id="file-input" accept="image/*" style="display:none">
+        <div class="lens-glyph" id="lens-glyph">📸</div>
+        <p id="drop-text">DRAG & DROP OR CLICK TO BIND IMAGE</p>
+        <img id="preview-img" src="" alt="Harvest Ingestion Preview">
+      </div>
+
+      <div class="form-row">
+        <div class="field-group">
+          <label for="node-id">NODE_ID</label>
+          <input type="text" id="node-id" value="GRANDE_01">
+        </div>
+        <div class="field-group">
+          <label for="batch">BATCH_REF</label>
+          <input type="text" id="batch" value="MAY_2026_JULIE">
+        </div>
+      </div>
+
+      <button class="action-btn" id="execute-btn">EXECUTE CRYPTO-TAGGING</button>
+
+      <div id="qr-result">
+        <p>GENUINE HARVEST RECEIPT</p>
+        <div id="qrcode"></div>
+      </div>
+
+      <div class="terminal" id="terminal-console">
+        <div class="log-entry">> Initializing Sovereign Node Terminal...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="contact" class="page">
+  <div class="contact-hero">
+    <h1>Request Systems Integration</h1>
+    <p>Let's map your operational structures into a secure, cryptographic data architecture built cleanly from the floor up.</p>
+  </div>
+  <div class="contact-content">
+    <div class="contact-info-panel">
+      
+      <div class="info-card">
+        <div class="info-icon">📧</div>
+        <div class="info-details">
+          <h4>Secure Domain Email</h4>
+          <a href="mailto:france@francefarms.net">france@francefarms.net</a>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-icon">📞</div>
+        <div class="info-details">
+          <h4>Direct Network Line</h4>
+          <a href="tel:+18683327968">+1 (868) 332-7968</a>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-icon">🐦</div>
+        <div class="info-details">
+          <h4>X / Twitter Core</h4>
+          <a href="https://x.com/france_far_ms" target="_blank">@france_far_ms</a>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-icon">🎵</div>
+        <div class="info-details">
+          <h4>TikTok Broadcasting</h4>
+          <a href="https://www.tiktok.com/@france_far_ms" target="_blank">@france_far_ms</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-form">
+      <h3>Initialize Strategy Review</h3>
+      <form onsubmit="alert('Telemetry parameters registered. Project review scheduled.'); return false;">
+        <div class="form-group">
+          <label for="form-name">Operator Name</label>
+          <input type="text" id="form-name" required placeholder="David François">
+        </div>
+        <div class="form-group">
+          <label for="scope">Operational Profile</label>
+          <select id="scope">
+            <option>Data Infrastructure Security</option>
+            <option>Provenance Ledger Implementation</option>
+            <option>Custom Server & Nginx Layouts</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="msg">System Vulnerabilities / Project Scope</label>
+          <textarea id="msg" required placeholder="Outline existing system log architectures or structural security needs..."></textarea>
+        </div>
+        <button type="submit" class="form-submit">Register Core Node Parameters</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>
+    <div class="footer-brand">Françe Farms</div>
+    <div class="footer-copy">© 2026 Françe Farms. Independent Computing. All Rights Reserved.</div>
+  </div>
+  <div class="footer-links">
+    <a href="#" onclick="showPage('home');return false;">Systems Overview</a>
+    <a href="#" onclick="showPage('scanner');return false;">Telemetry Terminal</a>
+  </div>
+</footer>
+
+<script>
+  /* ─── NAVIGATION ROUTER TAB ENGINE ─── */
+  function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+    document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active'));
+    const targetPage = document.getElementById(pageId);
+    if(targetPage) targetPage.classList.add('active');
+    const activeLink = document.getElementById(`link-${pageId}`);
+    if(activeLink) activeLink.classList.add('active');
+    document.querySelector('.nav-links').classList.remove('open');
+    window.scrollTo(0, 0);
+  }
+
+  document.querySelector('.nav-hamburger').addEventListener('click', () => {
+    document.querySelector('.nav-links').classList.toggle('open');
+  });
+
+  /* ─── THEME CONFIGURATION ENGINE ─── */
+  const themeToggle = document.getElementById('themeToggle');
+  if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark-theme');
+    themeToggle.textContent = '🌙';
+  }
+  themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-theme');
+    const isDark = document.body.classList.contains('dark-theme');
+    themeToggle.textContent = isDark ? '🌙' : '☀️';
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  });
+
+  /* ─── INTERACTIVE TIMELINE LOGIC ─── */
+  const playBtn = document.getElementById('playBtn');
+  const progressBar = document.getElementById('progressBar');
+  const timeLabel = document.getElementById('timeLabel');
+  const captions = [
+    "Françe Farms Data Integrity System: Tap Play to Run Infrastructure Timeline.",
+    "Traditional supply loops leave corporate partners entirely blind to source validation.",
+    "Sovereign edge nodes isolate physical batches and map real-time telemetry markers.",
+    "Hardware vectors output an invariant cryptographic footprint directly to the database layer.",
+    "Provenance chain verified. Absolute supply visibility sealed from the bare metal up."
+  ];
+
+  let currentStep = 0;
+  let timelineInterval = null;
+  const totalDuration = 20;
+
+  function updateTimeline() {
+    const progressPercent = (currentStep / totalDuration) * 100;
+    progressBar.style.width = `${progressPercent}%`;
+    
+    const displaySecs = currentStep % 60;
+    const displayMins = Math.floor(currentStep / 60);
+    timeLabel.textContent = `${displayMins.toString().padStart(2, '0')}:${displaySecs.toString().padStart(2, '0')}`;
+
+    if (currentStep === 0) {
+      switchScene(0, captions[0]);
+    } else if (currentStep === 4) {
+      switchScene(1, captions[1]);
+    } else if (currentStep === 9) {
+      switchScene(2, captions[2]);
+    } else if (currentStep === 14) {
+      switchScene(3, captions[3]);
+    } else if (currentStep === 19) {
+      switchScene(4, captions[4]);
+    }
+
+    if (currentStep >= totalDuration) {
+      clearInterval(timelineInterval);
+      timelineInterval = null;
+      playBtn.textContent = "REPLAY SYSTEM";
+      currentStep = 0;
+    } else {
+      currentStep++;
+    }
+  }
+
+  function switchScene(index, text) {
+    document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+    const targetScene = document.getElementById(`s${index}`);
+    if (targetScene) targetScene.classList.add('active');
+    document.getElementById('caption').textContent = text;
+  }
+
+  playBtn.addEventListener('click', () => {
+    if (timelineInterval) {
+      clearInterval(timelineInterval);
+      timelineInterval = null;
+      playBtn.textContent = "RESUME";
+    } else {
+      playBtn.textContent = "PAUSE";
+      if (currentStep === 0) progressBar.style.width = '0%';
+      timelineInterval = setInterval(updateTimeline, 1000);
+    }
+  });
+
+  /* ─── DYNAMIC INGESTION SCANNER WORKFLOW ─── */
+  const API_URL = "/api/scans";
+  const dropZone = document.getElementById('drop-zone');
+  const fileInput = document.getElementById('file-input');
+  const terminalConsole = document.getElementById('terminal-console');
+  const previewImg = document.getElementById('preview-img');
+  const lensGlyph = document.getElementById('lens-glyph');
+  const executeBtn = document.getElementById('execute-btn');
+  let qrcodeInstance = null;
+
+  function consoleLog(msg, type = '') {
+    const entry = document.createElement('div');
+    entry.className = `log-entry ${type}`;
+    entry.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+    terminalConsole.appendChild(entry);
+    terminalConsole.scrollTop = terminalConsole.scrollHeight;
+  }
+
+  dropZone.addEventListener('click', () => fileInput.click());
+
+  // Handle Drag & Drop Events
+  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.style.background = 'rgba(30,107,60,0.1)'; });
+  dropZone.addEventListener('dragleave', () => { dropZone.style.background = 'rgba(30,107,60,0.03)'; });
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.style.background = 'rgba(30,107,60,0.03)';
+    if (e.dataTransfer.files.length > 0) {
+      fileInput.files = e.dataTransfer.files;
+      handleFileIngestion(e.dataTransfer.files[0]);
+    }
+  });
+
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) handleFileIngestion(e.target.files[0]);
+  });
+
+  function handleFileIngestion(file) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      previewImg.src = event.target.result;
+      previewImg.style.display = 'block';
+      lensGlyph.style.display = 'none';
+      document.getElementById('drop-text').style.display = 'none';
+      consoleLog(`[SYSTEM] Physical asset bound to memory array: ${file.name}`);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  executeBtn.addEventListener('click', () => {
+    consoleLog("> Checking edge hardware coordinate references...");
+    if (!navigator.geolocation) {
+      consoleLog("[ERROR] Geolocation arrays unmapped by client viewport.", "log-error");
+      executeTransmission(0, 0);
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        executeTransmission(position.coords.latitude, position.coords.longitude);
+      },
+      () => {
+        consoleLog("[WARN] Geolocation locked or blocked. Defaulting coordinates.", "log-error");
+        executeTransmission(10.65, -61.22); // Default fallback coordinate array
+      },
+      { enableHighAccuracy: true, timeout: 6000 }
+    );
+  });
+
+  async function generateCryptoSignature(message) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  async function executeTransmission(lat, lon) {
+    const nodeId = document.getElementById('node-id').value;
+    const batchRef = document.getElementById('batch').value;
+    const timestamp = new Date().toISOString();
+
+    // Construct standard cryptographic manifest message sequence
+    const dataSeedString = `${nodeId}-${batchRef}-${lat}-${lon}-${timestamp}`;
+    const generatedHash = await generateCryptoSignature(dataSeedString);
+
+    consoleLog(`[CRYPTO] Signature Generated: ${generatedHash}`, "log-success");
+
+    // Clear and hide prior QR renders before transmission cycle
+    document.getElementById('qr-result').style.display = 'none';
+    document.getElementById('qrcode').innerHTML = '';
+
+    // Build Form-Data Mapping directly to Express Server parameters
+    const payload = new FormData();
+    payload.append('node_id', nodeId);
+    payload.append('batch', batchRef);
+    payload.append('sha256', generatedHash);
+
+    if (fileInput.files[0]) {
+      payload.append('image', fileInput.files[0]);
+      consoleLog("> Asset detected. Packing multipart/form-data schema...");
+    } else {
+      consoleLog("[WARN] Executing transmission without raw image stream attachment.");
+    }
+
+    try {
+      consoleLog(`> Broadcasting telemetry stream to gateway route: ${API_URL}`);
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        body: payload
+      });
+
+      if (response.ok) {
+        const jsonResponse = await response.json().catch(() => ({}));
+        consoleLog(`[SUCCESS] Receipt vector rendered. QR Code sealed to canvas.`, "log-success");
+        
+        // Render QR Code manifest block
+        document.getElementById('qr-result').style.display = 'block';
+        qrcodeInstance = new QRCode(document.getElementById("qrcode"), {
+          text: `FRANCEFARMS:${generatedHash}`,
+          width: 140,
+          height: 140,
+          colorDark: "#082213",
+          colorLight: "#ffffff"
+        });
+      } else {
+        const structuralErrorText = await response.text();
+        consoleLog(`[NETWORK FAULT] Multipart File stream failure: HTTP ${response.status}`, "log-error");
+        console.error(structuralErrorText);
+      }
+    } catch (networkException) {
+      consoleLog(`[FATAL ERROR] Proxy connection to port 3000 refused. Check if PM2 application is online.`, "log-error");
+      console.error(networkException);
+    }
+  }
+</script>
+</body>
+</html>
+
+```
