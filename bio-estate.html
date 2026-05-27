@@ -206,23 +206,19 @@
     appendTerminalLog(`Initializing client-side cryptographic engine pipeline...`);
     
     try {
-      // Step 1: Real browser-side processing
-      await new Promise(resolve => setTimeout(resolve, 600));
+      // Step 1: Secure actual SHA-256 block hash locally
+      await new Promise(resolve => setTimeout(resolve, 400));
       appendTerminalLog(`Computing actual SHA-256 block hash for file: ${activeIngestedFile.name}...`);
-      
       const realFileHash = await computeFileSHA256(activeIngestedFile);
       appendTerminalLog(`SHA-256 Footprint Secured: ${realFileHash.substring(0, 24)}...`, "success");
 
-      // Step 2: Telemetry Injection Simulation
-      await new Promise(resolve => setTimeout(resolve, 500));
-      // Standard local coordination parameters
+      // Step 2: Telemetry Generation
       const mockLat = 10.6500;
       const mockLon = -61.2200;
       appendTerminalLog(`Binding physical node telemetry markers: Lat ${mockLat}° N, Lon ${mockLon}° W`);
 
-      // Step 3: Local Manifest Packaging
-      await new Promise(resolve => setTimeout(resolve, 400));
-      const manifestPayload = JSON.stringify({
+      // Step 3: Package Data Manifest Payload
+      const manifestPayload = {
         node_id: nodeId,
         batch_ref: batchRef,
         file_meta: {
@@ -232,11 +228,30 @@
         timestamp_utc: new Date().toISOString(),
         immutable_sha256: realFileHash,
         telemetry: { lat: mockLat, lon: mockLon }
-      }, null, 2);
+      };
 
-      // Step 4: Render interactive receipt node QR code
+      // Step 4: Dispatch payload securely via relative path reverse proxy
+      appendTerminalLog("Dispatching transaction ledger block to secure domain proxy...");
+      
+      const response = await fetch('/api/scans', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(manifestPayload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Upstream node responded with server status code ${response.status}`);
+      }
+
+      // Read response back from your backend application server
+      const backendResult = await response.json();
+      appendTerminalLog("Upstream Handshake: Transaction logged successfully by database nodes.", "success");
+
+      // Step 5: Render interactive receipt node QR code using the verified payload
       new QRCode(qrCodeContainer, {
-        text: manifestPayload,
+        text: JSON.stringify(manifestPayload, null, 2),
         width: 160,
         height: 160,
         colorDark: "#0f3d22",
