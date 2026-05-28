@@ -1,79 +1,299 @@
-<script>
-  /* ─── NAVIGATION, THEME, AND TIMELINE LOGIC REMAINS UNCHANGED ─── */
-  // (Keep your existing functions: showPage, themeToggle, and runTimeline above this point)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Françe Farms - Bio-Estate Ledger Tracker</title>
+  <style>
+    :root {
+      --neon-green: #00ff66;
+      --dark-bg: #0a0f0d;
+      --panel-bg: #121b16;
+      --border-color: #1f3328;
+      --text-main: #e0e6e3;
+    }
+    body {
+      background-color: var(--dark-bg);
+      color: var(--text-main);
+      font-family: 'Courier New', Courier, monospace;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: var(--panel-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 25px;
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.05);
+    }
+    h1, h3 {
+      color: var(--neon-green);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-top: 0;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--neon-green);
+      font-size: 0.9rem;
+    }
+    input[type="text"], select {
+      width: 100%;
+      padding: 12px;
+      background: var(--dark-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      color: var(--text-main);
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+    input[type="text"]:focus, select:focus {
+      border-color: var(--neon-green);
+      outline: none;
+    }
+    .drop-zone {
+      border: 2px dashed var(--border-color);
+      border-radius: 6px;
+      padding: 30px;
+      text-align: center;
+      cursor: pointer;
+      background: var(--dark-bg);
+      transition: border-color 0.3s;
+    }
+    .drop-zone:hover {
+      border-color: var(--neon-green);
+    }
+    #preview-img {
+      max-width: 100%;
+      max-height: 250px;
+      margin-top: 15px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      display: none;
+    }
+    .btn {
+      background: transparent;
+      color: var(--neon-green);
+      border: 1px solid var(--neon-green);
+      padding: 14px 28px;
+      font-family: inherit;
+      font-weight: bold;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 4px;
+      width: 100%;
+      transition: background 0.3s, color 0.3s;
+    }
+    .btn:hover {
+      background: var(--neon-green);
+      color: var(--dark-bg);
+      box-shadow: 0 0 10px rgba(0, 255, 102, 0.3);
+    }
+    .console {
+      background: #050706;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 15px;
+      height: 180px;
+      overflow-y: auto;
+      margin-top: 25px;
+    }
+    .log-entry {
+      margin-bottom: 6px;
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+    .log-success { color: #00ff66; }
+    .log-error { color: #ff3333; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
 
-  /* ─── UPDATED LOCAL SOVEREIGN SCANNER ENGINE LOGIC ─── */
-  const executeBtn = document.getElementById('execute-btn');
-  const consoleEl = document.getElementById('terminal-console');
-  const qrResultBlock = document.getElementById('qr-result');
-  const qrCodeContainer = document.getElementById('qrcode');
+  <div class="container">
+    <h1>Françe Farms</h1>
+    <h3>Bio-Estate Provenance Ledger Engine</h3>
+    <hr style="border-color: var(--border-color); margin-bottom: 25px;">
 
-  function appendTerminalLog(message, type = 'normal') {
-    const entry = document.createElement('div');
-    entry.classList.add('log-entry');
-    if (type === 'success') entry.classList.add('log-success');
-    if (type === 'error') entry.classList.add('log-error');
-    const timestamp = new Date().toISOString().slice(11, 19);
-    entry.textContent = `[${timestamp}] ${message}`;
-    consoleEl.appendChild(entry);
-    consoleEl.scrollTop = consoleEl.scrollHeight;
-  }
+    <div class="form-group">
+      <label for="node-id">Sovereign Node ID Identification</label>
+      <input type="text" id="node-id" value="GRANDE_01" placeholder="e.g. GRANDE_01">
+    </div>
 
-  executeBtn.addEventListener('click', async () => {
-    if (!activeIngestedFile) {
-      appendTerminalLog("Execution Blocked: Image buffer empty.", "error");
-      return;
+    <div class="form-group">
+      <label for="batch">Agricultural Batch Reference Tracking Index</label>
+      <input type="text" id="batch" value="COCOA-2026-B1" placeholder="e.g. COCOA-2026-B1">
+    </div>
+
+    <div class="form-group">
+      <label>Product Validation Asset Capture Image</label>
+      <div class="drop-zone" id="drop-zone">
+        <span id="lens-glyph" style="font-size: 2.5rem; display:block; margin-bottom:10px;">📷</span>
+        <span id="drop-text">Click or Drop Asset Certificate Image to Bind</span>
+        <input type="file" id="file-input" accept="image/*" class="hidden">
+        <img id="preview-img" alt="Asset Validation Frame Preview">
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-top: 30px;">
+      <button class="btn" id="execute-btn">Execute Crypto-Tagging Ledger Submission</button>
+    </div>
+
+    <div class="form-group hidden" id="hash-wrapper">
+      <label>Sealed Immutable Signature Hash Result (SHA-256)</label>
+      <div id="hash-output" style="padding:12px; background:#050706; border:1px solid var(--border-color); color:var(--neon-green); font-size:0.85rem; word-break:break-all; border-radius:4px;"></div>
+    </div>
+
+    <div class="console" id="terminal-console">
+      <div class="log-entry" style="color: #666;">[SYSTEM] Core security matrix modules online. Waiting for operator submission...</div>
+    </div>
+  </div>
+
+  <script>
+    /* ─── CORE SCANNER LOGIC & TELEMETRY ─── */
+    const API_URL = "https://www.francefarms.net/api/scans";
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const terminalConsole = document.getElementById('terminal-console');
+    const previewImg = document.getElementById('preview-img');
+    const lensGlyph = document.getElementById('lens-glyph');
+    const executeBtn = document.getElementById('execute-btn');
+
+    // Custom Logger targeting your UI terminal component
+    function consoleLog(msg, type = '') {
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      entry.textContent = msg;
+      terminalConsole.appendChild(entry);
+      terminalConsole.scrollTop = terminalConsole.scrollHeight; 
     }
 
-    executeBtn.disabled = true;
-    qrResultBlock.style.display = 'none';
-    qrCodeContainer.innerHTML = '';
-    
-    appendTerminalLog(`Initializing cryptographic pipeline...`);
-    
-    try {
-      const realFileHash = await computeFileSHA256(activeIngestedFile);
-      const manifestPayload = {
-        node_id: document.getElementById('node-id').value.trim() || "UNKNOWN",
-        batch_ref: document.getElementById('batch').value.trim() || "UNKNOWN",
-        immutable_sha256: realFileHash,
-        timestamp_utc: new Date().toISOString()
-      };
+    // File Upload Visual Triggers
+    dropZone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          previewImg.src = event.target.result;
+          previewImg.style.display = 'block';
+          lensGlyph.style.display = 'none';
+          document.getElementById('drop-text').style.display = 'none';
+          consoleLog(`> Image bound successfully: ${file.name}`);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
 
-      appendTerminalLog("Dispatching ledger block via secure HTTPS proxy...");
-      
-      const response = await fetch(`/api/scans?t=${Date.now()}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(manifestPayload)
-      });
+    // GPS Telemetry Execution Trigger
+    executeBtn.addEventListener('click', () => {
+      consoleLog("> Initializing Geolocation verification protocol...");
 
-      if (!response.ok) throw new Error(`Gateway returned status ${response.status}`);
+      if (!navigator.geolocation) {
+        consoleLog("[ERROR] Geolocation is blocked or unsupported by this browser environment.", "log-error");
+        return;
+      }
 
-      const result = await response.json();
-      appendTerminalLog("Upstream Handshake: Transaction logged successfully.", "success");
-      
-      // ── OPTIMIZED QR GENERATION (Fixes Overflow) ──
-      // Compact object: truncated hash and simplified ID to fit in small matrix
-      new QRCode(qrCodeContainer, {
-        text: JSON.stringify({ 
-            n: manifestPayload.node_id, 
-            h: realFileHash.substring(0, 16) 
-        }),
-        width: 160, 
-        height: 160,
-        colorDark: "#0f3d22", 
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.L
-      });
+      navigator.geolocation.getCurrentPosition(
+        async (position) => { 
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+          const accuracy = position.coords.accuracy;
 
-      qrResultBlock.style.display = 'block';
-      appendTerminalLog("Sovereign verification manifest sealed.", "success");
-      
-    } catch (err) {
-      appendTerminalLog(`Pipeline execution fault: ${err.message}`, "error");
-    } finally {
-      executeBtn.disabled = false;
+          consoleLog(`[SUCCESS] GPS Fixed: Lat ${latitude.toFixed(4)}°, Lon ${longitude.toFixed(4)}° (Accuracy: ±${accuracy.toFixed(1)}m)`, "log-success");
+
+          // Proceed to asynchronously construct and transmit your sealed data payload
+          await sendDataToBackend(latitude, longitude);
+        },
+        (error) => {
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              consoleLog("[ERROR] Access Denied: Operator rejected location permissions.", "log-error");
+              alert("Françe Farms requires device location access to authenticate batch provenance.");
+              break;
+            case error.POSITION_UNAVAILABLE:
+              consoleLog("[ERROR] Telemetry Failed: Satellite linkage unavailable.", "log-error");
+              break;
+            case error.TIMEOUT:
+              consoleLog("[ERROR] Telemetry Failed: Core location handshake timed out.", "log-error");
+              break;
+          }
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 12000,
+          maximumAge: 0
+        }
+      );
+    });
+
+    // Helper Function: Generates a secure cryptographic SHA-256 string inside browsers
+    async function generateSHA256(message) {
+      const msgBuffer = new TextEncoder().encode(message);                     
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);  
+      const hashArray = Array.from(new Uint8Array(hashBuffer));              
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');  
     }
-  });
-</script>
+
+    async function sendDataToBackend(lat, lon) {
+      const nodeId = document.getElementById('node-id').value || "UNASSIGNED_NODE";
+      const batchRef = document.getElementById('batch').value || "GENERIC_BATCH";
+      const isoTimestamp = new Date().toISOString();
+
+      // 1. Create a unique raw data string to seed the hash engine
+      const rawStringSeed = `${nodeId}-${batchRef}-${lat}-${lon}-${isoTimestamp}`;
+      
+      consoleLog(`> Running local cryptographic hashing protocol...`);
+      const clientGeneratedHash = await generateSHA256(rawStringSeed);
+
+      // Expose hash visually on the dashboard matching user wrapper styles
+      document.getElementById('hash-wrapper').classList.remove('hidden');
+      document.getElementById('hash-output').textContent = clientGeneratedHash;
+
+      consoleLog(`[CRYPTO] Secure Hash Sealed: ${clientGeneratedHash}`, "log-success");
+      consoleLog(`> Payload block compiled cleanly. Compiling multi-part tracking profile stream...`);
+      
+      // 2. Build the standard Form Data payload object required by Multer package rules in server.js
+      const formData = new FormData();
+      formData.append('node_id', nodeId);
+      formData.append('batch', batchRef);
+      formData.append('sha256', clientGeneratedHash);
+      
+      // Attach file wrapper if provided by dropzone array state
+      if (fileInput.files[0]) {
+          formData.append('image', fileInput.files[0]);
+          consoleLog(`> Packing dynamic image byte payload allocation asset array...`);
+      }
+
+      try {
+        consoleLog(`> Launching payload delivery to live Express Vault engine on port 3000...`);
+        // 3. Live transmission deployment pipeline
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (res.ok) {
+          const data = await res.json().catch(() => ({}));
+          consoleLog(`[VAULT SUCCESS] Record committed to Postgres database! ID Token: ${data.id || 'Verified'}`, "log-success");
+        } else {
+          const errData = await res.text();
+          consoleLog(`[SERVER REJECTION] Status Code ${res.status}: ${errData}`, "log-error");
+        }
+      } catch (err) {
+        consoleLog(`[NETWORK ERROR] Communication with backend proxy gateway timed out or dropped.`, "log-error");
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>
