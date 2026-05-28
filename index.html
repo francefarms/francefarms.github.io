@@ -4,48 +4,41 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Françe Farms — Bio-Estate Ledger</title>
-<link rel="icon" type="image/x-icon" href="/favicon.ico">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
-:root{--green-deep:#0f3d22;--green-main:#1e6b3c;--green-mid:#2d8a52;--green-light:#4aad6e;--cream:#fdf8f0;--text-dark:#1a2a1e;--text-mid:#3d5c45;--error-red:#ff4444}
+:root{--green-deep:#0f3d22;--green-main:#1e6b3c;--cream:#fdf8f0;--text-dark:#1a2a1e;--error-red:#ff4444;--border-color:rgba(30,107,60,0.1)}
 body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text-dark)}
 .scanner-page-layout{max-width:580px;margin:40px auto;padding:0 20px}
-.terminal-box{background:#ffffff;border:1px solid rgba(30,107,60,0.1);border-radius:16px;padding:32px;box-shadow:0 8px 40px rgba(15,61,34,0.13)}
-.drop-zone{background:rgba(30,107,60,0.03);border:2px dashed var(--green-main);border-radius:12px;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0}
-.field-group input{width:100%;padding:12px 16px;background:var(--cream);border:1px solid rgba(30,107,60,0.1);border-radius:8px;font-family:monospace}
+.terminal-box{background:#ffffff;border:1px solid var(--border-color);border-radius:16px;padding:32px;box-shadow:0 8px 40px rgba(15,61,34,0.13)}
 .action-btn{width:100%;padding:14px;background:var(--green-main);border:none;border-radius:8px;color:#fff;font-weight:700;cursor:pointer}
 .action-btn:disabled{background:#6b8c74}
 .terminal{margin-top:24px;background:#060a07;border-radius:10px;height:160px;padding:14px;font-family:monospace;font-size:12px;overflow-y:auto;color:rgba(255,255,255,0.6)}
 .log-entry{margin-bottom:0.4rem;border-left:2px solid rgba(74,173,110,0.3);padding-left:10px}
 .log-success{color:#4aad6e;font-weight:bold;border-left-color:#4aad6e}
 .log-error{color:var(--error-red);border-left-color:var(--error-red)}
-#qr-result{margin-top:24px;display:none;text-align:center}
 </style>
 </head>
 <body>
 
 <div class="scanner-page-layout">
-    <div class="terminal-box">
-        <h2>Bio-Estate Scanner</h2>
-        <div class="drop-zone" id="drop-zone">
-            <input type="file" id="file-input" accept="image/*" style="display:none">
-            <p id="drop-text">CLICK TO BIND IMAGE</p>
-        </div>
-        <div class="form-row">
-            <div class="field-group"><input type="text" id="node-id" value="GRANDE_01"></div>
-            <div class="field-group"><input type="text" id="batch" value="MAY_2026_JULIE"></div>
-        </div>
-        <button class="action-btn" id="execute-btn">EXECUTE CRYPTO-TAGGING</button>
-        <div id="qr-result"><div id="qrcode"></div></div>
-        <div class="terminal" id="terminal-console"><div class="log-entry">&gt; System ready.</div></div>
+  <div class="terminal-box">
+    <h2>Bio-Estate Scanner</h2>
+    <div class="form-row">
+      <input type="text" id="node-id" value="GRANDE_01">
+      <input type="text" id="batch" value="MAY_2026_JULIE">
     </div>
+    <button class="action-btn" id="execute-btn">EXECUTE CRYPTO-TAGGING</button>
+    <div id="qr-result" style="display:none; text-align:center; margin-top:20px; background:#fff; padding:10px;">
+        <div id="qrcode"></div>
+    </div>
+    <div class="terminal" id="terminal-console"><div class="log-entry">&gt; System ready.</div></div>
+  </div>
 </div>
 
 <script>
   const API_URL = "/api/scans/";
-  const consoleLog = document.getElementById('terminal-console');
   const executeBtn = document.getElementById('execute-btn');
+  const consoleLog = document.getElementById('terminal-console');
   const qrContainer = document.getElementById('qrcode');
   const qrResult = document.getElementById('qr-result');
 
@@ -57,29 +50,35 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text-d
     consoleLog.scrollTop = consoleLog.scrollHeight;
   }
 
-  function computeSHA256(s) {
-    // Basic hash placeholder to maintain functionality
-    return btoa(s).substring(0, 32); 
-  }
+  // Basic hash placeholder
+  function computeSHA256(s) { return btoa(s).substring(0, 32); }
 
   executeBtn.addEventListener('click', async () => {
-    const nodeId = document.getElementById('node-id').value.trim();
-    const batchRef = document.getElementById('batch').value.trim();
-    
     executeBtn.disabled = true;
     executeBtn.textContent = "PROCESSING...";
-    
+    writeConsoleLog("Initiating SHA-256 seal sequence...");
+
     try {
-      const payload = { node_id: nodeId, batch_ref: batchRef, timestamp: new Date().toISOString() };
-      
+      const payload = { 
+        node_id: document.getElementById('node-id').value, 
+        batch_ref: document.getElementById('batch').value, 
+        timestamp: new Date().toISOString() 
+      };
+
+      // 1. Generate High-Capacity QR
       qrContainer.innerHTML = "";
       qrResult.style.display = "block";
-      new QRCode(qrContainer, { text: JSON.stringify(payload), width: 160, height: 160 });
+      new QRCode(qrContainer, {
+        text: JSON.stringify(payload),
+        width: 256,
+        height: 256,
+        correctLevel: QRCode.CorrectLevel.M 
+      });
+      writeConsoleLog("QR Manifest generated.", "log-success");
 
-      writeConsoleLog("Dispatching to mesh bridge (15s timeout)...");
-
+      // 2. Network Dispatch
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000);
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s buffer
 
       const response = await fetch(API_URL, {
         method: "POST",
@@ -89,18 +88,24 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text-d
       });
       clearTimeout(timeoutId);
 
-      if (!response.ok) throw new Error(`Status ${response.status}`);
-      
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}: ${JSON.stringify(result)}`);
+      }
+
       writeConsoleLog("Success: Synchronized.", "log-success");
     } catch (err) {
-      writeConsoleLog(`Fault Detail: ${err.message}`, "log-error");
+      if (err.name === 'AbortError') {
+        writeConsoleLog("Timeout: Peer unreachable. Check Nginx/Backend.", "log-error");
+      } else {
+        writeConsoleLog(`Fault Detail: ${err.message}`, "log-error");
+      }
     } finally {
       executeBtn.disabled = false;
       executeBtn.textContent = "EXECUTE CRYPTO-TAGGING";
     }
   });
-
-  document.getElementById('drop-zone').addEventListener('click', () => document.getElementById('file-input').click());
 </script>
 </body>
 </html>
