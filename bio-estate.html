@@ -50,11 +50,11 @@
 
       if (!response.ok) throw new Error(`Gateway returned status ${response.status}`);
 
-      const result = await response.json();
+      await response.json();
       appendTerminalLog("Upstream Handshake: Transaction logged successfully.", "success");
       
       // ── OPTIMIZED QR GENERATION (Fixes Overflow) ──
-      // Compact object: truncated hash and simplified ID to fit in small matrix
+      // Minimized to prevent exceeding 1056 bits
       new QRCode(qrCodeContainer, {
         text: JSON.stringify({ 
             n: manifestPayload.node_id, 
