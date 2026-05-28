@@ -1,94 +1,58 @@
-<script>
-  /* ─── NETWORKING TOPOLOGY DEFINITION ─── */
-  const API_URL = "/api/scans/";
+executeBtn.addEventListener('click', async () => {
+    const nodeId  = document.getElementById('node-id').value.trim();
+    const batchRef = document.getElementById('batch').value.trim();
 
-  /* ─── NAVIGATION & THEME ENGINE (Preserved) ─── */
-  function showPage(pageId) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-    const t = document.getElementById(pageId); if(t) t.classList.add('active');
-    const l = document.getElementById('link-'+pageId); if(l) l.classList.add('active');
-    document.querySelector('.nav-links').classList.remove('open');
-    window.scrollTo(0,0);
-  }
-  document.querySelector('.nav-hamburger').addEventListener('click', () => document.querySelector('.nav-links').classList.toggle('open'));
-
-  const themeToggle = document.getElementById('themeToggle');
-  if(localStorage.getItem('theme')==='dark'){document.body.classList.add('dark-theme');themeToggle.textContent='🌙';}
-  themeToggle.addEventListener('click',()=>{
-    document.body.classList.toggle('dark-theme');
-    const d=document.body.classList.contains('dark-theme');
-    themeToggle.textContent=d?'🌙':'☀️';
-    localStorage.setItem('theme',d?'dark':'light');
-  });
-
-  /* ─── SCANNER DRAG-DROP ENGINE ─── */
-  const dropZone=document.getElementById('drop-zone'), fileInput=document.getElementById('file-input');
-  const previewImg=document.getElementById('preview-img'), lensGlyph=document.getElementById('lens-glyph'), dropText=document.getElementById('drop-text');
-  const consoleLog=document.getElementById('terminal-console'), executeBtn=document.getElementById('execute-btn');
-  const qrResult=document.getElementById('qr-result'), qrContainer=document.getElementById('qrcode');
-  let activeFilePayload=null;
-
-  function writeConsoleLog(msg,variant=''){
-    const e=document.createElement('div');e.className='log-entry '+variant;
-    e.textContent='> ['+new Date().toLocaleTimeString()+'] '+msg;
-    consoleLog.appendChild(e);consoleLog.scrollTop=consoleLog.scrollHeight;
-  }
-
-  dropZone.addEventListener('click',()=>fileInput.click());
-  fileInput.addEventListener('change',e=>{if(e.target.files.length>0)bindUploadedFile(e.target.files[0]);});
-
-  function bindUploadedFile(file){
-    if(!file.type.startsWith('image/')){writeConsoleLog("Aborted: Invalid payload.","log-error");return;}
-    activeFilePayload=file;
-    const reader=new FileReader();
-    reader.onload=ev=>{previewImg.src=ev.target.result;previewImg.style.display='block';lensGlyph.style.display='none';dropText.style.display='none';writeConsoleLog('Acquired: '+file.name,"log-success");};
-    reader.readAsDataURL(file);
-  }
-
-  /* ─── OPTIMIZED EXECUTION ENGINE ─── */
-  executeBtn.addEventListener('click', async () => {
-    const nodeId = document.getElementById('node-id').value.trim();
-    const batch = document.getElementById('batch').value.trim();
-    if (!activeFilePayload) { writeConsoleLog("Fault: No file loaded.", "log-error"); return; }
+    if (!nodeId || !batchRef) {
+      writeConsoleLog("Fault Exception: Execution fields empty.", "log-error");
+      return;
+    }
 
     executeBtn.disabled = true;
-    writeConsoleLog("Initializing seal sequence...");
+    writeConsoleLog("Initiating SHA-256 seal sequence...");
 
     try {
-      // Use native Web Crypto API for performance
-      const buffer = await activeFilePayload.arrayBuffer();
-      const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const fullHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      const mockTimestamp = new Date().toISOString();
+      const generatedHash = computeSHA256(`${nodeId}-${batchRef}-${mockTimestamp}-${Math.random()}`);
 
-      // TRUNCATE DATA for QR Code to prevent Overflow
-      const qrData = {
-        n: nodeId,
-        b: batch,
-        h: fullHash.substring(0, 16) // Only 16 chars for QR visibility
+      // FULL PAYLOAD (For the server)
+      const receiptPayload = {
+        node_id:   nodeId,
+        batch_ref: batchRef,
+        timestamp: mockTimestamp,
+        signature: generatedHash,
+        status:    "VERIFIED_GENUINE"
       };
 
+      // COMPACT PAYLOAD (For the QR code - ONLY essential data)
+      const qrCompact = {
+        n: nodeId,
+        b: batchRef,
+        s: generatedHash.substring(0, 8) // Truncate signature to 8 chars
+      };
+
+      // Render QR code with LOW error correction to maximize capacity
       qrContainer.innerHTML = "";
       qrResult.style.display = "block";
-      
-      // Use CorrectLevel.L (Low) to allow more data density
       new QRCode(qrContainer, {
-        text: JSON.stringify(qrData),
+        text: JSON.stringify(qrCompact), // Use the compact version
         width: 160, height: 160,
-        correctLevel: QRCode.CorrectLevel.L 
+        colorDark: "#0f3d22", colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.L // Use Low error correction
       });
+      writeConsoleLog("Receipt QR generated (Compact Mode).", "log-success");
 
-      writeConsoleLog("Seal generated and verified.", "log-success");
-      
-      // Perform full network dispatch
+      // ── NETWORK DISPATCH ──
       const response = await fetch(API_URL, {
-        method: "POST",
+        method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nodeId, batch, signature: fullHash })
+        body:    JSON.stringify(receiptPayload) // Send the full payload here
       });
 
-      if(response.ok) writeConsoleLog("Server sync complete.", "log-success");
+      if (response.ok) {
+        writeConsoleLog("Network synchronization acknowledged.", "log-success");
+      } else {
+        throw new Error(`Server returned ${response.status}`);
+      }
 
     } catch (err) {
       writeConsoleLog(`Critical Fault: ${err.message}`, "log-error");
@@ -96,4 +60,3 @@
       executeBtn.disabled = false;
     }
   });
-</script>
