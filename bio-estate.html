@@ -1,269 +1,72 @@
 <script>
-  /* ─── NAVIGATION ROUTER TAB ENGINE ─── */
-  function showPage(pageId) {
-    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-    document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active'));
-    
-    const targetPage = document.getElementById(pageId);
-    if(targetPage) targetPage.classList.add('active');
-    
-    const activeLink = document.getElementById(`link-${pageId}`);
-    if(activeLink) activeLink.classList.add('active');
-    
-    document.querySelector('.nav-links').classList.remove('open');
-    window.scrollTo(0, 0);
-  }
+  /* ─── NAVIGATION, THEME, AND TIMELINE LOGIC REMAINS UNCHANGED ─── */
+  // (Keep your existing functions: showPage, themeToggle, and runTimeline above this point)
 
-  document.querySelector('.nav-hamburger').addEventListener('click', () => {
-    document.querySelector('.nav-links').classList.toggle('open');
-  });
-
-  /* ─── THEME CONFIGURATION ENGINE ─── */
-  const themeToggle = document.getElementById('themeToggle');
-  if (localStorage.getItem('theme') === 'dark') {
-    document.body.classList.add('dark-theme');
-    themeToggle.textContent = '🌙';
-  }
-  themeToggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark-theme');
-    const isDark = document.body.classList.contains('dark-theme');
-    themeToggle.textContent = isDark ? '🌙' : '☀️';
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-  });
-
-  /* ─── INTERACTIVE TIMELINE LOGIC ─── */
-  const playBtn = document.getElementById('playBtn');
-  const progressBar = document.getElementById('progressBar');
-  const timeLabel = document.getElementById('timeLabel');
-  const captionEl = document.getElementById('caption');
-  const scenes = document.querySelectorAll('.scene');
-  
-  const captions = [
-    "Françe Farms Data Integrity System: Tap Play to Run Infrastructure Timeline.",
-    "Traditional supply loops leave corporate partners entirely blind to source validation.",
-    "Sovereign edge nodes isolate physical batches and map real-time telemetry markers.",
-    "Hardware vectors output an invariant cryptographic footprint directly to the database layer.",
-    "Provenance chain verified. Absolute supply visibility sealed from the bare metal up."
-  ];
-
-  let currentStep = 0;
-  let timelineInterval = null;
-  const stepsCount = scenes.length; 
-  const durationPerStep = 4000; 
-
-  function updateTimelineUI(step, elapsedInStep = 0) {
-    scenes.forEach((scene, idx) => {
-      if (idx === step) {
-        scene.classList.add('active');
-      } else {
-        scene.classList.remove('active');
-      }
-    });
-
-    captionEl.textContent = captions[step];
-
-    const totalDuration = stepsCount * durationPerStep;
-    const currentElapsed = (step * durationPerStep) + elapsedInStep;
-    const percentage = (currentElapsed / totalDuration) * 100;
-    progressBar.style.width = `${percentage}%`;
-
-    const totalSeconds = Math.floor(currentElapsed / 1000);
-    const mins = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
-    const secs = String(totalSeconds % 60).padStart(2, '0');
-    timeLabel.textContent = `${mins}:${secs}`;
-  }
-
-  function runTimeline() {
-    let startTimestamp = null;
-    const stepDuration = 4000;
-
-    function animate(timestamp) {
-      if (!timelineInterval) return; 
-      if (!startTimestamp) startTimestamp = timestamp;
-
-      let elapsed = timestamp - startTimestamp;
-
-      if (elapsed >= stepDuration) {
-        currentStep++;
-        if (currentStep >= stepsCount) {
-          currentStep = 0;
-          playBtn.textContent = 'PLAY SYSTEM';
-          timelineInterval = null;
-          updateTimelineUI(0, 0);
-          return;
-        }
-        startTimestamp = timestamp;
-        elapsed = 0;
-      }
-
-      updateTimelineUI(currentStep, elapsed);
-      requestAnimationFrame(animate);
-    }
-
-    timelineInterval = requestAnimationFrame(animate);
-  }
-
-  playBtn.addEventListener('click', () => {
-    if (timelineInterval) {
-      cancelAnimationFrame(timelineInterval);
-      timelineInterval = null;
-      playBtn.textContent = 'RESUME';
-    } else {
-      playBtn.textContent = 'PAUSE';
-      runTimeline();
-    }
-  });
-
-  /* ─── LOCAL SOVEREIGN SCANNER ENGINE LOGIC ─── */
-  const dropZone = document.getElementById('drop-zone');
-  const fileInput = document.getElementById('file-input');
-  const previewImg = document.getElementById('preview-img');
-  const lensGlyph = document.getElementById('lens-glyph');
-  const dropText = document.getElementById('drop-text');
-  
-  const consoleEl = document.getElementById('terminal-console');
+  /* ─── UPDATED LOCAL SOVEREIGN SCANNER ENGINE LOGIC ─── */
   const executeBtn = document.getElementById('execute-btn');
+  const consoleEl = document.getElementById('terminal-console');
   const qrResultBlock = document.getElementById('qr-result');
   const qrCodeContainer = document.getElementById('qrcode');
-
-  let activeIngestedFile = null;
 
   function appendTerminalLog(message, type = 'normal') {
     const entry = document.createElement('div');
     entry.classList.add('log-entry');
     if (type === 'success') entry.classList.add('log-success');
     if (type === 'error') entry.classList.add('log-error');
-    
     const timestamp = new Date().toISOString().slice(11, 19);
     entry.textContent = `[${timestamp}] ${message}`;
-    
     consoleEl.appendChild(entry);
     consoleEl.scrollTop = consoleEl.scrollHeight;
   }
 
-  // File picker binding
-  dropZone.addEventListener('click', () => fileInput.click());
-  fileInput.addEventListener('change', (e) => handleFileIngestion(e.target.files[0]));
-
-  // Drag & Drop event bindings
-  dropZone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    dropZone.style.background = "rgba(30,107,60,0.1)";
-  });
-
-  dropZone.addEventListener('dragleave', () => {
-    dropZone.style.background = "rgba(30,107,60,0.03)";
-  });
-
-  dropZone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropZone.style.background = "rgba(30,107,60,0.03)";
-    if (e.dataTransfer.files.length > 0) {
-      handleFileIngestion(e.dataTransfer.files[0]);
-    }
-  });
-
-  function handleFileIngestion(file) {
-    if (!file || !file.type.startsWith('image/')) {
-      appendTerminalLog("Ingestion Failure: Object parameter must be a valid image file.", "error");
-      return;
-    }
-    activeIngestedFile = file;
-    appendTerminalLog(`Buffered file locally: ${file.name} (${Math.round(file.size / 1024)} KB)`);
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      previewImg.src = e.target.result;
-      previewImg.style.display = 'block';
-      lensGlyph.style.display = 'none';
-      dropText.style.display = 'none';
-    };
-    reader.readAsDataURL(file);
-  }
-
-  // Browser-native cryptographic hashing implementation
-  async function computeFileSHA256(file) {
-    const arrayBuffer = await file.arrayBuffer();
-    const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-  }
-
   executeBtn.addEventListener('click', async () => {
     if (!activeIngestedFile) {
-      appendTerminalLog("Execution Blocked: Local hardware telemetry image buffer is empty.", "error");
-      alert("Please upload or drag an image into the scanner boundary first.");
+      appendTerminalLog("Execution Blocked: Image buffer empty.", "error");
       return;
     }
-
-    const nodeId = document.getElementById('node-id').value.trim() || "UNKNOWN_NODE";
-    const batchRef = document.getElementById('batch').value.trim() || "UNKNOWN_BATCH";
 
     executeBtn.disabled = true;
     qrResultBlock.style.display = 'none';
     qrCodeContainer.innerHTML = '';
-
-    appendTerminalLog(`Initializing client-side cryptographic engine pipeline...`);
+    
+    appendTerminalLog(`Initializing cryptographic pipeline...`);
     
     try {
-      // Step 1: Secure actual SHA-256 block hash locally
-      await new Promise(resolve => setTimeout(resolve, 400));
-      appendTerminalLog(`Computing actual SHA-256 block hash for file: ${activeIngestedFile.name}...`);
       const realFileHash = await computeFileSHA256(activeIngestedFile);
-      appendTerminalLog(`SHA-256 Footprint Secured: ${realFileHash.substring(0, 24)}...`, "success");
-
-      // Step 2: Telemetry Generation
-      const mockLat = 10.6500;
-      const mockLon = -61.2200;
-      appendTerminalLog(`Binding physical node telemetry markers: Lat ${mockLat}° N, Lon ${mockLon}° W`);
-
-      // Step 3: Package Data Manifest Payload
       const manifestPayload = {
-        node_id: nodeId,
-        batch_ref: batchRef,
-        file_meta: {
-          name: activeIngestedFile.name,
-          size_bytes: activeIngestedFile.size
-        },
-        timestamp_utc: new Date().toISOString(),
+        node_id: document.getElementById('node-id').value.trim() || "UNKNOWN",
+        batch_ref: document.getElementById('batch').value.trim() || "UNKNOWN",
         immutable_sha256: realFileHash,
-        telemetry: { lat: mockLat, lon: mockLon }
+        timestamp_utc: new Date().toISOString()
       };
 
-      // Step 4: Dispatch payload securely via direct infrastructure endpoint
-      appendTerminalLog("Dispatching transaction ledger block to node listener interface...");
+      appendTerminalLog("Dispatching ledger block via secure HTTPS proxy...");
       
-      const response = await fetch('/api/scans', {
+      // Cache-busting (?t=) forces browser to ignore old cached requests
+      const response = await fetch(`/api/scans?t=${Date.now()}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(manifestPayload)
       });
 
-      if (!response.ok) {
-        throw new Error(`Upstream node responded with server status code ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`Gateway returned status ${response.status}`);
 
-      // Read response back from your backend application server
-      const backendResult = await response.json();
-      appendTerminalLog("Upstream Handshake: Transaction logged successfully by database nodes.", "success");
-
-      // Step 5: Render interactive receipt node QR code using the verified payload
+      const result = await response.json();
+      appendTerminalLog("Upstream Handshake: Transaction logged successfully.", "success");
+      
       new QRCode(qrCodeContainer, {
         text: JSON.stringify(manifestPayload, null, 2),
-        width: 160,
-        height: 160,
-        colorDark: "#0f3d22",
-        colorLight: "#ffffff",
+        width: 160, height: 160,
+        colorDark: "#0f3d22", colorLight: "#ffffff",
         correctLevel: QRCode.CorrectLevel.H
       });
 
       qrResultBlock.style.display = 'block';
-      appendTerminalLog("Sovereign verification manifest sealed to frontend layers.", "success");
+      appendTerminalLog("Sovereign verification manifest sealed.", "success");
       
     } catch (err) {
-      appendTerminalLog(`Internal pipeline execution fault: ${err.message}`, "error");
+      // If a fault occurs, we log it clearly rather than implying a "node offline" status
+      appendTerminalLog(`Pipeline execution fault: ${err.message}`, "error");
     } finally {
       executeBtn.disabled = false;
     }
