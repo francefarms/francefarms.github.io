@@ -408,7 +408,7 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
       </div>
 
       <div class="info-card">
-        <div class="info-icon">���</div>
+        <div class="info-icon">📞</div>
         <div class="info-details">
           <h4>Direct Network Line</h4>
           <a href="tel:+18683327968">+1 (868) 332-7968</a>
@@ -469,9 +469,6 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
 </footer>
 
 <script>
-  /* ─── NETWORKING TOPOLOGY DEFINITION ─── */
-  const API_URL = "/api/scans";
-
   /* ─── NAVIGATION ROUTER TAB ENGINE ─── */
   function showPage(pageId) {
     document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
@@ -761,7 +758,7 @@ footer { background: #082213; padding: 32px clamp(24px,6vw,80px); display: flex;
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 2500); // Fail gracefully if offline
 
-        const networkResponse = await fetch(API_URL, {
+        const networkResponse = await fetch("/api/scans/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: receiptStringData,
