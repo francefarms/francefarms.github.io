@@ -50,10 +50,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text-d
     consoleLog.scrollTop = consoleLog.scrollHeight;
   }
 
-  // Placeholder for file hash - ensure this matches your project's function
-  async function computeFileSHA256(file) { return "hash_" + Date.now(); }
-  let activeIngestedFile = true; // Simulating file presence
-
   executeBtn.addEventListener('click', async () => {
     executeBtn.disabled = true;
     executeBtn.textContent = "PROCESSING...";
@@ -69,7 +65,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text-d
         timestamp: new Date().toISOString() 
       };
 
-      // 1. Network Dispatch (15s timeout to handle Tailscale latency)
+      // 1. Network Dispatch
       writeConsoleLog("Dispatching ledger block...");
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
@@ -83,13 +79,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text-d
       clearTimeout(timeoutId);
 
       if (!response.ok) throw new Error(`Gateway returned ${response.status}`);
-      
-      const result = await response.json().catch(() => ({}));
+      await response.json();
       writeConsoleLog("Success: Synchronized.", "log-success");
 
-      // 2. High-Capacity QR Generation
+      // 2. Minimized QR Generation (Fixes overflow error)
+      const qrReference = {
+        n: payload.node_id,
+        b: payload.batch_ref,
+        t: new Date().toLocaleTimeString() 
+      };
+
       new QRCode(qrContainer, {
-        text: JSON.stringify(payload),
+        text: JSON.stringify(qrReference),
         width: 256,
         height: 256,
         correctLevel: QRCode.CorrectLevel.L
