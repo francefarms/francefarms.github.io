@@ -120,7 +120,7 @@
   const previewImg = document.getElementById('preview-img');
   const lensGlyph = document.getElementById('lens-glyph');
   const dropText = document.getElementById('drop-text');
-  
+   
   const consoleEl = document.getElementById('terminal-console');
   const executeBtn = document.getElementById('execute-btn');
   const qrResultBlock = document.getElementById('qr-result');
@@ -233,7 +233,8 @@
       // Step 4: Dispatch payload securely via direct infrastructure endpoint
       appendTerminalLog("Dispatching transaction ledger block to node listener interface...");
       
-      const response = await fetch('http://100.114.231.81:3000/api/scans', {
+      // FIXED: Routed securely through the domain proxy to satisfy browser active mixed content restrictions
+      const response = await fetch('https://www.francefarms.net/api/scans', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
