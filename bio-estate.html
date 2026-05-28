@@ -42,7 +42,6 @@
 
       appendTerminalLog("Dispatching ledger block via secure HTTPS proxy...");
       
-      // Cache-busting (?t=) forces browser to ignore old cached requests
       const response = await fetch(`/api/scans?t=${Date.now()}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -54,18 +53,24 @@
       const result = await response.json();
       appendTerminalLog("Upstream Handshake: Transaction logged successfully.", "success");
       
+      // ── OPTIMIZED QR GENERATION (Fixes Overflow) ──
+      // Compact object: truncated hash and simplified ID to fit in small matrix
       new QRCode(qrCodeContainer, {
-        text: JSON.stringify(manifestPayload, null, 2),
-        width: 160, height: 160,
-        colorDark: "#0f3d22", colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
+        text: JSON.stringify({ 
+            n: manifestPayload.node_id, 
+            h: realFileHash.substring(0, 16) 
+        }),
+        width: 160, 
+        height: 160,
+        colorDark: "#0f3d22", 
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.L
       });
 
       qrResultBlock.style.display = 'block';
       appendTerminalLog("Sovereign verification manifest sealed.", "success");
       
     } catch (err) {
-      // If a fault occurs, we log it clearly rather than implying a "node offline" status
       appendTerminalLog(`Pipeline execution fault: ${err.message}`, "error");
     } finally {
       executeBtn.disabled = false;
