@@ -1,12 +1,113 @@
-// Render QR code with higher capacity configuration
-      qrContainer.innerHTML = "";
-      qrResult.style.display = "block";
-      new QRCode(qrContainer, {
-        text: JSON.stringify(receiptPayload),
-        width: 256,              // Increased size for better density
-        height: 256,
-        colorDark: "#0f3d22",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.L // Use Low error correction to maximize data capacity
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Françe Farms — Bio-Estate Ledger</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{--green-deep:#0f3d22;--green-main:#1e6b3c;--cream:#fdf8f0;--text-dark:#1a2a1e;--error-red:#ff4444;--border-color:rgba(30,107,60,0.1)}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text-dark)}
+.scanner-page-layout{max-width:580px;margin:40px auto;padding:0 20px}
+.terminal-box{background:#ffffff;border:1px solid var(--border-color);border-radius:16px;padding:32px;box-shadow:0 8px 40px rgba(15,61,34,0.13)}
+.action-btn{width:100%;padding:14px;background:var(--green-main);border:none;border-radius:8px;color:#fff;font-weight:700;cursor:pointer}
+.action-btn:disabled{background:#6b8c74}
+.terminal{margin-top:24px;background:#060a07;border-radius:10px;height:160px;padding:14px;font-family:monospace;font-size:12px;overflow-y:auto;color:rgba(255,255,255,0.6)}
+.log-entry{margin-bottom:0.4rem;border-left:2px solid rgba(74,173,110,0.3);padding-left:10px}
+.log-success{color:#4aad6e;font-weight:bold;border-left-color:#4aad6e}
+.log-error{color:var(--error-red);border-left-color:var(--error-red)}
+</style>
+</head>
+<body>
+
+<div class="scanner-page-layout">
+  <div class="terminal-box">
+    <h2>Bio-Estate Scanner</h2>
+    <div class="form-row">
+      <input type="text" id="node-id" value="GRANDE_01" style="width:100%; margin-bottom:10px; padding:10px;">
+      <input type="text" id="batch" value="MAY_2026_JULIE" style="width:100%; margin-bottom:10px; padding:10px;">
+    </div>
+    <button class="action-btn" id="execute-btn">EXECUTE CRYPTO-TAGGING</button>
+    <div id="qr-result" style="display:none; text-align:center; margin-top:20px; background:#fff; padding:10px;">
+        <div id="qrcode" style="display:inline-block;"></div>
+    </div>
+    <div class="terminal" id="terminal-console"><div class="log-entry">&gt; System ready.</div></div>
+  </div>
+</div>
+
+<script>
+  const API_URL = "/api/scans/";
+  const executeBtn = document.getElementById('execute-btn');
+  const consoleLog = document.getElementById('terminal-console');
+  const qrContainer = document.getElementById('qrcode');
+  const qrResult = document.getElementById('qr-result');
+
+  function writeConsoleLog(msg, variant='') {
+    const e = document.createElement('div');
+    e.className = 'log-entry ' + variant;
+    e.textContent = '> [' + new Date().toLocaleTimeString() + '] ' + msg;
+    consoleLog.appendChild(e);
+    consoleLog.scrollTop = consoleLog.scrollHeight;
+  }
+
+  // Placeholder for file hash - ensure this matches your project's function
+  async function computeFileSHA256(file) { return "hash_" + Date.now(); }
+  let activeIngestedFile = true; // Simulating file presence
+
+  executeBtn.addEventListener('click', async () => {
+    executeBtn.disabled = true;
+    executeBtn.textContent = "PROCESSING...";
+    qrResult.style.display = 'none';
+    qrContainer.innerHTML = '';
+    
+    writeConsoleLog("Initiating cryptographic pipeline...");
+
+    try {
+      const payload = { 
+        node_id: document.getElementById('node-id').value.trim(), 
+        batch_ref: document.getElementById('batch').value.trim(), 
+        timestamp: new Date().toISOString() 
+      };
+
+      // 1. Network Dispatch (15s timeout to handle Tailscale latency)
+      writeConsoleLog("Dispatching ledger block...");
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        signal: controller.signal
       });
-      writeConsoleLog("QR Manifest generated.", "log-success");
+      clearTimeout(timeoutId);
+
+      if (!response.ok) throw new Error(`Gateway returned ${response.status}`);
+      
+      const result = await response.json().catch(() => ({}));
+      writeConsoleLog("Success: Synchronized.", "log-success");
+
+      // 2. High-Capacity QR Generation
+      new QRCode(qrContainer, {
+        text: JSON.stringify(payload),
+        width: 256,
+        height: 256,
+        correctLevel: QRCode.CorrectLevel.L
+      });
+      qrResult.style.display = 'block';
+      writeConsoleLog("Manifest sealed.", "log-success");
+
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        writeConsoleLog("Timeout: Peer unreachable. Check Nginx/Backend.", "log-error");
+      } else {
+        writeConsoleLog(`Fault Detail: ${err.message}`, "log-error");
+      }
+    } finally {
+      executeBtn.disabled = false;
+      executeBtn.textContent = "EXECUTE CRYPTO-TAGGING";
+    }
+  });
+</script>
+</body>
+</html>
