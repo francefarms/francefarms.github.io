@@ -954,30 +954,6 @@
       color: var(--text-dark);
       margin-bottom: 24px;
     }
-    .form-group {
-      margin-bottom: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .form-group label {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-mid);
-      text-transform: uppercase;
-    }
-    .form-group input, .form-group select, .form-group textarea {
-      width: 100%;
-      padding: 12px;
-      background: var(--cream);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      color: var(--text-dark);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      transition: border 0.2s;
-    }
-    .form-group textarea { resize: vertical; height: 100px; }
     .form-submit {
       width: 100%;
       padding: 13px;
@@ -1357,7 +1333,6 @@
         await sendDataToBackend(latitude, longitude);
       },
       async (error) => {
-        // Fallback coordination settings if navigation hardware tracking times out or fails
         let fallbackLat = "10.650000";
         let fallbackLon = "-61.510000";
         
@@ -1399,12 +1374,16 @@
     consoleLog(`[CRYPTO] Secure Hash Sealed: ${clientGeneratedHash}`, "log-success");
     consoleLog(`Payload block compiled cleanly. Compiling tracking profile stream...`);
     
+    /* ─── TUNED STREAM PACKETS TO MATCH EXPRESS INTERFACES ─── */
     const formData = new FormData();
     formData.append('node_id', nodeId);
-    formData.append('batch', batchRef);
-    formData.append('sha256', clientGeneratedHash);
+    formData.append('batch_ref', batchRef);               // Synced payload key matching your backend schema rules
+    formData.append('hash', clientGeneratedHash);          // Synced payload key matching your backend schema rules
+    formData.append('payload_hash', clientGeneratedHash);  // Fallback string duplication block
     formData.append('latitude', lat);
     formData.append('longitude', lon);
+    formData.append('timestamp', isoTimestamp);
+    formData.append('event_type', `AUDIT_LOG:${batchRef}`);
     
     if (fileInput.files[0]) {
         formData.append('image', fileInput.files[0]);
