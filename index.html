@@ -1430,3 +1430,71 @@
 </script>
 </body>
 </html>
+
+
+<script>
+  // ... (Keep existing script code until the sendDataToBackend function) ...
+
+  async function sendDataToBackend(lat, lon) {
+    const nodeId = document.getElementById('node-id').value.trim() || "UNASSIGNED_NODE";
+    const batchRef = document.getElementById('batch').value.trim() || "GENERIC_BATCH";
+    const isoTimestamp = new Date().toISOString();
+
+    const rawStringSeed = `${nodeId}-${batchRef}-${lat}-${lon}-${isoTimestamp}`;
+    
+    consoleLog(`Running local cryptographic hashing protocol...`);
+    const clientGeneratedHash = await generateSHA256(rawStringSeed);
+
+    document.getElementById('hash-wrapper').classList.remove('hidden');
+    document.getElementById('hash-output').textContent = clientGeneratedHash;
+
+    consoleLog(`[CRYPTO] Secure Hash Sealed: ${clientGeneratedHash}`, "log-success");
+    consoleLog(`Payload block compiled cleanly. Compiling tracking profile stream...`);
+    
+    /* ─── TUNED STREAM PACKETS TO MATCH EXPRESS INTERFACES ─── */
+    const formData = new FormData();
+    formData.append('node_id', nodeId);
+    
+    // UPDATED: Ensuring the key matches the server's 'batch_ref' requirement
+    formData.append('batch_ref', batchRef); 
+    
+    // UPDATED: Ensuring the key matches the server's 'hash' requirement
+    formData.append('hash', clientGeneratedHash); 
+    
+    formData.append('payload_hash', clientGeneratedHash); 
+    formData.append('latitude', lat);
+    formData.append('longitude', lon);
+    formData.append('timestamp', isoTimestamp);
+    formData.append('event_type', `AUDIT_LOG:${batchRef}`);
+    
+    if (fileInput.files[0]) {
+        formData.append('image', fileInput.files[0]);
+        consoleLog(`Packing dynamic image byte payload allocation asset array...`);
+    }
+
+    try {
+      consoleLog(`Launch payload delivery stream to Express Vault API terminal...`);
+      
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (res.ok) {
+        const data = await res.json().catch(() => ({}));
+        consoleLog(`[VAULT SUCCESS] Record committed to storage container ledger!`, "log-success");
+        renderReceiptQR(clientGeneratedHash);
+      } else {
+        const errData = await res.text();
+        consoleLog(`[SERVER REJECTION] Status Code ${res.status}: ${errData}`, "log-error");
+        executeBtn.disabled = false;
+      }
+    } catch (err) {
+      consoleLog(`[NETWORK ERROR] Intermittent bridge drop. Verify 'sudo docker start local-vault-backend' context parameters.`, "log-error");
+      console.error(err);
+      executeBtn.disabled = false;
+    }
+  }
+
+  // ... (Keep the rest of your script) ...
+</script>
