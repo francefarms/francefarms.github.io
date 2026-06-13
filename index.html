@@ -315,8 +315,10 @@ footer{background:#082213;padding:32px clamp(24px,6vw,80px);display:flex;align-i
   function showPage(pageId) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-    const t = document.getElementById(pageId); if(t) t.classList.add('active');
-    const l = document.getElementById('link-'+pageId); if(l) l.classList.add('active');
+    const t = document.getElementById(pageId);
+    if(t) t.classList.add('active');
+    const l = document.getElementById('link-'+pageId);
+    if(l) l.classList.add('active');
     document.querySelector('.nav-links').classList.remove('open');
     window.scrollTo(0,0);
   }
@@ -324,7 +326,10 @@ footer{background:#082213;padding:32px clamp(24px,6vw,80px);display:flex;align-i
 
   /* ─── THEME ENGINE ─── */
   const themeToggle = document.getElementById('themeToggle');
-  if(localStorage.getItem('theme')==='dark'){document.body.classList.add('dark-theme');themeToggle.textContent='🌙';}
+  if(localStorage.getItem('theme')==='dark'){
+    document.body.classList.add('dark-theme');
+    themeToggle.textContent='🌙';
+  }
   themeToggle.addEventListener('click',()=>{
     document.body.classList.toggle('dark-theme');
     const d=document.body.classList.contains('dark-theme');
@@ -332,28 +337,32 @@ footer{background:#082213;padding:32px clamp(24px,6vw,80px);display:flex;align-i
     localStorage.setItem('theme',d?'dark':'light');
   });
 
-  /* ─── TIMELINE PLAYER ─── */
-  const playBtn=document.getElementById('playBtn'), progressBar=document.getElementById('progressBar'), timeLabel=document.getElementById('timeLabel'), captionEl=document.getElementById('caption');
-  const captions=["Françe Farms Data Integrity System: Tap Play to Run Infrastructure Timeline.","Traditional supply loops leave corporate partners entirely blind to source validation.","Sovereign edge nodes isolate physical batches and map real-time telemetry markers.","Data payloads are locked dynamically inside a secure cryptographic SHA-256 sealing pipeline.","Provenance verified. Decentralized logs successfully validated through sovereign bare-metal layers."];
-  let playing=false,currentScene=0,timelineInterval=null;
-  const totalDuration=20;
-  function setScene(i){document.querySelectorAll('.scene').forEach((sc,idx)=>sc.classList.toggle('active',idx===i));captionEl.textContent=captions[i];currentScene=i;}
-  playBtn.addEventListener('click',()=>{
-    if(playing){clearInterval(timelineInterval);playBtn.textContent="RESUME SYSTEM";playing=false;}
-    else{
-      playing=true;playBtn.textContent="PAUSE ENGINE";
-      let elapsed=(currentScene*4)||0;setScene(currentScene);
-      timelineInterval=setInterval(()=>{
-        elapsed+=0.1;
-        if(elapsed>=totalDuration){clearInterval(timelineInterval);progressBar.style.width="100%";timeLabel.textContent="00:20";setScene(4);playBtn.textContent="REPLAY RUN";playing=false;currentScene=0;}
-        else{
-          progressBar.style.width=((elapsed/totalDuration)*100)+"%";
-          const m=Math.floor(elapsed/60).toString().padStart(2,'0'),s=Math.floor(elapsed%60).toString().padStart(2,'0');timeLabel.textContent=m+':'+s;
-          const cs=Math.floor(elapsed/4);if(cs!==currentScene&&cs<5)setScene(cs);
-        }
-      },100);
-    }
-  });
+  /* ─── VIDEO EXPOSITION SIMULATOR TIMELINE ─── */
+  const playBtn=document.getElementById('playBtn'), progressBar=document.getElementById('progressBar'), timeLabel=document.getElementById('timeLabel');
+  const scenes=document.querySelectorAll('.scene'), caption=document.getElementById('caption');
+  let isPlaying=false, currentTicks=0, maxTicks=400, playbackClock=null;
+  const scriptCues=[
+    {tick:0,scene:0,text:"Françe Farms Data Integrity System: Tap Play to Run Infrastructure Timeline."},
+    {tick:60,scene:1,text:"Market Blindspots: High consumer uncertainty due to opaque, untracked supply chain gaps."},
+    {tick:150,scene:2,text:"Metadata Extraction: Hardware cameras intercept physical profiles and anchor absolute GPS positions."},
+    {tick:260,scene:3,text:"Cryptographic Consolidation: Node states, references, and timestamps compile an immutable validation hash."},
+    {tick:340,scene:4,text:"Sovereign Integrity Achieved: Cryptographic tracing verification running natively on bare metal endpoints."}
+  ];
+
+  playBtn.addEventListener('click',toggleVideoPlayback);
+  function toggleVideoPlayback(){
+    if(isPlaying){clearInterval(playbackClock);playBtn.textContent='PLAY SYSTEM';isPlaying=false;}
+    else{playBtn.textContent='HALT ENGINE';isPlaying=true;playbackClock=setInterval(advancePlaybackTick,30);}
+  }
+  function advancePlaybackTick(){
+    currentTicks++;if(currentTicks>maxTicks)currentTicks=0;
+    const pct=(currentTicks/maxTicks)*100;progressBar.style.width=pct+'%';
+    const totalSecs=Math.floor((currentTicks*30)/1000),m=String(Math.floor(totalSecs/60)).padStart(2,'0'),s=String(totalSecs%60).padStart(2,'0');
+    timeLabel.textContent=`${m}:${s}`;
+    let activeCue=scriptCues[0];scriptCues.forEach(c=>{if(currentTicks>=c.tick)activeCue=c;});
+    caption.textContent=activeCue.text;
+    scenes.forEach((sc,idx)=>{if(idx===activeCue.scene)sc.classList.add('active');else sc.classList.remove('active');});
+  }
 
   /* ─── SCANNER DRAG-DROP ENGINE ─── */
   const dropZone=document.getElementById('drop-zone'), fileInput=document.getElementById('file-input');
@@ -401,14 +410,14 @@ footer{background:#082213;padding:32px clamp(24px,6vw,80px);display:flex;align-i
     writeConsoleLog(`[SYSTEM] 🛰️ Initializing transaction generation rules pipeline...`);
 
     // 1. Geolocation Native Traversal Matrix
-    let lat = "10.65"; 
-    let lon = "-61.51"; 
+    let lat = "10.650000"; 
+    let lon = "-61.510000"; 
 
     if (navigator.geolocation) {
       writeConsoleLog(`[SYSTEM] Querying hardware location matrix arrays...`);
       const getCoords = () => new Promise((res) => {
         navigator.geolocation.getCurrentPosition(
-          pos => res({lat: pos.coords.latitude.toString(), lon: pos.coords.longitude.toString()}),
+          pos => res({lat: pos.coords.latitude.toFixed(6), lon: pos.coords.longitude.toFixed(6)}),
           err => { writeConsoleLog(`[WARN] Fallback active. Node location used: ${err.message}`); res({lat, lon}); },
           { timeout: 4000 }
         );
@@ -423,6 +432,7 @@ footer{background:#082213;padding:32px clamp(24px,6vw,80px);display:flex;align-i
     writeConsoleLog(`[HASH] Generating SHA-256 block manifestation manifest...`);
     const verificationString = `${nodeId}:${batchRef}:${isoTimestamp}:${lat}:${lon}`;
     let computedHash = "";
+    
     try {
       computedHash = await generateSHA256(verificationString);
       writeConsoleLog(`[BLOCK_HASH] ${computedHash}`, "log-success");
