@@ -160,7 +160,8 @@
 
   <script>
     /* ─── CORE SCANNER LOGIC & TELEMETRY ─── */
-    const API_URL = "https://www.francefarms.net/api/scans";
+    // CHANGED: Pointing securely to your local docker backend port instead of external proxy
+    const API_URL = "http://localhost:3000/api/scans";
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
     const terminalConsole = document.getElementById('terminal-console');
@@ -267,6 +268,8 @@
       formData.append('node_id', nodeId);
       formData.append('batch', batchRef);
       formData.append('sha256', clientGeneratedHash);
+      formData.append('latitude', lat);
+      formData.append('longitude', lon);
       
       // Attach file wrapper if provided by dropzone array state
       if (fileInput.files[0]) {
@@ -290,7 +293,7 @@
           consoleLog(`[SERVER REJECTION] Status Code ${res.status}: ${errData}`, "log-error");
         }
       } catch (err) {
-        consoleLog(`[NETWORK ERROR] Communication with backend proxy gateway timed out or dropped.`, "log-error");
+        consoleLog(`[NETWORK ERROR] Could not connect to container backend. Ensure 'sudo docker start local-vault-backend' is running.`, "log-error");
         console.error(err);
       }
     }
