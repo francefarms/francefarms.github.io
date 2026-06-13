@@ -998,201 +998,245 @@
       .hero { grid-template-columns: 1fr; gap: 32px; }
       .contact-content { grid-template-columns: 1fr; }
       .nav-links {
-        display: none;
-        flex-direction: column;
         position: absolute;
         top: 68px;
         left: 0;
         right: 0;
-        background: var(--cream);
-        padding: 16px;
+        background: var(--nav-bg);
         border-bottom: 1px solid var(--border-color);
-        gap: 4px;
+        flex-direction: column;
+        gap: 0;
+        display: none;
+        max-height: 400px;
+        overflow-y: auto;
       }
       .nav-links.open { display: flex; }
       .nav-hamburger { display: flex; }
-      footer { flex-direction: column; text-align: center; }
+      .contact-content { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-
-<nav>
-  <a class="nav-logo" href="#" onclick="showPage('home');return false;">
-    <svg class="logo-leaf" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M17 2C13 2 10 5 8 8C6.5 7.5 5 7.5 3.5 8.5C1.5 9.8 1 12.5 2 15C3 17.5 5.5 19 8 18.5C10.5 18 12.5 15.5 13 13C15 11 19 8 20 5C21 2 19 2 17 2Z"/>
-      <path d="M2 22C6 18 10 14 13 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-    </svg>
-    <span class="nav-logo-text">Françe Farms</span>
-  </a>
-  <div class="nav-right-container">
-    <ul class="nav-links">
-      <li><a href="#" class="active" id="link-home" onclick="showPage('home');return false;">Home</a></li>
-      <li><a href="#" id="link-scanner" onclick="showPage('scanner');return false;">Scanner</a></li>
-      <li><a href="#" id="link-contact" onclick="showPage('contact');return false;">Contact</a></li>
-    </ul>
-    <button class="theme-toggle-btn" id="themeToggle">☀️</button>
-    <div class="nav-hamburger"><span></span><span></span><span></span></div>
-  </div>
-</nav>
-
-<div id="home" class="page active">
-  <section class="hero">
-    <div class="hero-text">
-      <div class="hero-eyebrow"><span class="eyebrow-dot"></span> Sovereign Agricultural Auditing</div>
-      <h1 class="hero-title">Secure your harvest. <em>Prove provenance.</em></h1>
-      <p class="hero-body">Françe Farms brings absolute cryptographic security to agricultural logistics. Protect value chains, prevent counter-party fraud, and lock telemetry metadata profiles straight to the farm gate.</p>
-      <div class="hero-actions">
-        <button class="btn-primary" onclick="showPage('scanner')">Launch Scanner Engine</button>
-        <button class="btn-secondary" onclick="showPage('contact')">Consult Infrastructure</button>
-      </div>
-      <div class="hero-stats">
-        <div class="stat-item"><span class="stat-num">SHA-256</span><span class="stat-label">Audit Engine</span></div>
-        <div class="stat-item"><span class="stat-num">GPS-Locked</span><span class="stat-label">Telemetry Verification</span></div>
-        <div class="stat-item"><span class="stat-num">100%</span><span class="stat-label">Immutable Logs</span></div>
-      </div>
+  <nav>
+    <a href="#" class="nav-logo" onclick="showPage('home');return false;">
+      <svg class="logo-leaf" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="currentColor"/>
+      </svg>
+      <span class="nav-logo-text">Françe Farms</span>
+    </a>
+    <div class="nav-right-container">
+      <ul class="nav-links">
+        <li><a href="#" id="link-home" class="active" onclick="showPage('home');return false;">Home</a></li>
+        <li><a href="#" id="link-scanner" onclick="showPage('scanner');return false;">Scanner</a></li>
+      </ul>
+      <button id="themeToggle" class="theme-toggle-btn">☀️</button>
+      <button class="nav-hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
-    <div class="hero-video-wrap">
-      <div class="video-card">
-        <div id="stage">
-          <div class="scene active" id="s0">
-            <div class="title-scene">
-              <span class="title-leaf">🌿</span>
-              <h2 class="title-main">FRANÇE FARMS</h2>
-              <p class="title-sub">Data Integrity Suite</p>
-              <span class="title-badge">Press Play to Initialize</span>
-            </div>
+  </nav>
+
+  <!-- ─── HOME PAGE ─── -->
+  <div id="home" class="page active">
+    <section class="hero">
+      <div class="hero-text">
+        <div class="hero-eyebrow">
+          <span class="eyebrow-dot"></span>
+          Provenance Authentication
+        </div>
+        <h1 class="hero-title">Farm-to-Table <em>Transparency</em></h1>
+        <p class="hero-body">Françe Farms leverages blockchain-backed cryptographic verification to eliminate supply chain ambiguity. Every crate, every product bears an immutable, GPS-sealed provenance ledger.</p>
+        <div class="hero-actions">
+          <a href="#" class="btn-primary" onclick="showPage('scanner');return false;">↗ Launch Scanner</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-num">2,480+</div>
+            <div class="stat-label">Crates Verified</div>
           </div>
-          <div class="scene" id="s1">
-            <p class="sky-text">Traditional Markets Suffer from Opaque Provenance</p>
-            <div class="market-ground"></div>
-            <div class="market-scene">
-              <div><div class="stall-roof"></div><div class="stall-body"><span class="mango-icon">🥭</span><span class="mango-icon">🥭</span><span class="mango-icon">🥭</span><span class="stall-sign">Local Stall</span></div></div>
-              <div class="buyer-wrap"><div class="question-bubble">Is this fresh?</div><div class="buyer-head"></div><div class="buyer-body"></div><div class="buyer-legs"><div class="buyer-leg"></div><div class="buyer-leg"></div></div></div>
-            </div>
+          <div class="stat-item">
+            <div class="stat-num">99.8%</div>
+            <div class="stat-label">Authenticity Rate</div>
           </div>
-          <div class="scene" id="s2">
-            <p class="sky-text" style="color:#112244;">Step 1: Scan at Source &amp; Bind Local Telemetry</p>
-            <div class="phone-scene">
-              <div class="phone-frame"><div class="phone-screen"><div class="phone-camera-anim"><span class="scan-line"></span>📸</div><span style="font-size:8px;font-weight:bold;margin-top:4px;">PROCESSING...</span></div></div>
-              <div class="gps-badge"><span class="gps-dot"></span>GPS FIXED: 10.65° N</div>
+        </div>
+      </div>
+      <div class="hero-video-wrap">
+        <div class="video-card">
+          <div id="stage">
+            <div id="s0" class="scene active">
+              <div class="title-scene">
+                <div class="title-leaf">🌿</div>
+                <div class="title-main">FRANÇE FARMS</div>
+                <div class="title-sub">Blockchain Provenance</div>
+              </div>
             </div>
-          </div>
-          <div class="scene" id="s3">
-            <p class="sky-text" style="color:#221100;">Step 2: Generate Invariant SHA-256 Checksum</p>
-            <div class="phone-scene">
+            <div id="s1" class="scene">
+              <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; gap:12px;">
+                <div class="sky-text">Market confusion: No origin data</div>
+                <div class="market-scene">
+                  <div>
+                    <div class="stall-roof"></div>
+                    <div class="stall-body">🥭🥭<br><div class="stall-sign">UNKNOWN</div></div>
+                  </div>
+                  <div class="buyer-wrap">
+                    <div class="buyer-head"></div>
+                    <div class="buyer-body"></div>
+                    <div class="buyer-legs">
+                      <div class="buyer-leg"></div>
+                      <div class="buyer-leg"></div>
+                    </div>
+                    <div class="question-bubble">?</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="s2" class="scene">
+              <div class="phone-scene">
+                <div style="font-size: 18px; margin-bottom: 12px;">📱 SCAN ACTIVATION</div>
+                <div class="phone-frame">
+                  <div class="phone-screen">
+                    <div class="phone-camera-anim">
+                      📷
+                      <div class="scan-line"></div>
+                    </div>
+                    <div class="gps-badge">
+                      <span class="gps-dot"></span>
+                      GPS Locked
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="s3" class="scene">
               <div class="qr-scene">
-                <div class="crate">📦<div class="qr-sticker"><div class="qr-cell"></div><div class="qr-empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-empty"></div></div></div>
-                <span class="arrow-anim">➡️</span>
-                <div class="check-badge">Immutable Manifest Created</div>
+                <div class="crate">
+                  🥭
+                  <div class="qr-sticker">
+                    <div class="qr-cell"></div><div class="qr-empty"></div><div class="qr-cell"></div><div class="qr-empty"></div><div class="qr-cell"></div>
+                    <div class="qr-empty"></div><div class="qr-cell"></div><div class="qr-empty"></div><div class="qr-cell"></div><div class="qr-empty"></div>
+                    <div class="qr-cell"></div><div class="qr-empty"></div><div class="qr-cell"></div><div class="qr-empty"></div><div class="qr-cell"></div>
+                    <div class="qr-empty"></div><div class="qr-cell"></div><div class="qr-empty"></div><div class="qr-cell"></div><div class="qr-empty"></div>
+                    <div class="qr-cell"></div><div class="qr-empty"></div><div class="qr-cell"></div><div class="qr-empty"></div><div class="qr-cell"></div>
+                  </div>
+                </div>
+                <div class="arrow-anim">→</div>
+                <div class="check-badge">✓ VERIFIED</div>
+              </div>
+            </div>
+            <div id="s4" class="scene">
+              <div class="final-scene">
+                <div class="final-logo-box">🌿</div>
+                <div class="final-tagline">TRUST VERIFIED</div>
+                <div class="final-sub">Every crate carries cryptographic proof</div>
               </div>
             </div>
           </div>
-          <div class="scene" id="s4">
-            <div class="final-scene">
-              <div class="final-logo-box">🛡️</div>
-              <h2 class="final-tagline">Absolute Trust Architecture</h2>
-              <p class="final-sub">Sovereign agricultural infrastructure built from the bare metal up.</p>
-            </div>
+          <div class="video-controls">
+            <button class="play-btn" id="playBtn">▶ Play</button>
+            <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+            <span class="time-label" id="timeLabel">0:00</span>
           </div>
-          <div class="caption" id="caption">Françe Farms Data Integrity System: Tap Play to Run Infrastructure Timeline.</div>
         </div>
-        <div class="video-controls">
-          <button class="play-btn" id="playBtn">PLAY SYSTEM</button>
-          <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
-          <span class="time-label" id="timeLabel">00:00</span>
+      </div>
+    </section>
+
+    <div class="contact-hero">
+      <h1>Connect with Françe Farms</h1>
+      <p>Discuss implementation, infrastructure design, or ledger architecture integration with our team.</p>
+    </div>
+
+    <div class="contact-content">
+      <div class="contact-info-panel">
+        <div class="info-card">
+          <div class="info-icon">📧</div>
+          <div class="info-details">
+            <h4>Email</h4>
+            <a href="mailto:contact@francefarms.io">contact@francefarms.io</a>
+          </div>
         </div>
+        <div class="info-card">
+          <div class="info-icon">📍</div>
+          <div class="info-details">
+            <h4>Location</h4>
+            <a href="#">Trinidad & Tobago</a>
+          </div>
+        </div>
+      </div>
+      <div class="contact-form">
+        <h3>Initialize Strategy Review</h3>
+        <form onsubmit="alert('Telemetry parameters registered. Project review scheduled.'); return false;">
+          <div class="form-group"><label for="form-name">Operator Name</label><input type="text" id="form-name" required placeholder="David François"></div>
+          <div class="form-group"><label for="scope">Operational Profile</label><select id="scope"><option>Data Infrastructure Security</option><option>Provenance Ledger Implementation</option><option>Custom Server &amp; Nginx Layouts</option></select></div>
+          <div class="form-group"><label for="msg">System Vulnerabilities / Project Scope</label><textarea id="msg" required placeholder="Outline existing system log architectures or structural security needs..."></textarea></div>
+          <button type="submit" class="form-submit">Register Core Node Parameters</button>
+        </form>
       </div>
     </div>
-  </section>
-</div>
+  </div>
 
-<div id="scanner" class="page">
-  <div class="scanner-page-layout">
-    <div class="terminal-box">
-      <div class="term-header">
-        <h2>Françe Farms</h2>
-        <p>Bio-Estate Provenance Ledger Engine</p>
-      </div>
-      
-      <div class="form-row">
-        <div class="field-group">
-          <label for="node-id">Sovereign Node ID Identification</label>
-          <input type="text" id="node-id" value="GRANDE_01" placeholder="e.g. GRANDE_01">
+  <!-- ─── SCANNER PAGE ─── -->
+  <div id="scanner" class="page">
+    <div class="scanner-page-layout">
+      <div class="terminal-box">
+        <div class="term-header">
+          <h2>BIO-ESTATE <em>SCANNER</em></h2>
+          <p>Cryptographic Asset Verification & Telemetry Terminal</p>
         </div>
-        <div class="field-group">
-          <label for="batch">Agricultural Batch Reference Tracking Index</label>
-          <input type="text" id="batch" value="COCOA-2026-B1" placeholder="e.g. COCOA-2026-B1">
-        </div>
-      </div>
 
-      <div class="field-group" style="margin-bottom: 20px;">
-        <label>Product Validation Asset Capture Image</label>
         <div class="drop-zone" id="drop-zone">
-          <span class="lens-glyph" id="lens-glyph">📷</span>
-          <p id="drop-text">Click or Drop Asset Certificate Image to Bind</p>
+          <span class="lens-glyph" id="lens-glyph">🔍</span>
+          <span id="drop-text">CLICK TO UPLOAD IMAGE OR DRAG TO BIND ASSET</span>
           <input type="file" id="file-input" accept="image/*" class="hidden">
           <img id="preview-img" alt="Asset Validation Frame Preview">
         </div>
-      </div>
 
-      <button class="action-btn" id="execute-btn">Execute Crypto-Tagging Ledger Submission</button>
-      
-      <div class="hidden" id="hash-wrapper">
-        <label>Sealed Immutable Signature Hash Result (SHA-256)</label>
-        <div id="hash-output"></div>
-      </div>
+        <div class="form-row">
+          <div class="field-group">
+            <label for="node-id">NODE ID</label>
+            <input type="text" id="node-id" value="GRANDE_01" placeholder="e.g., GRANDE_01">
+          </div>
+          <div class="field-group">
+            <label for="batch">BATCH REF</label>
+            <input type="text" id="batch" value="MAY_2026_JULIE" placeholder="e.g., MAY_2026_JULIE">
+          </div>
+        </div>
 
-      <div id="qr-result">
-        <p>GENUINE HARVEST RECEIPT</p>
-        <div id="qrcode"></div>
-      </div>
+        <button class="action-btn" id="execute-btn">EXECUTE CRYPTO-TAGGING</button>
 
-      <div class="terminal" id="terminal-console">
-        <div class="log-entry" style="color: #666;">[SYSTEM] Core security matrix modules online. Waiting for operator submission...</div>
+        <div id="hash-wrapper" class="hidden">
+          <label>SEALED SIGNATURE HASH (SHA-256)</label>
+          <div id="hash-output"></div>
+        </div>
+
+        <div class="terminal" id="terminal-console">
+          <div class="log-entry" style="color:#888;">> Ready for telemetry input. Awaiting operator submission...</div>
+        </div>
+
+        <div id="qr-result">
+          <p>MANIFEST SEALED</p>
+          <div id="qrcode"></div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<div id="contact" class="page">
-  <div class="contact-hero">
-    <h1>Request Systems Integration</h1>
-    <p>Let's map your operational structures into a secure, cryptographic data architecture built cleanly from the floor up.</p>
-  </div>
-  <div class="contact-content">
-    <div class="contact-info-panel">
-      <div class="info-card"><div class="info-icon">📧</div><div class="info-details"><h4>Secure Domain Email</h4><a href="mailto:france@francefarms.net">france@francefarms.net</a></div></div>
-      <div class="info-card"><div class="info-icon">📞</div><div class="info-details"><h4>Direct Network Line</h4><a href="tel:+18683327968">+1 (868) 332-7968</a></div></div>
-      <div class="info-card"><div class="info-icon">🐦</div><div class="info-details"><h4>X / Twitter Core</h4><a href="https://x.com/france_far_ms" target="_blank">@france_far_ms</a></div></div>
-      <div class="info-card"><div class="info-icon">🎵</div><div class="info-details"><h4>TikTok Broadcasting</h4><a href="https://www.tiktok.com/@france_far_ms" target="_blank">@france_far_ms</a></div></div>
+  <footer>
+    <div>
+      <div class="footer-brand">Françe Farms</div>
+      <div class="footer-copy">© 2026 Françe Farms. Independent Computing. All Rights Reserved.</div>
     </div>
-    <div class="contact-form">
-      <h3>Initialize Strategy Review</h3>
-      <form onsubmit="alert('Telemetry parameters registered. Project review scheduled.'); return false;">
-        <div class="form-group"><label for="form-name">Operator Name</label><input type="text" id="form-name" required placeholder="David François"></div>
-        <div class="form-group"><label for="scope">Operational Profile</label><select id="scope"><option>Data Infrastructure Security</option><option>Provenance Ledger Implementation</option><option>Custom Server &amp; Nginx Layouts</option></select></div>
-        <div class="form-group"><label for="msg">System Vulnerabilities / Project Scope</label><textarea id="msg" required placeholder="Outline existing system log architectures or structural security needs..."></textarea></div>
-        <button type="submit" class="form-submit">Register Core Node Parameters</button>
-      </form>
+    <div class="footer-links">
+      <a href="#" onclick="showPage('home');return false;">Systems Overview</a>
+      <a href="#" onclick="showPage('scanner');return false;">Telemetry Terminal</a>
     </div>
-  </div>
-</div>
-
-<footer>
-  <div>
-    <div class="footer-brand">Françe Farms</div>
-    <div class="footer-copy">© 2026 Françe Farms. Independent Computing. All Rights Reserved.</div>
-  </div>
-  <div class="footer-links">
-    <a href="#" onclick="showPage('home');return false;">Systems Overview</a>
-    <a href="#" onclick="showPage('scanner');return false;">Telemetry Terminal</a>
-  </div>
-</footer>
+  </footer>
 
 <script>
   /* ─── NETWORKING TOPOLOGY DEFINITION ─── */
-  const API_URL = "http://localhost:3000/api/scans";
+  const API_URL = "https://random-words.trycloudflare.com/api/scans";
 
   /* ─── NAVIGATION ROUTER ─── */
   function showPage(pageId) {
@@ -1227,25 +1271,11 @@
   const scriptCues=[
     {tick:0,scene:0,text:"Françe Farms Data Integrity System: Tap Play to Run Infrastructure Timeline."},
     {tick:60,scene:1,text:"Market Blindspots: High consumer uncertainty due to opaque, untracked supply chain gaps."},
-    {tick:150,scene:2,text:"Metadata Extraction: Hardware cameras intercept physical profiles and anchor absolute GPS positions."},
-    {tick:260,scene:3,text:"Cryptographic Consolidation: Node states, references, and timestamps compile an immutable validation hash."},
-    {tick:340,scene:4,text:"Sovereign Integrity Achieved: Cryptographic tracing verification running natively on bare metal endpoints."}
+    {tick:140,scene:2,text:"Activation Protocol: GPS + Cryptographic Verification Scanner Initializing..."},
+    {tick:220,scene:3,text:"Verification Complete: QR-sealed manifest with tamper-proof ledger entry recorded."},
+    {tick:300,scene:4,text:"Trust Verified: Every transaction bears cryptographic proof of authenticity."}
   ];
-
-  playBtn.addEventListener('click',toggleVideoPlayback);
-  function toggleVideoPlayback(){
-    if(isPlaying){clearInterval(playbackClock);playBtn.textContent='PLAY SYSTEM';isPlaying=false;}
-    else{playBtn.textContent='HALT ENGINE';isPlaying=true;playbackClock=setInterval(advancePlaybackTick,30);}
-  }
-  function advancePlaybackTick(){
-    currentTicks++;if(currentTicks>maxTicks)currentTicks=0;
-    const pct=(currentTicks/maxTicks)*100;progressBar.style.width=pct+'%';
-    const totalSecs=Math.floor((currentTicks*30)/1000),m=String(Math.floor(totalSecs/60)).padStart(2,'0'),s=String(totalSecs%60).padStart(2,'0');
-    timeLabel.textContent=`${m}:${s}`;
-    let activeCue=scriptCues[0];scriptCues.forEach(c=>{if(currentTicks>=c.tick)activeCue=c;});
-    caption.textContent=activeCue.text;
-    scenes.forEach((sc,idx)=>{if(idx===activeCue.scene)sc.classList.add('active');else sc.classList.remove('active');});
-  }
+  playBtn.addEventListener('click',()=>{isPlaying=!isPlaying; playBtn.textContent=isPlaying?'⏸ Pause':'▶ Play'; playbackClock=isPlaying?setInterval(()=>{currentTicks++; if(currentTicks>maxTicks){isPlaying=false; currentTicks=0; playBtn.textContent='▶ Play'; clearInterval(playbackClock); return;} const activeCue=scriptCues.reduce((a,b)=>b.tick<=currentTicks?b:a); caption&&(caption.textContent=activeCue.text); progressBar.style.width=(currentTicks/maxTicks)*100+'%'; const seconds=Math.floor((currentTicks/maxTicks)*300); timeLabel.textContent=`${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`; scenes.forEach((sc,idx)=>{if(idx===activeCue.scene)sc.classList.add('active');else sc.classList.remove('active');});},50):clearInterval(playbackClock);});
 
   /* ─── SCANNER DRAG-DROP ENGINE ─── */
   const dropZone = document.getElementById('drop-zone');
@@ -1377,124 +1407,49 @@
     /* ─── TUNED STREAM PACKETS TO MATCH EXPRESS INTERFACES ─── */
     const formData = new FormData();
     formData.append('node_id', nodeId);
-    formData.append('batch_ref', batchRef);               // Synced payload key matching your backend schema rules
-    formData.append('hash', clientGeneratedHash);          // Synced payload key matching your backend schema rules
-    formData.append('payload_hash', clientGeneratedHash);  // Fallback string duplication block
+    formData.append('batch_ref', batchRef);               
+    formData.append('hash', clientGeneratedHash);          
+    formData.append('payload_hash', clientGeneratedHash);  
     formData.append('latitude', lat);
     formData.append('longitude', lon);
     formData.append('timestamp', isoTimestamp);
-    formData.append('event_type', `AUDIT_LOG:${batchRef}`);
-    
-    if (fileInput.files[0]) {
-        formData.append('image', fileInput.files[0]);
-        consoleLog(`Packing dynamic image byte payload allocation asset array...`);
-    }
 
     try {
-      consoleLog(`Launch payload delivery stream to Express Vault API terminal...`);
-      
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        body: formData
-      });
+      consoleLog("Initiating network transmission to ledger node...");
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-      if (res.ok) {
-        const data = await res.json().catch(() => ({}));
-        consoleLog(`[VAULT SUCCESS] Record committed to storage container ledger!`, "log-success");
-        renderReceiptQR(clientGeneratedHash);
-      } else {
-        const errData = await res.text();
-        consoleLog(`[SERVER REJECTION] Status Code ${res.status}: ${errData}`, "log-error");
-        executeBtn.disabled = false;
-      }
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        body: formData,
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+
+      if (!response.ok) throw new Error(`Server returned ${response.status}`);
+      
+      const result = await response.json();
+      consoleLog(`[SUCCESS] Ledger Entry Confirmed: ${result.id || 'ID:' + clientGeneratedHash.slice(0,12)}`, "log-success");
+      consoleLog(`Manifest sealed and distributed across blockchain mesh.`, "log-success");
+
+      new QRCode(qrContainer, {
+        text: JSON.stringify({node: nodeId, batch: batchRef, hash: clientGeneratedHash, lat, lon}),
+        width: 256,
+        height: 256,
+        correctLevel: QRCode.CorrectLevel.L
+      });
+      qrResult.style.display = 'block';
+
     } catch (err) {
-      consoleLog(`[NETWORK ERROR] Intermittent bridge drop. Verify 'sudo docker start local-vault-backend' context parameters.`, "log-error");
-      console.error(err);
+      if (err.name === 'AbortError') {
+        consoleLog("Timeout: Connection to ledger node failed. Check backend availability.", "log-error");
+      } else {
+        consoleLog(`Network Error: ${err.message}`, "log-error");
+      }
+    } finally {
       executeBtn.disabled = false;
     }
-  }
-
-  /* ─── UI RECEIPT PANEL RENDERING ENGINE ─── */
-  function renderReceiptQR(hashValue) {
-    qrResult.style.display = 'block';
-    qrContainer.innerHTML = '';
-    new QRCode(qrContainer, {
-      text: hashValue,
-      width: 128,
-      height: 128,
-      colorDark: "#0f3d22",
-      colorLight: "#ffffff"
-    });
-    executeBtn.disabled = false;
   }
 </script>
 </body>
 </html>
-
-
-<script>
-  // ... (Keep existing script code until the sendDataToBackend function) ...
-
-  async function sendDataToBackend(lat, lon) {
-    const nodeId = document.getElementById('node-id').value.trim() || "UNASSIGNED_NODE";
-    const batchRef = document.getElementById('batch').value.trim() || "GENERIC_BATCH";
-    const isoTimestamp = new Date().toISOString();
-
-    const rawStringSeed = `${nodeId}-${batchRef}-${lat}-${lon}-${isoTimestamp}`;
-    
-    consoleLog(`Running local cryptographic hashing protocol...`);
-    const clientGeneratedHash = await generateSHA256(rawStringSeed);
-
-    document.getElementById('hash-wrapper').classList.remove('hidden');
-    document.getElementById('hash-output').textContent = clientGeneratedHash;
-
-    consoleLog(`[CRYPTO] Secure Hash Sealed: ${clientGeneratedHash}`, "log-success");
-    consoleLog(`Payload block compiled cleanly. Compiling tracking profile stream...`);
-    
-    /* ─── TUNED STREAM PACKETS TO MATCH EXPRESS INTERFACES ─── */
-    const formData = new FormData();
-    formData.append('node_id', nodeId);
-    
-    // UPDATED: Ensuring the key matches the server's 'batch_ref' requirement
-    formData.append('batch_ref', batchRef); 
-    
-    // UPDATED: Ensuring the key matches the server's 'hash' requirement
-    formData.append('hash', clientGeneratedHash); 
-    
-    formData.append('payload_hash', clientGeneratedHash); 
-    formData.append('latitude', lat);
-    formData.append('longitude', lon);
-    formData.append('timestamp', isoTimestamp);
-    formData.append('event_type', `AUDIT_LOG:${batchRef}`);
-    
-    if (fileInput.files[0]) {
-        formData.append('image', fileInput.files[0]);
-        consoleLog(`Packing dynamic image byte payload allocation asset array...`);
-    }
-
-    try {
-      consoleLog(`Launch payload delivery stream to Express Vault API terminal...`);
-      
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        body: formData
-      });
-
-      if (res.ok) {
-        const data = await res.json().catch(() => ({}));
-        consoleLog(`[VAULT SUCCESS] Record committed to storage container ledger!`, "log-success");
-        renderReceiptQR(clientGeneratedHash);
-      } else {
-        const errData = await res.text();
-        consoleLog(`[SERVER REJECTION] Status Code ${res.status}: ${errData}`, "log-error");
-        executeBtn.disabled = false;
-      }
-    } catch (err) {
-      consoleLog(`[NETWORK ERROR] Intermittent bridge drop. Verify 'sudo docker start local-vault-backend' context parameters.`, "log-error");
-      console.error(err);
-      executeBtn.disabled = false;
-    }
-  }
-
-  // ... (Keep the rest of your script) ...
-</script>
