@@ -160,8 +160,8 @@
 
   <script>
     /* ─── CORE SCANNER LOGIC & TELEMETRY ─── */
-    // CHANGED: Pointing securely to your local docker backend port instead of external proxy
-    const API_URL = "http://localhost:3000/api/scans";
+    // CHANGED: Pointing securely to your live API endpoint instead of local proxy
+    const API_URL = "https://api.francefarms.net/api/scans";
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
     const terminalConsole = document.getElementById('terminal-console');
