@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Françe Farms — Scanner</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root {
+      --neon-green: #00ff66;
+      --dark-bg: #0a0f0d;
+      --panel-bg: #121b16;
+      --border-color: #1f3328;
+      --text-main: #e0e6e3;
+    }
+    body { background: var(--dark-bg); color: var(--text-main); font-family: 'Courier New', Courier, monospace; margin: 0; padding: 20px; display: flex; justify-content: center; }
+    .container { width: 100%; max-width: 640px; background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 25px; }
+    h1, h3 { color: var(--neon-green); text-transform: uppercase; letter-spacing: 2px; margin-top: 0; }
+    .field-group { margin-bottom: 18px; }
+    label { display: block; margin-bottom: 6px; color: var(--neon-green); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+    input[type="text"], select {
+      width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid var(--border-color);
+      border-radius: 4px; color: var(--text-main); font-family: inherit; box-sizing: border-box;
+    }
+    input:focus, select:focus { border-color: var(--neon-green); outline: none; }
+    input:disabled { opacity: 0.6; }
+    .lot-banner {
+      background: rgba(0,255,102,0.08); border: 1px solid var(--neon-green); border-radius: 4px;
+      padding: 10px 14px; font-size: 0.8rem; margin-bottom: 20px; word-break: break-all;
+    }
+    .warn-banner {
+      background: rgba(255,51,51,0.08); border: 1px solid #ff3333; color: #ff8888; border-radius: 4px;
+      padding: 10px 14px; font-size: 0.8rem; margin-bottom: 20px;
+    }
+    .drop-zone { border: 2px dashed var(--border-color); border-radius: 6px; padding: 30px; text-align: center; cursor: pointer; background: var(--dark-bg); }
+    .drop-zone:hover { border-color: var(--neon-green); }
+    #preview-img { max-width: 100%; max-height: 250px; margin-top: 15px; border-radius: 4px; border: 1px solid var(--border-color); display: none; }
+    .btn { background: transparent; color: var(--neon-green); border: 1px solid var(--neon-green); padding: 14px 28px; font-family: inherit; font-weight: bold; text-transform: uppercase; cursor: pointer; border-radius: 4px; width: 100%; margin-top: 20px; }
+    .btn:hover { background: var(--neon-green); color: var(--dark-bg); }
+    .btn:disabled { border-color: #444; color: #666; cursor: not-allowed; background: transparent; }
+    .console { background: #050706; border: 1px solid var(--border-color); border-radius: 4px; padding: 15px; height: 160px; overflow-y: auto; margin-top: 20px; }
+    .log-entry { margin-bottom: 6px; font-size: 0.8rem; line-height: 1.4; }
+    .log-success { color: #00ff66; }
+    .log-error { color: #ff3333; }
+    #qr-result { margin-top: 20px; display: none; text-align: center; background: #fff; padding: 20px; border-radius: 8px; }
+    #qr-result p { color: #0c140f; font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+    #qr-result .lot-display { color: #3d5c45; font-size: 11px; margin-bottom: 12px; word-break: break-all; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Françe Farms</h1>
+    <h3>Provenance Ledger — Add Event</h3>
+    <hr style="border-color: var(--border-color); margin-bottom: 20px;">
+
+    <div id="lot-banner" class="lot-banner hidden">
+      Continuing lot: <span id="lot-code-display"></span>
+    </div>
+    <div id="no-lot-warning" class="warn-banner hidden">
+      No lot code detected. Only a <strong>Harvest</strong> event can start a new lot —
+      every other stage must be reached by scanning the previous stage's QR code.
+    </div>
+
+    <div class="field-group">
+      <label for="event-type">Event Type</label>
+      <select id="event-type">
+        <option value="HARVEST">Harvest (starts a new lot)</option>
+        <option value="PACK">Pack</option>
+        <option value="TRANSFORM">Transform</option>
+        <option value="SHIP">Ship</option>
+        <option value="RECEIVE">Receive</option>
+      </select>
+    </div>
+
+    <div class="field-group">
+      <label for="node-id">Node ID (who is performing this event)</label>
+      <input type="text" id="node-id" placeholder="e.g. GRANDE_01">
+    </div>
+
+    <div class="field-group">
+      <label for="batch">Batch / Shipment Note (optional, descriptive only)</label>
+      <input type="text" id="batch" placeholder="e.g. Truck 2, Tuesday delivery">
+    </div>
+
+    <div class="field-group">
+      <label>Product Image</label>
+      <div class="drop-zone" id="drop-zone">
+        <span id="lens-glyph" style="font-size: 2.2rem; display:block; margin-bottom:8px;">📷</span>
+        <span id="drop-text">Click or drop image to bind</span>
+        <input type="file" id="file-input" accept="image/*" class="hidden">
+        <img id="preview-img" alt="preview">
+      </div>
+    </div>
+
+    <button class="btn" id="execute-btn">Submit Event to Ledger</button>
+
+    <div id="qr-result">
+      <p>Event recorded</p>
+      <div class="lot-display" id="lot-display-final"></div>
+      <div id="qrcode"></div>
+    </div>
+
+    <div class="console" id="terminal-console">
+      <div class="log-entry" style="color:#666;">[SYSTEM] Waiting for submission...</div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://api.francefarms.net/api/scans";
+    const VERIFY_BASE = "https://www.francefarms.net/verify.html";
+
+    // ─── Carry forward parent_hash + lot_code from the verify page's "Add Next Event" link ───
+    const urlParams = new URLSearchParams(window.location.search);
+    const parentHash = urlParams.get('parent_hash');
+    const lotCode = urlParams.get('lot_code');
+    const eventTypeSelect = document.getElementById('event-type');
+    const lotBanner = document.getElementById('lot-banner');
+    const noLotWarning = document.getElementById('no-lot-warning');
+
+    function refreshLotState() {
+      const selected = eventTypeSelect.value;
+      if (lotCode) {
+        lotBanner.classList.remove('hidden');
+        document.getElementById('lot-code-display').textContent = lotCode;
+        noLotWarning.classList.add('hidden');
+      } else if (selected !== 'HARVEST') {
+        // Trying to log a non-harvest event with no lot code carried in — block it early
+        // rather than letting the server reject it after a full submission attempt.
+        noLotWarning.classList.remove('hidden');
+        lotBanner.classList.add('hidden');
+      } else {
+        noLotWarning.classList.add('hidden');
+        lotBanner.classList.add('hidden');
+      }
+    }
+    eventTypeSelect.addEventListener('change', refreshLotState);
+    refreshLotState();
+
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const terminalConsole = document.getElementById('terminal-console');
+    const previewImg = document.getElementById('preview-img');
+    const lensGlyph = document.getElementById('lens-glyph');
+    const executeBtn = document.getElementById('execute-btn');
+    const qrResult = document.getElementById('qr-result');
+    const qrContainer = document.getElementById('qrcode');
+
+    function consoleLog(msg, type = '') {
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      entry.textContent = `> [${new Date().toLocaleTimeString()}] ${msg}`;
+      terminalConsole.appendChild(entry);
+      terminalConsole.scrollTop = terminalConsole.scrollHeight;
+    }
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          previewImg.src = e.target.result;
+          previewImg.style.display = 'block';
+          lensGlyph.style.display = 'none';
+          document.getElementById('drop-text').style.display = 'none';
+          consoleLog(`Image bound: ${file.name}`);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    async function generateSHA256(message) {
+      const msgBuffer = new TextEncoder().encode(message);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    executeBtn.addEventListener('click', () => {
+      const selectedType = eventTypeSelect.value;
+
+      // Client-side guard: block obviously broken submissions before hitting the network.
+      if (selectedType !== 'HARVEST' && !lotCode) {
+        consoleLog("[BLOCKED] Cannot log a non-Harvest event without a lot code. Scan the previous stage's QR first.", "log-error");
+        return;
+      }
+
+      executeBtn.disabled = true;
+      qrResult.style.display = 'none';
+      qrContainer.innerHTML = '';
+      consoleLog("Requesting location...");
+
+      if (!navigator.geolocation) {
+        consoleLog("[ERROR] Geolocation unsupported.", "log-error");
+        executeBtn.disabled = false;
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          consoleLog(`[SUCCESS] GPS: ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`, "log-success");
+          await submitEvent(pos.coords.latitude, pos.coords.longitude);
+        },
+        async () => {
+          consoleLog("[WARN] Location unavailable, using fallback.", "log-error");
+          await submitEvent("10.650000", "-61.510000");
+        },
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+      );
+    });
+
+    async function submitEvent(lat, lon) {
+      const eventType = eventTypeSelect.value;
+      const nodeId = document.getElementById('node-id').value.trim() || "UNASSIGNED_NODE";
+      const batchNote = document.getElementById('batch').value.trim();
+      const isoTimestamp = new Date().toISOString();
+      const rawSeed = `${eventType}-${nodeId}-${lotCode || 'NEW'}-${lat}-${lon}-${isoTimestamp}`;
+
+      const hash = await generateSHA256(rawSeed);
+      consoleLog(`[CRYPTO] Hash: ${hash}`, "log-success");
+
+      const formData = new FormData();
+      formData.append('node_id', nodeId);
+      formData.append('batch_ref', batchNote);
+      formData.append('hash', hash);
+      formData.append('latitude', lat);
+      formData.append('longitude', lon);
+      formData.append('event_type', eventType);
+      if (parentHash) formData.append('parent_hash', parentHash);
+      if (lotCode) formData.append('lot_code', lotCode); // omitted on Harvest — server generates it
+      if (fileInput.files[0]) formData.append('image', fileInput.files[0]);
+
+      try {
+        consoleLog("Submitting to ledger...");
+        const res = await fetch(API_URL, { method: 'POST', body: formData });
+        const data = await res.json().catch(() => ({}));
+
+        if (res.ok) {
+          consoleLog(`[SUCCESS] Event recorded. Lot: ${data.lot_code}`, "log-success");
+          renderReceiptQR(data.hash, data.lot_code);
+        } else {
+          consoleLog(`[ERROR] Status ${res.status}: ${data.message || 'Unknown error'}`, "log-error");
+          executeBtn.disabled = false;
+        }
+      } catch (err) {
+        consoleLog("[NETWORK ERROR] Could not reach API.", "log-error");
+        console.error(err);
+        executeBtn.disabled = false;
+      }
+    }
+
+    function renderReceiptQR(hash, returnedLotCode) {
+      qrResult.style.display = 'block';
+      qrContainer.innerHTML = '';
+      document.getElementById('lot-display-final').textContent = `Lot: ${returnedLotCode}`;
+      // QR encodes a link to the verify page — scanning it shows the full chain
+      // and offers a button to continue to the next stage.
+      const verifyUrl = `${VERIFY_BASE}?hash=${encodeURIComponent(hash)}`;
+      new QRCode(qrContainer, {
+        text: verifyUrl,
+        width: 160,
+        height: 160,
+        colorDark: "#0f3d22",
+        colorLight: "#ffffff"
+      });
+      executeBtn.disabled = false;
+    }
+  </script>
+</body>
+</html>
